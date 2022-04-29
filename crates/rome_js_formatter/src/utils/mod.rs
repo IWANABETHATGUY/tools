@@ -615,6 +615,19 @@ pub(crate) fn format_string_literal_token(
     token: JsSyntaxToken,
     formatter: &Formatter,
 ) -> FormatElement {
+    let content = format_string_literal_token_content(&token, formatter);
+
+    formatter.format_replaced(
+        &token,
+        Token::from_syntax_token_cow_slice(content, &token, token.text_trimmed_range().start())
+            .into(),
+    )
+}
+
+pub(crate) fn format_string_literal_token_content<'a, 'b>(
+    token: &'a rome_rowan::SyntaxToken<JsLanguage>,
+    formatter: &'b Formatter,
+) -> Cow<'a, str> {
     let quoted = token.text_trimmed();
     let (primary_quote_char, secondary_quote_char) = match formatter.options().quote_style {
         QuoteStyle::Double => ('"', '\''),
@@ -628,12 +641,7 @@ pub(crate) fn format_string_literal_token(
         } else {
             normalize_newlines(quoted, ['\r'])
         };
-
-    formatter.format_replaced(
-        &token,
-        Token::from_syntax_token_cow_slice(content, &token, token.text_trimmed_range().start())
-            .into(),
-    )
+    content
 }
 
 /// A call like expression is one of:
