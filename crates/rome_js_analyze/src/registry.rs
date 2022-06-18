@@ -17,6 +17,9 @@ pub(crate) fn build_registry(filter: &AnalysisFilter) -> RuleRegistry<JsLanguage
     if filter.match_rule::<NoDoubleEquals>() {
         rules.push::<NoDoubleEquals>();
     }
+    if filter.match_rule::<NoDuplicateCase>() {
+        rules.push::<NoDuplicateCase>();
+    }
     if filter.match_rule::<NoImplicitBoolean>() {
         rules.push::<NoImplicitBoolean>();
     }
