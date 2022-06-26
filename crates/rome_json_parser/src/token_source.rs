@@ -1,3 +1,5 @@
+use std::collections::VecDeque;
+
 use rome_diagnostics::{file::FileId, Diagnostic};
 use rome_json_syntax::{JsonSyntaxKind, TextRange, TextSize, TriviaPieceKind};
 
@@ -49,6 +51,14 @@ impl Trivia {
     }
 }
 
+#[derive(Debug, Copy, Clone)]
+struct Lookahead {
+    kind: JsonSyntaxKind,
+    after_newline: bool,
+    range: TextRange
+}
+
+
 /// Token source for the parser that skips over any non-trivia token.
 #[derive(Debug)]
 pub struct TokenSource<'l> {
@@ -57,6 +67,19 @@ pub struct TokenSource<'l> {
     /// List of the skipped trivia. Needed to construct the CST and compute the non-trivia token offsets.
     pub trivia_list: Vec<Trivia>,
     after_newline: bool,
+
+    /// Cache for the non-trivia token lookahead. For example for the source `let a = 10;` if the
+    /// [TokenSource]'s currently positioned at the start of the file (`let`). The `nth(2)` non-trivia token,
+    /// as returned by the [TokenSource], is the `=` token but retrieving it requires skipping over the
+    /// two whitespace trivia tokens (first between `let` and `a`, second between `a` and `=`).
+    /// The [TokenSource] state then is:
+    ///
+    /// * `non_trivia_lookahead`: [IDENT: 'a', EQ]
+    /// * `lookahead_offset`: 4 (the `=` is the 4th token after the `let` keyword)
+    non_trivia_lookahead: VecDeque<Lookahead>,
+
+    /// Offset of the last cached lookahead token from the current [BufferedLexer] token.
+    lookahead_offset: usize,
 }
 
 impl<'l> TokenSource<'l> {
@@ -66,6 +89,8 @@ impl<'l> TokenSource<'l> {
             lexer,
             trivia_list: vec![],
             after_newline: false,
+            non_trivia_lookahead: VecDeque::default(),
+            lookahead_offset: 0,
         }
     }
 
@@ -80,6 +105,9 @@ impl<'l> TokenSource<'l> {
 
     #[inline]
     pub fn next_non_trivia_token(&mut self, first_token: bool) {
+        if !self.non_trivia_lookahead.is_empty() {
+            return;
+        }
         let mut trailing = !first_token;
 
         loop {
@@ -107,19 +135,57 @@ impl<'l> TokenSource<'l> {
     /// Returns the kind of the current non-trivia token
     #[inline(always)]
     pub fn current(&self) -> JsonSyntaxKind {
-        self.lexer.current_token()
+        if self.non_trivia_lookahead.is_empty() {
+            self.lexer.current_token()
+        } else {
+            self.non_trivia_lookahead[0].kind
+        }
+        // self.lexer.current_token()
     }
 
     /// Returns the range of the current non-trivia token
     #[inline(always)]
     pub fn current_range(&self) -> TextRange {
-        self.lexer.current_range()
+        if self.non_trivia_lookahead.is_empty() {
+            self.lexer.current_range()
+        } else {
+            self.non_trivia_lookahead[0].range
+        }
     }
 
     /// Gets the kind of the nth non-trivia token
     #[inline(always)]
     pub fn nth(&mut self, n: usize) -> JsonSyntaxKind {
-        self.lexer.nth(n)
+        if n == 0 {
+            return self.current();
+        } else if n <= self.non_trivia_lookahead.len() {
+            return self.non_trivia_lookahead[n - 1].kind;
+        }
+
+        if self.lexer.cursor() + n >= self.lexer.len() {
+            return JsonSyntaxKind::EOF;
+        }
+        let mut trailing = true;
+        loop {
+            let kind = self.lexer.current_token();
+
+            let trivia_kind = TriviaPieceKind::try_from(kind);
+
+            match trivia_kind {
+                Err(_) => break,
+                Ok(trivia_kind) => {
+                    // Trivia after and including the newline is considered the leading trivia of the next token
+                    if trivia_kind.is_newline() {
+                        trailing = false;
+                        self.after_newline = true;
+                    }
+                    let current_range = self.current_range();
+                    self.trivia_list
+                        .push(Trivia::new(trivia_kind, current_range, trailing));
+                }
+            }
+            self.lexer.advance();
+        }
     }
 
     /// Returns true if the current token is preceded by a line break
@@ -214,8 +280,12 @@ impl<'l> TokenSource<'l> {
             //     self.lookahead_offset = 0;
             //     self.non_trivia_lookahead.clear();
             // }
-            self.lexer.advance();
-            self.next_non_trivia_token(false);
+            if self.non_trivia_lookahead.is_empty() {
+                self.lexer.advance();
+                self.next_non_trivia_token(false);
+            } else {
+                self.non_trivia_lookahead.pop_front();
+            }
         }
     }
 

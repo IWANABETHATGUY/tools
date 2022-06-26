@@ -137,6 +137,12 @@ impl<'a> Lexer<'a> {
         }
     }
 
+    #[inline]
+    pub fn len(&self) -> usize {
+        self.tokens_with_span.len()
+    }
+
+    #[inline]
     pub fn advance(&mut self) {
         self.cursor += 1;
     }
@@ -177,6 +183,10 @@ impl<'a> Lexer<'a> {
         vec![]
     }
 
+    #[inline]
+    pub fn cursor(&self) -> usize {
+        self.cursor
+    }
     // pub fn lookahead(&self) -> It {
     //     todo!()
     // }

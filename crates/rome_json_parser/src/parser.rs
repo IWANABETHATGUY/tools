@@ -176,10 +176,10 @@ impl<'s> Parser<'s> {
     }
 
     /// Tests if there's a line break before the current token (between the last and current)
-    #[inline]
-    pub fn has_preceding_line_break(&self) -> bool {
-        self.tokens.has_preceding_line_break()
-    }
+    // #[inline]
+    // pub fn has_preceding_line_break(&self) -> bool {
+    //     self.tokens.has_preceding_line_break()
+    // }
 
     /// Consume the current token if `kind` matches.
     #[inline]
