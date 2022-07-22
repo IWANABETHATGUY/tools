@@ -1,4 +1,5 @@
 import { Dispatch, SetStateAction } from "react";
+import { RomeDiagnostic } from "../pkg/rome_playground";
 
 export enum IndentStyle { Tab = "tab", Space = "space" }
 export enum SourceType { Module = "module", Script = "script" }
@@ -9,7 +10,7 @@ export enum LoadingState { Loading, Success, Error }
 export interface RomeOutput {
 	ast: string;
 	cst: string;
-	errors: string;
+	errors: RomeDiagnostic[];
 	formatted_code: string;
 	formatter_ir: string;
 }

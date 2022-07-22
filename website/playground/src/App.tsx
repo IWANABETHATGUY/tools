@@ -17,7 +17,7 @@ function App() {
 	const [romeOutput, setRomeOutput] = useState<RomeOutput>({
 		ast: "",
 		cst: "",
-		errors: "",
+		errors: [],
 		formatted_code: "",
 		formatter_ir: "",
 	});

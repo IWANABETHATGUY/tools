@@ -1,5 +1,8 @@
 #![allow(clippy::unused_unit)] // Bug in wasm_bindgen creates unused unit warnings. See wasm_bindgen#2774
 
+use std::fmt::Debug;
+use std::ops::Range;
+
 use js_sys::Array;
 use rome_analyze::{AnalysisFilter, ControlFlow, Never};
 use rome_console::fmt::{Formatter, HTML};
@@ -11,6 +14,7 @@ use rome_js_formatter::context::JsFormatContext;
 use rome_js_formatter::format_node;
 use rome_js_parser::parse;
 use rome_js_syntax::{LanguageVariant, SourceType};
+use wasm_bindgen::convert::FromWasmAbi;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
@@ -43,7 +47,41 @@ pub struct RomeOutput {
     cst: String,
     formatted_code: String,
     formatter_ir: String,
-    errors: String,
+    errors: Array,
+}
+
+#[wasm_bindgen]
+#[derive(Clone)]
+pub struct RomeDiagnostic {
+    start: u32,
+    end: u32,
+    message: String,
+}
+
+#[wasm_bindgen]
+impl RomeDiagnostic {
+    #[wasm_bindgen(constructor)]
+    pub fn new(start: u32, end: u32, message: String) -> Self {
+        Self {
+            start,
+            end,
+            message,
+        }
+    }
+    #[wasm_bindgen(getter)]
+    pub fn start(&self) -> u32 {
+        self.start.clone()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn end(&self) -> u32 {
+        self.end.clone()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn message(&self) -> String {
+        self.message.clone()
+    }
 }
 
 #[wasm_bindgen]
@@ -69,9 +107,13 @@ impl RomeOutput {
     }
 
     #[wasm_bindgen(getter)]
-    pub fn errors(&self) -> String {
+    pub fn errors(&self) -> Array {
         self.errors.clone()
     }
+    // #[wasm_bindgen(getter)]
+    // pub fn errors(&self) -> String {
+    //     self.errors.clone()
+    // }
 }
 
 #[wasm_bindgen]
@@ -174,8 +216,11 @@ pub fn run(
     let formatter_ir = format!("{:#?}", root_element);
 
     let mut html = HTML(Vec::new());
+    let mut diagnostic: Array = Array::new();
     for diag in parse.diagnostics() {
-        diagnostic_to_string(&simple_files, main_file_id, diag, &mut html);
+        if let Some(diag) = diagnostic_to_string(&simple_files, main_file_id, diag, &mut html) {
+            diagnostic.push(&JsValue::from(diag));
+        }
     }
 
     mark("rome::analyze::begin");
@@ -188,7 +233,11 @@ pub fn run(
                 if let Some(action) = signal.action() {
                     diag.suggestions.push(action.into());
                 }
-                diagnostic_to_string(&simple_files, main_file_id, &diag, &mut html);
+                if let Some(diag) =
+                    diagnostic_to_string(&simple_files, main_file_id, &diag, &mut html)
+                {
+                    diagnostic.push(&JsValue::from(diag));
+                }
             }
 
             ControlFlow::<Never>::Continue(())
@@ -212,7 +261,7 @@ pub fn run(
         ast,
         formatted_code,
         formatter_ir,
-        errors: String::from_utf8(html.0).unwrap(),
+        errors: diagnostic,
     }
 }
 
@@ -226,12 +275,22 @@ fn diagnostic_to_string(
     id: usize,
     diag: &Diagnostic,
     html: &mut HTML<Vec<u8>>,
-) {
+) -> Option<RomeDiagnostic> {
     let file = simple_files.get(id).unwrap();
-    markup_to_string(
-        markup! {
-            {diag.display(file)}
-        },
-        html,
-    );
+    // let mut html: HTML<Vec<u8>> = HTML(Vec::new());
+    // let mut fmt = Formatter::new(&mut html);
+    // fmt.write_markup(markup).unwrap();
+    let range = diag.clone().primary?.span;
+    Some(RomeDiagnostic {
+        start: u32::from(range.range.start()),
+        end: u32::from(range.range.end()),
+        message: format!("{:?}", diag.title),
+    })
+    // diag.primary.unwrap().
+    // markup_to_string(
+    //     markup! {
+    //         {diag.display(file)}
+    //     },
+    //     html,
+    // );
 }

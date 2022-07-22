@@ -36,12 +36,15 @@ self.addEventListener("message", async (e) => {
 				isJsx,
 				sourceType,
 			);
+			if (romeOutput.errors) {
+				console.log(romeOutput.errors)
+			}
 			self.postMessage({
 				type: "formatted",
 				romeOutput: {
 					ast: romeOutput.ast,
 					cst: romeOutput.cst,
-					errors: romeOutput.errors,
+					errors: romeOutput.errors.map((item) => ({start: item.start, end: item.end, message: item.message})),
 					formatted_code: romeOutput.formatted_code,
 					formatter_ir: romeOutput.formatter_ir,
 				},

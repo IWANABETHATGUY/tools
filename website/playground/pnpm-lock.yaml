@@ -2,6 +2,7 @@ lockfileVersion: 5.4
 
 specifiers:
   '@codemirror/lang-javascript': ^6.0.1
+  '@codemirror/lint': ^6.0.0
   '@tailwindcss/forms': ^0.4.0
   '@types/prettier': ^2.6.3
   '@types/react': ^17.0.33
@@ -23,6 +24,7 @@ specifiers:
 
 dependencies:
   '@codemirror/lang-javascript': 6.0.1
+  '@codemirror/lint': 6.0.0
   '@uiw/react-codemirror': 4.11.0_sfoxds7t5ydpegc3knd667wn6m
   prettier: 2.7.0
   react: 17.0.2

@@ -39,7 +39,7 @@ export function MobilePlayground(
 					<Tab selectedClassName="bg-slate-300">AST</Tab>
 					<Tab selectedClassName="bg-slate-300">Rome IR</Tab>
 					<Tab selectedClassName="bg-slate-300">Prettier IR</Tab>
-					<Tab disabled={errors === ""} selectedClassName="bg-slate-300">Errors</Tab>
+					<Tab disabled={errors.length === 0} selectedClassName="bg-slate-300">Errors</Tab>
 				</TabList>
 				<TabPanel>
 					<CodeMirror
