@@ -73,7 +73,7 @@
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">termcolor</span>;
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">Debug</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Hash</span>)]</span>
-<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;serde&quot;</span>, <span class="ident">derive</span>(<span class="ident">serde::Serialize</span>))]</span>
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;serde&quot;</span>, <span class="ident">derive</span>(<span class="ident">serde::Serialize</span>, <span class="ident">serde::Deserialize</span>))]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">DiagnosticTag</span> {
     <span class="ident">Unnecessary</span>,
     <span class="ident">Deprecated</span>,
@@ -81,7 +81,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">DiagnosticTag</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_unecessary</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_unnecessary</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
         <span class="macro">matches!</span>(<span class="self">self</span>, <span class="ident">DiagnosticTag::Unnecessary</span> <span class="op">|</span> <span class="ident">DiagnosticTag::Both</span>)
     }
 
@@ -90,9 +90,9 @@
     }
 }
 
-<span class="doccomment">/// Indicicates how a tool should manage this suggestion.</span>
+<span class="doccomment">/// Indicates how a tool should manage this suggestion.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">Debug</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Hash</span>)]</span>
-<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;serde&quot;</span>, <span class="ident">derive</span>(<span class="ident">serde::Serialize</span>))]</span>
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;serde&quot;</span>, <span class="ident">derive</span>(<span class="ident">serde::Serialize</span>, <span class="ident">serde::Deserialize</span>))]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Applicability</span> {
     <span class="doccomment">/// The suggestion is definitely what the user intended.</span>
     <span class="doccomment">/// This suggestion should be automatically applied.</span>
@@ -108,7 +108,7 @@
     <span class="ident">Unspecified</span>,
 }
 
-<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MAXIMUM_DISPLAYABLE_DIAGNOSTICS</span>: <span class="ident">u8</span> <span class="op">=</span> <span class="number">50</span>;
+<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MAXIMUM_DISPLAYABLE_DIAGNOSTICS</span>: <span class="ident">u16</span> <span class="op">=</span> <span class="number">200</span>;
 </code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="rome_diagnostics" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.62.0 (a8314ef7d 2022-06-27)" ></div>
 </body></html>
