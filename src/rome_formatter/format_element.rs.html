@@ -1038,6 +1038,9 @@
 <span id="1033">1033</span>
 <span id="1034">1034</span>
 <span id="1035">1035</span>
+<span id="1036">1036</span>
+<span id="1037">1037</span>
+<span id="1038">1038</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::prelude</span>::{<span class="ident">dynamic_text</span>, <span class="ident">format_with</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::printer::LineEnding</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::{
@@ -1079,6 +1082,10 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// Nesting (Aligns)[FormatElement::Align] has the effect that all except the most inner align are handled as (Indent)[FormatElement::Indent].</span>
     <span class="ident">Align</span>(<span class="ident">Align</span>),
+
+    <span class="doccomment">/// Reduces the indention of the specified content by one. Reverse operation of `Indent` and can be used to</span>
+    <span class="doccomment">/// *undo` an `Align` for nested content.</span>
+    <span class="ident">Dedent</span>(<span class="ident">Content</span>),
 
     <span class="doccomment">/// Creates a logical group where its content is either consistently printed:</span>
     <span class="doccomment">/// * on a single line: Omitting `LineMode::Soft` line breaks and printing spaces for `LineMode::SoftOrSpace`</span>
@@ -1197,6 +1204,7 @@
             <span class="ident">FormatElement::Space</span> =&gt; <span class="macro">write!</span>(<span class="ident">fmt</span>, <span class="string">&quot;Space&quot;</span>),
             <span class="ident">FormatElement::Line</span>(<span class="ident">content</span>) =&gt; <span class="ident">fmt</span>.<span class="ident">debug_tuple</span>(<span class="string">&quot;Line&quot;</span>).<span class="ident">field</span>(<span class="ident">content</span>).<span class="ident">finish</span>(),
             <span class="ident">FormatElement::Indent</span>(<span class="ident">content</span>) =&gt; <span class="ident">fmt</span>.<span class="ident">debug_tuple</span>(<span class="string">&quot;Indent&quot;</span>).<span class="ident">field</span>(<span class="ident">content</span>).<span class="ident">finish</span>(),
+            <span class="ident">FormatElement::Dedent</span>(<span class="ident">content</span>) =&gt; <span class="ident">fmt</span>.<span class="ident">debug_tuple</span>(<span class="string">&quot;Dedent&quot;</span>).<span class="ident">field</span>(<span class="ident">content</span>).<span class="ident">finish</span>(),
             <span class="ident">FormatElement::Align</span>(<span class="ident">Align</span> { <span class="ident">count</span>, <span class="ident">content</span> }) =&gt; <span class="ident">fmt</span>
                 .<span class="ident">debug_struct</span>(<span class="string">&quot;Align&quot;</span>)
                 .<span class="ident">field</span>(<span class="string">&quot;count&quot;</span>, <span class="ident">count</span>)
@@ -1431,6 +1439,10 @@
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Interned</span>(<span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">FormatElement</span><span class="op">&gt;</span>);
 
 <span class="kw">impl</span> <span class="ident">Interned</span> {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">element</span>: <span class="ident">FormatElement</span>) -&gt; <span class="self">Self</span> {
+        <span class="self">Self</span>(<span class="ident">Rc::new</span>(<span class="ident">element</span>))
+    }
+
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">try_unwrap</span>(<span class="ident">this</span>: <span class="ident">Interned</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">FormatElement</span>, <span class="ident">Interned</span><span class="op">&gt;</span> {
         <span class="ident">Rc::try_unwrap</span>(<span class="ident">this</span>.<span class="number">0</span>).<span class="ident">map_err</span>(<span class="ident">Interned</span>)
     }
@@ -1691,6 +1703,7 @@
             <span class="op">|</span> <span class="ident">FormatElement::Verbatim</span>(<span class="ident">Verbatim</span> { <span class="ident">content</span>, .. })
             <span class="op">|</span> <span class="ident">FormatElement::Label</span>(<span class="ident">Label</span> { <span class="ident">content</span>, .. })
             <span class="op">|</span> <span class="ident">FormatElement::Indent</span>(<span class="ident">content</span>)
+            <span class="op">|</span> <span class="ident">FormatElement::Dedent</span>(<span class="ident">content</span>)
             <span class="op">|</span> <span class="ident">FormatElement::Align</span>(<span class="ident">Align</span> { <span class="ident">content</span>, .. }) =&gt; {
                 <span class="ident">content</span>.<span class="ident">iter</span>().<span class="ident">any</span>(<span class="ident">FormatElement::will_break</span>)
             }
@@ -1729,16 +1742,6 @@
             <span class="ident">FormatElement::Interned</span>(<span class="ident">Interned</span>(<span class="ident">inner</span>)) =&gt; <span class="ident">inner</span>.<span class="ident">last_element</span>(),
 
             <span class="kw">_</span> =&gt; <span class="prelude-val">Some</span>(<span class="self">self</span>),
-        }
-    }
-
-    <span class="doccomment">/// Interns a format element.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// Returns `self` for an already interned element.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">intern</span>(<span class="self">self</span>) -&gt; <span class="ident">Interned</span> {
-        <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">FormatElement::Interned</span>(<span class="ident">interned</span>) =&gt; <span class="ident">interned</span>,
-            <span class="ident">element</span> =&gt; <span class="ident">Interned</span>(<span class="ident">Rc::new</span>(<span class="ident">element</span>)),
         }
     }
 }
@@ -1806,7 +1809,7 @@
             <span class="ident">tab_width</span>: <span class="number">2</span>,
             <span class="ident">print_width</span>: <span class="self">self</span>.<span class="ident">line_width</span>(),
             <span class="ident">line_ending</span>: <span class="ident">LineEnding::LineFeed</span>,
-            <span class="ident">indent_string</span>: <span class="string">&quot;  &quot;</span>.<span class="ident">to_string</span>(),
+            <span class="ident">indent_style</span>: <span class="ident">IndentStyle::Space</span>(<span class="number">2</span>),
         }
     }
 }
@@ -1840,6 +1843,9 @@
             }
             <span class="ident">FormatElement::Indent</span>(<span class="ident">content</span>) =&gt; {
                 <span class="macro">write!</span>(<span class="ident">f</span>, [<span class="ident">text</span>(<span class="string">&quot;indent(&quot;</span>), <span class="ident">content</span>.<span class="ident">as_ref</span>(), <span class="ident">text</span>(<span class="string">&quot;)&quot;</span>)])
+            }
+            <span class="ident">FormatElement::Dedent</span>(<span class="ident">content</span>) =&gt; {
+                <span class="macro">write!</span>(<span class="ident">f</span>, [<span class="ident">text</span>(<span class="string">&quot;dedent(&quot;</span>), <span class="ident">content</span>.<span class="ident">as_ref</span>(), <span class="ident">text</span>(<span class="string">&quot;)&quot;</span>)])
             }
             <span class="ident">FormatElement::Align</span>(<span class="ident">Align</span> { <span class="ident">content</span>, <span class="ident">count</span> }) =&gt; {
                 <span class="macro">write!</span>(
