@@ -1083,6 +1083,10 @@
 <span id="1077">1077</span>
 <span id="1078">1078</span>
 <span id="1079">1079</span>
+<span id="1080">1080</span>
+<span id="1081">1081</span>
+<span id="1082">1082</span>
+<span id="1083">1083</span>
 </pre><pre class="rust"><code><span class="doccomment">//! JavaScript supports parenthesizing expressions, assignments, and TypeScript types.</span>
 <span class="doccomment">//! Parenthesizing an expression can be desired to change the precedence of an expression or to ease</span>
 <span class="doccomment">//! readability.</span>
@@ -1243,6 +1247,7 @@
             <span class="ident">JsAnyExpression::TsTypeAssertionExpression</span>(<span class="ident">type_assertion</span>) =&gt; {
                 <span class="ident">type_assertion</span>.<span class="ident">needs_parentheses</span>()
             }
+            <span class="ident">JsAnyExpression::TsInstantiationExpression</span>(<span class="ident">arguments</span>) =&gt; <span class="ident">arguments</span>.<span class="ident">needs_parentheses</span>(),
         }
     }
 
@@ -1336,6 +1341,9 @@
             }
             <span class="ident">JsAnyExpression::TsTypeAssertionExpression</span>(<span class="ident">type_assertion</span>) =&gt; {
                 <span class="ident">type_assertion</span>.<span class="ident">needs_parentheses_with_parent</span>(<span class="ident">parent</span>)
+            }
+            <span class="ident">JsAnyExpression::TsInstantiationExpression</span>(<span class="ident">expr</span>) =&gt; {
+                <span class="ident">expr</span>.<span class="ident">needs_parentheses_with_parent</span>(<span class="ident">parent</span>)
             }
         }
     }

@@ -983,6 +983,7 @@
 <span id="977">977</span>
 <span id="978">978</span>
 <span id="979">979</span>
+<span id="980">980</span>
 </pre><pre class="rust"><code><span class="doccomment">//! This module implements the formatting of binary like nodes. Binary like nodes are nodes with</span>
 <span class="doccomment">//! `left` and `right` expressions. Today, this includes:</span>
 <span class="doccomment">//! * [JsBinaryExpression]</span>
@@ -1053,11 +1054,12 @@
 };
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::js::expressions::static_member_expression::JsAnyStaticMemberLike</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::utils::assignment_like::has_leading_own_line_comment</span>;
 <span class="kw">use</span> <span class="ident">rome_rowan</span>::{<span class="ident">declare_node_union</span>, <span class="ident">AstNode</span>, <span class="ident">SyntaxResult</span>};
 <span class="kw">use</span> <span class="ident">std::fmt::Debug</span>;
 <span class="kw">use</span> <span class="ident">std::hash::Hash</span>;
 <span class="kw">use</span> <span class="ident">std::iter::FusedIterator</span>;
+
+<span class="kw">use</span> <span class="ident"><span class="kw">super</span>::has_leading_own_line_comment</span>;
 
 <span class="macro">declare_node_union!</span> {
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">JsAnyBinaryLikeExpression</span> <span class="op">=</span> <span class="ident">JsLogicalExpression</span> <span class="op">|</span> <span class="ident">JsBinaryExpression</span> <span class="op">|</span> <span class="ident">JsInstanceofExpression</span> <span class="op">|</span> <span class="ident">JsInExpression</span>
