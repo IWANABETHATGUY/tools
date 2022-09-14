@@ -350,19 +350,19 @@
         <span class="kw">const</span> <span class="ident">SOURCE</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;
             function checkSuppressions1(a, b) {
                 a == b;
-                // rome-ignore lint(js): whole group
+                // rome-ignore lint(correctness): whole group
                 a == b;
-                // rome-ignore lint(js/noDoubleEquals): single rule
+                // rome-ignore lint(correctness/noDoubleEquals): single rule
                 a == b;
-                /* rome-ignore lint(js/useWhile): multiple block comments */ /* rome-ignore lint(js/noDoubleEquals): multiple block comments */
+                /* rome-ignore lint(correctness/useWhile): multiple block comments */ /* rome-ignore lint(correctness/noDoubleEquals): multiple block comments */
                 a == b;
-                // rome-ignore lint(js/useWhile): multiple line comments
-                // rome-ignore lint(js/noDoubleEquals): multiple line comments
+                // rome-ignore lint(correctness/useWhile): multiple line comments
+                // rome-ignore lint(correctness/noDoubleEquals): multiple line comments
                 a == b;
                 a == b;
             }
 
-            // rome-ignore lint(js/noDoubleEquals): do not suppress warning for the whole function
+            // rome-ignore lint(correctness/noDoubleEquals): do not suppress warning for the whole function
             function checkSuppressions2(a, b) {
                 a == b;
             }
@@ -377,7 +377,7 @@
                 <span class="kw">let</span> <span class="ident">code</span> <span class="op">=</span> <span class="ident">diag</span>.<span class="ident">code</span>.<span class="ident">as_deref</span>().<span class="ident">unwrap</span>();
                 <span class="kw">let</span> <span class="ident">primary</span> <span class="op">=</span> <span class="ident">diag</span>.<span class="ident">primary</span>.<span class="ident">as_ref</span>().<span class="ident">unwrap</span>();
 
-                <span class="kw">if</span> <span class="ident">code</span> <span class="op">==</span> <span class="string">&quot;js/noDoubleEquals&quot;</span> {
+                <span class="kw">if</span> <span class="ident">code</span> <span class="op">==</span> <span class="string">&quot;correctness/noDoubleEquals&quot;</span> {
                     <span class="ident">error_ranges</span>.<span class="ident">push</span>(<span class="ident">primary</span>.<span class="ident">span</span>.<span class="ident">range</span>);
                 }
             }
@@ -389,8 +389,8 @@
             <span class="ident">error_ranges</span>.<span class="ident">as_slice</span>(),
             <span class="kw-2">&amp;</span>[
                 <span class="ident">TextRange::new</span>(<span class="ident">TextSize::from</span>(<span class="number">67</span>), <span class="ident">TextSize::from</span>(<span class="number">69</span>)),
-                <span class="ident">TextRange::new</span>(<span class="ident">TextSize::from</span>(<span class="number">604</span>), <span class="ident">TextSize::from</span>(<span class="number">606</span>)),
-                <span class="ident">TextRange::new</span>(<span class="ident">TextSize::from</span>(<span class="number">790</span>), <span class="ident">TextSize::from</span>(<span class="number">792</span>)),
+                <span class="ident">TextRange::new</span>(<span class="ident">TextSize::from</span>(<span class="number">658</span>), <span class="ident">TextSize::from</span>(<span class="number">660</span>)),
+                <span class="ident">TextRange::new</span>(<span class="ident">TextSize::from</span>(<span class="number">853</span>), <span class="ident">TextSize::from</span>(<span class="number">855</span>)),
             ]
         );
     }
