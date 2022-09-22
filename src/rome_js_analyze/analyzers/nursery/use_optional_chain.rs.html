@@ -865,12 +865,7 @@
 <span id="859">859</span>
 <span id="860">860</span>
 <span id="861">861</span>
-<span id="862">862</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::cmp::Ordering</span>;
-<span class="kw">use</span> <span class="ident">std::collections::VecDeque</span>;
-<span class="kw">use</span> <span class="ident">std::iter</span>;
-
-<span class="kw">use</span> <span class="ident">rome_analyze</span>::{
+</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">rome_analyze</span>::{
     <span class="ident">context::RuleContext</span>, <span class="ident">declare_rule</span>, <span class="ident">ActionCategory</span>, <span class="ident">Ast</span>, <span class="ident">Rule</span>, <span class="ident">RuleCategory</span>, <span class="ident">RuleDiagnostic</span>,
 };
 <span class="kw">use</span> <span class="ident">rome_console::markup</span>;
@@ -881,6 +876,9 @@
     <span class="ident">JsStaticMemberExpression</span>, <span class="ident">OperatorPrecedence</span>, <span class="ident">T</span>,
 };
 <span class="kw">use</span> <span class="ident">rome_rowan</span>::{<span class="ident">declare_node_union</span>, <span class="ident">AstNode</span>, <span class="ident">AstNodeExt</span>, <span class="ident">BatchMutationExt</span>, <span class="ident">SyntaxResult</span>};
+<span class="kw">use</span> <span class="ident">std::cmp::Ordering</span>;
+<span class="kw">use</span> <span class="ident">std::collections::VecDeque</span>;
+<span class="kw">use</span> <span class="ident">std::iter</span>;
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::JsRuleAction</span>;
 

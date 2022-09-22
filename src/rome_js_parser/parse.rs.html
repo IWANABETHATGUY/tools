@@ -206,11 +206,13 @@
 <span id="200">200</span>
 <span id="201">201</span>
 <span id="202">202</span>
+<span id="203">203</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Utilities for high level parsing of js code.</span>
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::token_source::Trivia</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident">rome_diagnostics</span>::{<span class="ident">file::FileId</span>, <span class="ident">Severity</span>};
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">rome_diagnostics::file::FileId</span>;
+<span class="kw">use</span> <span class="ident">rome_diagnostics::Severity</span>;
 <span class="kw">use</span> <span class="ident">rome_js_syntax</span>::{
     <span class="ident">JsAnyRoot</span>, <span class="ident">JsExpressionSnipped</span>, <span class="ident">JsLanguage</span>, <span class="ident">JsModule</span>, <span class="ident">JsScript</span>, <span class="ident">JsSyntaxNode</span>, <span class="ident">ModuleKind</span>,
     <span class="ident">SourceType</span>,
