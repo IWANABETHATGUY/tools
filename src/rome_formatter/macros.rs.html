@@ -1,10 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/rome_formatter/src/macros.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>macros.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../rome_formatter/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
-        </a><h2 class="location"></h2>
-    </nav>
-    <nav class="sidebar"><a class="sidebar-logo" href="../../rome_formatter/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
-        </a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../rome_formatter/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><button type="button" id="help-button" title="help">?</button><div id="settings-menu" tabindex="-1">
-                                <a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div>
-                        </div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/rome_formatter/src/macros.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>macros.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../rome_formatter/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../rome_formatter/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../rome_formatter/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -428,6 +422,16 @@
 <span id="422">422</span>
 <span id="423">423</span>
 <span id="424">424</span>
+<span id="425">425</span>
+<span id="426">426</span>
+<span id="427">427</span>
+<span id="428">428</span>
+<span id="429">429</span>
+<span id="430">430</span>
+<span id="431">431</span>
+<span id="432">432</span>
+<span id="433">433</span>
+<span id="434">434</span>
 </pre><pre class="rust"><code><span class="doccomment">/// Constructs the parameters for other formatting macros.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// This macro functions by taking a list of objects implementing [crate::Format]. It canonicalize the</span>
@@ -444,11 +448,14 @@
 <span class="doccomment">/// use rome_formatter::{SimpleFormatContext, format, format_args};</span>
 <span class="doccomment">/// use rome_formatter::prelude::*;</span>
 <span class="doccomment">///</span>
+<span class="doccomment">/// # fn main() -&gt; FormatResult&lt;()&gt; {</span>
 <span class="doccomment">/// let formatted = format!(SimpleFormatContext::default(), [</span>
 <span class="doccomment">///     format_args!(text(&quot;Hello World&quot;))</span>
-<span class="doccomment">/// ]).unwrap();</span>
+<span class="doccomment">/// ])?;</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// assert_eq!(&quot;Hello World&quot;, formatted.print().as_code());</span>
+<span class="doccomment">/// assert_eq!(&quot;Hello World&quot;, formatted.print()?.as_code());</span>
+<span class="doccomment">/// # Ok(())</span>
+<span class="doccomment">/// # }</span>
 <span class="doccomment">/// ```</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// [`Format`]: crate::Format</span>
@@ -476,23 +483,22 @@
 <span class="doccomment">/// use rome_formatter::prelude::*;</span>
 <span class="doccomment">/// use rome_formatter::{Buffer, FormatState, SimpleFormatContext, VecBuffer, write};</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// fn main() -&gt; FormatResult&lt;()&gt; {</span>
-<span class="doccomment">///     let mut state = FormatState::new(SimpleFormatContext::default());</span>
-<span class="doccomment">///     let mut buffer = VecBuffer::new(&amp;mut state);</span>
-<span class="doccomment">///     write!(&amp;mut buffer, [text(&quot;Hello&quot;), space()])?;</span>
-<span class="doccomment">///     write!(&amp;mut buffer, [text(&quot;World&quot;)])?;</span>
+<span class="doccomment">/// # fn main() -&gt; FormatResult&lt;()&gt; {</span>
+<span class="doccomment">/// let mut state = FormatState::new(SimpleFormatContext::default());</span>
+<span class="doccomment">/// let mut buffer = VecBuffer::new(&amp;mut state);</span>
+<span class="doccomment">/// write!(&amp;mut buffer, [text(&quot;Hello&quot;), space()])?;</span>
+<span class="doccomment">/// write!(&amp;mut buffer, [text(&quot;World&quot;)])?;</span>
 <span class="doccomment">///</span>
-<span class="doccomment">///     assert_eq!(</span>
-<span class="doccomment">///         buffer.into_element(),</span>
-<span class="doccomment">///         FormatElement::from_iter([</span>
-<span class="doccomment">///             FormatElement::Text(Text::Static { text: &quot;Hello&quot; }),</span>
-<span class="doccomment">///             FormatElement::Space,</span>
-<span class="doccomment">///             FormatElement::Text(Text::Static { text: &quot;World&quot; }),</span>
-<span class="doccomment">///         ])</span>
-<span class="doccomment">///     );</span>
-<span class="doccomment">///</span>
-<span class="doccomment">///     Ok(())</span>
-<span class="doccomment">/// }</span>
+<span class="doccomment">/// assert_eq!(</span>
+<span class="doccomment">///     buffer.into_vec(),</span>
+<span class="doccomment">///     vec![</span>
+<span class="doccomment">///         FormatElement::Text(Text::Static { text: &quot;Hello&quot; }),</span>
+<span class="doccomment">///         FormatElement::Space,</span>
+<span class="doccomment">///         FormatElement::Text(Text::Static { text: &quot;World&quot; }),</span>
+<span class="doccomment">///     ]</span>
+<span class="doccomment">///  );</span>
+<span class="doccomment">/// #  Ok(())</span>
+<span class="doccomment">/// # }</span>
 <span class="doccomment">/// ```</span>
 <span class="attribute">#[<span class="ident">macro_export</span>]</span>
 <span class="macro">macro_rules!</span> <span class="ident">write</span> {
@@ -510,13 +516,16 @@
 <span class="doccomment">/// use rome_formatter::prelude::*;</span>
 <span class="doccomment">/// use rome_formatter::{FormatState, VecBuffer};</span>
 <span class="doccomment">///</span>
+<span class="doccomment">/// # fn main() -&gt; FormatResult&lt;()&gt; {</span>
 <span class="doccomment">/// let mut state = FormatState::new(SimpleFormatContext::default());</span>
 <span class="doccomment">/// let mut buffer = VecBuffer::new(&amp;mut state);</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// dbg_write!(buffer, [text(&quot;Hello&quot;)]).unwrap();</span>
+<span class="doccomment">/// dbg_write!(buffer, [text(&quot;Hello&quot;)])?;</span>
 <span class="doccomment">/// // ^-- prints: [src/main.rs:7][0] = StaticToken(&quot;Hello&quot;)</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// assert_eq!(buffer.into_element(), FormatElement::Text(Text::Static { text: &quot;Hello&quot; }));</span>
+<span class="doccomment">/// assert_eq!(buffer.into_vec(), vec![FormatElement::Text(Text::Static { text: &quot;Hello&quot; })]);</span>
+<span class="doccomment">/// # Ok(())</span>
+<span class="doccomment">/// # }</span>
 <span class="doccomment">/// ```</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// Note that the macro is intended as debugging tool and therefore you should avoid having</span>
@@ -554,8 +563,8 @@
 <span class="doccomment">/// let formatted = format!(SimpleFormatContext::default(), [text(&quot;(&quot;), text(&quot;a&quot;), text(&quot;)&quot;)]).unwrap();</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// assert_eq!(</span>
-<span class="doccomment">///     formatted.into_format_element(),</span>
-<span class="doccomment">///     FormatElement::from_iter([</span>
+<span class="doccomment">///     formatted.into_document(),</span>
+<span class="doccomment">///     Document::from(vec![</span>
 <span class="doccomment">///         FormatElement::Text(Text::Static { text: &quot;(&quot; }),</span>
 <span class="doccomment">///         FormatElement::Text(Text::Static { text: &quot;a&quot; }),</span>
 <span class="doccomment">///         FormatElement::Text(Text::Static { text: &quot;)&quot; }),</span>
@@ -581,6 +590,7 @@
 <span class="doccomment">/// use rome_formatter::{Formatted, LineWidth, format, format_args, SimpleFormatOptions};</span>
 <span class="doccomment">/// use rome_formatter::prelude::*;</span>
 <span class="doccomment">///</span>
+<span class="doccomment">/// # fn main() -&gt; FormatResult&lt;()&gt; {</span>
 <span class="doccomment">/// let formatted = format!(</span>
 <span class="doccomment">///     SimpleFormatContext::default(),</span>
 <span class="doccomment">///     [</span>
@@ -630,15 +640,15 @@
 <span class="doccomment">///             )</span>
 <span class="doccomment">///         )</span>
 <span class="doccomment">///     ]</span>
-<span class="doccomment">/// ).unwrap();</span>
+<span class="doccomment">/// )?;</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// let elements = formatted.into_format_element();</span>
+<span class="doccomment">/// let document = formatted.into_document();</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// // Takes the first variant if everything fits on a single line</span>
 <span class="doccomment">/// assert_eq!(</span>
 <span class="doccomment">///     &quot;aVeryLongIdentifier([1, 2, 3])&quot;,</span>
-<span class="doccomment">///     Formatted::new(elements.clone(), SimpleFormatContext::default())</span>
-<span class="doccomment">///         .print()</span>
+<span class="doccomment">///     Formatted::new(document.clone(), SimpleFormatContext::default())</span>
+<span class="doccomment">///         .print()?</span>
 <span class="doccomment">///         .as_code()</span>
 <span class="doccomment">/// );</span>
 <span class="doccomment">///</span>
@@ -646,18 +656,20 @@
 <span class="doccomment">/// // has some additional line breaks to make sure inner groups don&#39;t break</span>
 <span class="doccomment">/// assert_eq!(</span>
 <span class="doccomment">///     &quot;aVeryLongIdentifier([\n\t1, 2, 3\n])&quot;,</span>
-<span class="doccomment">///     Formatted::new(elements.clone(), SimpleFormatContext::new(SimpleFormatOptions { line_width: 21.try_into().unwrap(), ..SimpleFormatOptions::default() }))</span>
-<span class="doccomment">///         .print()</span>
+<span class="doccomment">///     Formatted::new(document.clone(), SimpleFormatContext::new(SimpleFormatOptions { line_width: 21.try_into().unwrap(), ..SimpleFormatOptions::default() }))</span>
+<span class="doccomment">///         .print()?</span>
 <span class="doccomment">///         .as_code()</span>
 <span class="doccomment">/// );</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// // Prints the last option as last resort</span>
 <span class="doccomment">/// assert_eq!(</span>
 <span class="doccomment">///     &quot;aVeryLongIdentifier(\n\t[\n\t\t1,\n\t\t2,\n\t\t3\n\t]\n)&quot;,</span>
-<span class="doccomment">///     Formatted::new(elements.clone(), SimpleFormatContext::new(SimpleFormatOptions { line_width: 20.try_into().unwrap(), ..SimpleFormatOptions::default() }))</span>
-<span class="doccomment">///         .print()</span>
+<span class="doccomment">///     Formatted::new(document.clone(), SimpleFormatContext::new(SimpleFormatOptions { line_width: 20.try_into().unwrap(), ..SimpleFormatOptions::default() }))</span>
+<span class="doccomment">///         .print()?</span>
 <span class="doccomment">///         .as_code()</span>
 <span class="doccomment">/// );</span>
+<span class="doccomment">/// # Ok(())</span>
+<span class="doccomment">/// # }</span>
 <span class="doccomment">/// ```</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// ## Complexity</span>
@@ -711,8 +723,8 @@
         <span class="macro">write!</span>[<span class="kw-2">&amp;mut</span> <span class="ident">buffer</span>, [<span class="ident">TestFormat</span>]].<span class="ident">unwrap</span>();
 
         <span class="macro">assert_eq!</span>(
-            <span class="ident">buffer</span>.<span class="ident">into_element</span>(),
-            <span class="ident">FormatElement::Text</span>(<span class="ident">Text::Static</span> { <span class="ident">text</span>: <span class="string">&quot;test&quot;</span> })
+            <span class="ident">buffer</span>.<span class="ident">into_vec</span>(),
+            <span class="macro">vec!</span>[<span class="ident">FormatElement::Text</span>(<span class="ident">Text::Static</span> { <span class="ident">text</span>: <span class="string">&quot;test&quot;</span> })]
         );
     }
 
@@ -728,14 +740,14 @@
         .<span class="ident">unwrap</span>();
 
         <span class="macro">assert_eq!</span>(
-            <span class="ident">buffer</span>.<span class="ident">into_element</span>(),
-            <span class="ident">FormatElement::List</span>(<span class="ident">List::new</span>(<span class="macro">vec!</span>[
+            <span class="ident">buffer</span>.<span class="ident">into_vec</span>(),
+            <span class="macro">vec!</span>[
                 <span class="ident">FormatElement::Text</span>(<span class="ident">Text::Static</span> { <span class="ident">text</span>: <span class="string">&quot;a&quot;</span> }),
                 <span class="ident">FormatElement::Space</span>,
                 <span class="ident">FormatElement::Text</span>(<span class="ident">Text::Static</span> { <span class="ident">text</span>: <span class="string">&quot;simple&quot;</span> }),
                 <span class="ident">FormatElement::Space</span>,
                 <span class="ident">FormatElement::Text</span>(<span class="ident">Text::Static</span> { <span class="ident">text</span>: <span class="string">&quot;test&quot;</span> })
-            ]))
+            ]
         );
     }
 
@@ -826,24 +838,26 @@
         .<span class="ident">unwrap</span>();
 
         <span class="kw">let</span> <span class="ident">best_fitting_code</span> <span class="op">=</span> <span class="ident">Formatted::new</span>(
-            <span class="ident">formatted_best_fitting</span>.<span class="ident">into_format_element</span>(),
+            <span class="ident">formatted_best_fitting</span>.<span class="ident">into_document</span>(),
             <span class="ident">SimpleFormatContext::new</span>(<span class="ident">SimpleFormatOptions</span> {
                 <span class="ident">line_width</span>: <span class="number">30</span>.<span class="ident">try_into</span>().<span class="ident">unwrap</span>(),
                 ..<span class="ident">SimpleFormatOptions::default</span>()
             }),
         )
         .<span class="ident">print</span>()
+        .<span class="ident">expect</span>(<span class="string">&quot;Document to be valid&quot;</span>)
         .<span class="ident">as_code</span>()
         .<span class="ident">to_string</span>();
 
         <span class="kw">let</span> <span class="ident">normal_list_code</span> <span class="op">=</span> <span class="ident">Formatted::new</span>(
-            <span class="ident">formatted_normal_list</span>.<span class="ident">into_format_element</span>(),
+            <span class="ident">formatted_normal_list</span>.<span class="ident">into_document</span>(),
             <span class="ident">SimpleFormatContext::new</span>(<span class="ident">SimpleFormatOptions</span> {
                 <span class="ident">line_width</span>: <span class="number">30</span>.<span class="ident">try_into</span>().<span class="ident">unwrap</span>(),
                 ..<span class="ident">SimpleFormatOptions::default</span>()
             }),
         )
         .<span class="ident">print</span>()
+        .<span class="ident">expect</span>(<span class="string">&quot;Document to be valid&quot;</span>)
         .<span class="ident">as_code</span>()
         .<span class="ident">to_string</span>();
 
@@ -853,5 +867,4 @@
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="rome_formatter" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.63.0 (4b91a6ea7 2022-08-08)" ></div>
-</body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="rome_formatter" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0 (a55dd71d5 2022-09-19)" ></div></body></html>

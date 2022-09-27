@@ -1,10 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/rome_formatter/src/formatter.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>formatter.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../rome_formatter/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
-        </a><h2 class="location"></h2>
-    </nav>
-    <nav class="sidebar"><a class="sidebar-logo" href="../../rome_formatter/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
-        </a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../rome_formatter/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><button type="button" id="help-button" title="help">?</button><div id="settings-menu" tabindex="-1">
-                                <a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div>
-                        </div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/rome_formatter/src/formatter.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>formatter.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../rome_formatter/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../rome_formatter/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../rome_formatter/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -277,6 +271,21 @@
 <span id="271">271</span>
 <span id="272">272</span>
 <span id="273">273</span>
+<span id="274">274</span>
+<span id="275">275</span>
+<span id="276">276</span>
+<span id="277">277</span>
+<span id="278">278</span>
+<span id="279">279</span>
+<span id="280">280</span>
+<span id="281">281</span>
+<span id="282">282</span>
+<span id="283">283</span>
+<span id="284">284</span>
+<span id="285">285</span>
+<span id="286">286</span>
+<span id="287">287</span>
+<span id="288">288</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::buffer::BufferSnapshot</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::builders</span>::{<span class="ident">FillBuilder</span>, <span class="ident">JoinBuilder</span>, <span class="ident">JoinNodesBuilder</span>, <span class="ident">Line</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::prelude</span>::<span class="kw-2">*</span>;
@@ -331,6 +340,7 @@
     <span class="doccomment">/// use rome_formatter::format;</span>
     <span class="doccomment">/// use rome_formatter::prelude::*;</span>
     <span class="doccomment">///</span>
+    <span class="doccomment">/// # fn main() -&gt; FormatResult&lt;()&gt; {</span>
     <span class="doccomment">/// let formatted = format!(SimpleFormatContext::default(), [format_with(|f| {</span>
     <span class="doccomment">///     f.join()</span>
     <span class="doccomment">///         .entry(&amp;text(&quot;a&quot;))</span>
@@ -339,12 +349,14 @@
     <span class="doccomment">///         .entry(&amp;space())</span>
     <span class="doccomment">///         .entry(&amp;text(&quot;b&quot;))</span>
     <span class="doccomment">///         .finish()</span>
-    <span class="doccomment">/// })]).unwrap();</span>
+    <span class="doccomment">/// })])?;</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// assert_eq!(</span>
     <span class="doccomment">///     &quot;a + b&quot;,</span>
-    <span class="doccomment">///     formatted.print().as_code()</span>
-    <span class="doccomment">/// )</span>
+    <span class="doccomment">///     formatted.print()?.as_code()</span>
+    <span class="doccomment">/// );</span>
+    <span class="doccomment">/// # Ok(())</span>
+    <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">join</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="ident">JoinBuilder</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;buf</span>, (), <span class="ident">Context</span><span class="op">&gt;</span> {
         <span class="ident">JoinBuilder::new</span>(<span class="self">self</span>)
@@ -360,6 +372,7 @@
     <span class="doccomment">/// use rome_formatter::{format, format_args};</span>
     <span class="doccomment">/// use rome_formatter::prelude::*;</span>
     <span class="doccomment">///</span>
+    <span class="doccomment">/// # fn main() -&gt; FormatResult&lt;()&gt; {</span>
     <span class="doccomment">/// let formatted = format!(SimpleFormatContext::default(), [format_with(|f| {</span>
     <span class="doccomment">///     f.join_with(&amp;format_args!(text(&quot;,&quot;), space()))</span>
     <span class="doccomment">///         .entry(&amp;text(&quot;1&quot;))</span>
@@ -367,12 +380,14 @@
     <span class="doccomment">///         .entry(&amp;text(&quot;3&quot;))</span>
     <span class="doccomment">///         .entry(&amp;text(&quot;4&quot;))</span>
     <span class="doccomment">///         .finish()</span>
-    <span class="doccomment">/// })]).unwrap();</span>
+    <span class="doccomment">/// })])?;</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// assert_eq!(</span>
     <span class="doccomment">///     &quot;1, 2, 3, 4&quot;,</span>
-    <span class="doccomment">///     formatted.print().as_code()</span>
+    <span class="doccomment">///     formatted.print()?.as_code()</span>
     <span class="doccomment">/// );</span>
+    <span class="doccomment">/// # Ok(())</span>
+    <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">join_with</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">Joiner</span><span class="op">&gt;</span>(
         <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="self">self</span>,
@@ -416,6 +431,7 @@
     <span class="doccomment">/// use rome_formatter::prelude::*;</span>
     <span class="doccomment">/// use rome_formatter::{format, format_args};</span>
     <span class="doccomment">///</span>
+    <span class="doccomment">/// # fn main() -&gt; FormatResult&lt;()&gt; {</span>
     <span class="doccomment">/// let formatted = format!(SimpleFormatContext::default(), [format_with(|f| {</span>
     <span class="doccomment">///     f.fill()</span>
     <span class="doccomment">///         .entry(&amp;soft_line_break_or_space(), &amp;text(&quot;aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa&quot;))</span>
@@ -423,18 +439,21 @@
     <span class="doccomment">///         .entry(&amp;soft_line_break_or_space(), &amp;text(&quot;cccccccccccccccccccccccccccccc&quot;))</span>
     <span class="doccomment">///         .entry(&amp;soft_line_break_or_space(), &amp;text(&quot;dddddddddddddddddddddddddddddd&quot;))</span>
     <span class="doccomment">///         .finish()</span>
-    <span class="doccomment">/// })]).unwrap();</span>
+    <span class="doccomment">/// })])?;</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// assert_eq!(</span>
     <span class="doccomment">///     &quot;aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\ncccccccccccccccccccccccccccccc dddddddddddddddddddddddddddddd&quot;,</span>
-    <span class="doccomment">///     formatted.print().as_code()</span>
-    <span class="doccomment">/// )</span>
+    <span class="doccomment">///     formatted.print()?.as_code()</span>
+    <span class="doccomment">/// );</span>
+    <span class="doccomment">/// # Ok(())</span>
+    <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// ```rust</span>
     <span class="doccomment">/// use rome_formatter::prelude::*;</span>
     <span class="doccomment">/// use rome_formatter::{format, format_args};</span>
     <span class="doccomment">///</span>
+    <span class="doccomment">/// # fn main() -&gt; FormatResult&lt;()&gt; {</span>
     <span class="doccomment">/// let entries = vec![</span>
     <span class="doccomment">///     text(&quot;&lt;b&gt;Important: &lt;/b&gt;&quot;),</span>
     <span class="doccomment">///     text(&quot;Please do not commit memory bugs such as segfaults, buffer overflows, etc. otherwise you &quot;),</span>
@@ -444,31 +463,36 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// let formatted = format!(SimpleFormatContext::default(), [format_with(|f| {</span>
     <span class="doccomment">///     f.fill().entries(&amp;soft_line_break(), entries.iter()).finish()</span>
-    <span class="doccomment">/// })]).unwrap();</span>
+    <span class="doccomment">/// })])?;</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// assert_eq!(</span>
     <span class="doccomment">///     &amp;std::format!(&quot;&lt;b&gt;Important: &lt;/b&gt;\nPlease do not commit memory bugs such as segfaults, buffer overflows, etc. otherwise you \n&lt;em&gt;will&lt;/em&gt; be reprimanded&quot;),</span>
-    <span class="doccomment">///     formatted.print().as_code()</span>
-    <span class="doccomment">/// )</span>
+    <span class="doccomment">///     formatted.print()?.as_code()</span>
+    <span class="doccomment">/// );</span>
+    <span class="doccomment">/// # Ok(())</span>
+    <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">fill</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="ident">FillBuilder</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;buf</span>, <span class="ident">Context</span><span class="op">&gt;</span> {
         <span class="ident">FillBuilder::new</span>(<span class="self">self</span>)
     }
 
     <span class="doccomment">/// Formats `content` into an interned element without writing it to the formatter&#39;s buffer.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">intern</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">content</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Format</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>) -&gt; <span class="ident">FormatResult</span><span class="op">&lt;</span><span class="ident">FormatElement</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">intern</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">content</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Format</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>) -&gt; <span class="ident">FormatResult</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">FormatElement</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">VecBuffer::new</span>(<span class="self">self</span>.<span class="ident">state_mut</span>());
-
         <span class="macro">crate::write!</span>(<span class="kw-2">&amp;mut</span> <span class="ident">buffer</span>, [<span class="ident">content</span>])<span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="ident">elements</span> <span class="op">=</span> <span class="ident">buffer</span>.<span class="ident">into_vec</span>();
 
-        <span class="kw">let</span> <span class="ident">interned</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">buffer</span>.<span class="ident">into_element</span>() {
-            <span class="comment">// No point in interning an empty list as that would only result in an unnecessary allocation.</span>
-            <span class="ident">FormatElement::List</span>(<span class="ident">list</span>) <span class="kw">if</span> <span class="ident">list</span>.<span class="ident">is_empty</span>() =&gt; <span class="ident">FormatElement::List</span>(<span class="ident">list</span>),
-            <span class="ident">interned</span> @ <span class="ident">FormatElement::Interned</span>(<span class="kw">_</span>) =&gt; <span class="ident">interned</span>,
-            <span class="ident">element</span> =&gt; <span class="ident">FormatElement::Interned</span>(<span class="ident">Interned::new</span>(<span class="ident">element</span>)),
-        };
+        <span class="prelude-val">Ok</span>(<span class="self">self</span>.<span class="ident">intern_vec</span>(<span class="ident">elements</span>))
+    }
 
-        <span class="prelude-val">Ok</span>(<span class="ident">interned</span>)
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">intern_vec</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">elements</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">FormatElement</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">FormatElement</span><span class="op">&gt;</span> {
+        <span class="kw">match</span> <span class="ident">elements</span>.<span class="ident">len</span>() {
+            <span class="number">0</span> =&gt; <span class="prelude-val">None</span>,
+            <span class="comment">// Doesn&#39;t get cheaper than calling clone, use the element directly</span>
+            <span class="comment">// SAFETY: Safe because of the `len == 1` check in the match arm.</span>
+            <span class="number">1</span> =&gt; <span class="prelude-val">Some</span>(<span class="ident">elements</span>.<span class="ident">pop</span>().<span class="ident">unwrap</span>()),
+            <span class="kw">_</span> =&gt; <span class="prelude-val">Some</span>(<span class="ident">FormatElement::Interned</span>(<span class="ident">Interned::new</span>(<span class="ident">elements</span>))),
+        }
     }
 }
 
@@ -551,5 +575,4 @@
     <span class="ident">state</span>: <span class="ident">FormatStateSnapshot</span>,
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="rome_formatter" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.63.0 (4b91a6ea7 2022-08-08)" ></div>
-</body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="rome_formatter" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0 (a55dd71d5 2022-09-19)" ></div></body></html>
