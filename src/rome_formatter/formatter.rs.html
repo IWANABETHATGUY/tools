@@ -403,7 +403,7 @@
     <span class="doccomment">/// line break or empty line depending on the input file.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// This functions inspects the input source and separates consecutive elements with either</span>
-    <span class="doccomment">/// a [crate::soft_line_break_or_space] or [crate::empty_line] depending on how many line breaks were</span>
+    <span class="doccomment">/// a [crate::builders::soft_line_break_or_space] or [crate::builders::empty_line] depending on how many line breaks were</span>
     <span class="doccomment">/// separating the elements in the original file.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">join_nodes_with_soft_line</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(
         <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="self">self</span>,
@@ -415,7 +415,7 @@
     <span class="doccomment">/// line breaks depending on the input file.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// This functions inspects the input source and separates consecutive elements with either</span>
-    <span class="doccomment">/// a [crate::hard_line_break] or [crate::empty_line] depending on how many line breaks were separating the</span>
+    <span class="doccomment">/// a [crate::builders::hard_line_break] or [crate::builders::empty_line] depending on how many line breaks were separating the</span>
     <span class="doccomment">/// elements in the original file.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">join_nodes_with_hardline</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="ident">JoinNodesBuilder</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;buf</span>, <span class="ident">Line</span>, <span class="ident">Context</span><span class="op">&gt;</span> {
         <span class="ident">JoinNodesBuilder::new</span>(<span class="ident">hard_line_break</span>(), <span class="self">self</span>)

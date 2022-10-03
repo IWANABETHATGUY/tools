@@ -509,7 +509,7 @@
 <span class="kw">use</span> <span class="ident">rome_formatter::Printed</span>;
 <span class="kw">use</span> <span class="ident">rome_fs::RomePath</span>;
 <span class="kw">use</span> <span class="ident">rome_js_syntax</span>::{<span class="ident">TextRange</span>, <span class="ident">TextSize</span>};
-<span class="kw">use</span> <span class="ident">rome_text_edit::Indel</span>;
+<span class="kw">use</span> <span class="ident">rome_text_edit::TextEdit</span>;
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">borrow::Cow</span>, <span class="ident">panic::RefUnwindSafe</span>, <span class="ident">sync::Arc</span>};
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::client</span>::{<span class="ident">TransportRequest</span>, <span class="ident">WorkspaceClient</span>, <span class="ident">WorkspaceTransport</span>};
@@ -728,7 +728,7 @@
     <span class="doccomment">/// Range of source code modified by this rename operation</span>
     <span class="kw">pub</span> <span class="ident">range</span>: <span class="ident">TextRange</span>,
     <span class="doccomment">/// List of text edit operations to apply on the source code</span>
-    <span class="kw">pub</span> <span class="ident">indels</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Indel</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">indels</span>: <span class="ident">TextEdit</span>,
 }
 
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Workspace</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="ident">RefUnwindSafe</span> {

@@ -432,6 +432,74 @@
 <span id="432">432</span>
 <span id="433">433</span>
 <span id="434">434</span>
+<span id="435">435</span>
+<span id="436">436</span>
+<span id="437">437</span>
+<span id="438">438</span>
+<span id="439">439</span>
+<span id="440">440</span>
+<span id="441">441</span>
+<span id="442">442</span>
+<span id="443">443</span>
+<span id="444">444</span>
+<span id="445">445</span>
+<span id="446">446</span>
+<span id="447">447</span>
+<span id="448">448</span>
+<span id="449">449</span>
+<span id="450">450</span>
+<span id="451">451</span>
+<span id="452">452</span>
+<span id="453">453</span>
+<span id="454">454</span>
+<span id="455">455</span>
+<span id="456">456</span>
+<span id="457">457</span>
+<span id="458">458</span>
+<span id="459">459</span>
+<span id="460">460</span>
+<span id="461">461</span>
+<span id="462">462</span>
+<span id="463">463</span>
+<span id="464">464</span>
+<span id="465">465</span>
+<span id="466">466</span>
+<span id="467">467</span>
+<span id="468">468</span>
+<span id="469">469</span>
+<span id="470">470</span>
+<span id="471">471</span>
+<span id="472">472</span>
+<span id="473">473</span>
+<span id="474">474</span>
+<span id="475">475</span>
+<span id="476">476</span>
+<span id="477">477</span>
+<span id="478">478</span>
+<span id="479">479</span>
+<span id="480">480</span>
+<span id="481">481</span>
+<span id="482">482</span>
+<span id="483">483</span>
+<span id="484">484</span>
+<span id="485">485</span>
+<span id="486">486</span>
+<span id="487">487</span>
+<span id="488">488</span>
+<span id="489">489</span>
+<span id="490">490</span>
+<span id="491">491</span>
+<span id="492">492</span>
+<span id="493">493</span>
+<span id="494">494</span>
+<span id="495">495</span>
+<span id="496">496</span>
+<span id="497">497</span>
+<span id="498">498</span>
+<span id="499">499</span>
+<span id="500">500</span>
+<span id="501">501</span>
+<span id="502">502</span>
 </pre><pre class="rust"><code><span class="doccomment">/// Constructs the parameters for other formatting macros.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// This macro functions by taking a list of objects implementing [crate::Format]. It canonicalize the</span>
@@ -672,6 +740,72 @@
 <span class="doccomment">/// # }</span>
 <span class="doccomment">/// ```</span>
 <span class="doccomment">///</span>
+<span class="doccomment">/// ### Enclosing group with `should_expand: true`</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// ```</span>
+<span class="doccomment">/// use rome_formatter::{Formatted, LineWidth, format, format_args, SimpleFormatOptions};</span>
+<span class="doccomment">/// use rome_formatter::prelude::*;</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// # fn main() -&gt; FormatResult&lt;()&gt; {</span>
+<span class="doccomment">/// let formatted = format!(</span>
+<span class="doccomment">///     SimpleFormatContext::default(),</span>
+<span class="doccomment">///     [</span>
+<span class="doccomment">///         best_fitting!(</span>
+<span class="doccomment">///             // Prints the method call on the line but breaks the array.</span>
+<span class="doccomment">///             format_args!(</span>
+<span class="doccomment">///                 text(&quot;expect(a).toMatch(&quot;),</span>
+<span class="doccomment">///                 group(&amp;format_args![</span>
+<span class="doccomment">///                     text(&quot;[&quot;),</span>
+<span class="doccomment">///                     soft_block_indent(&amp;format_args![</span>
+<span class="doccomment">///                         text(&quot;1,&quot;),</span>
+<span class="doccomment">///                         soft_line_break_or_space(),</span>
+<span class="doccomment">///                         text(&quot;2,&quot;),</span>
+<span class="doccomment">///                         soft_line_break_or_space(),</span>
+<span class="doccomment">///                         text(&quot;3&quot;),</span>
+<span class="doccomment">///                     ]),</span>
+<span class="doccomment">///                     text(&quot;]&quot;)</span>
+<span class="doccomment">///                 ]).should_expand(true),</span>
+<span class="doccomment">///                 text(&quot;)&quot;)</span>
+<span class="doccomment">///             ),</span>
+<span class="doccomment">///</span>
+<span class="doccomment">///             // Breaks after `(`</span>
+<span class="doccomment">///            format_args!(</span>
+<span class="doccomment">///                 text(&quot;expect(a).toMatch(&quot;),</span>
+<span class="doccomment">///                 group(&amp;soft_block_indent(</span>
+<span class="doccomment">///                     &amp;group(&amp;format_args![</span>
+<span class="doccomment">///                         text(&quot;[&quot;),</span>
+<span class="doccomment">///                         soft_block_indent(&amp;format_args![</span>
+<span class="doccomment">///                             text(&quot;1,&quot;),</span>
+<span class="doccomment">///                             soft_line_break_or_space(),</span>
+<span class="doccomment">///                             text(&quot;2,&quot;),</span>
+<span class="doccomment">///                             soft_line_break_or_space(),</span>
+<span class="doccomment">///                             text(&quot;3&quot;),</span>
+<span class="doccomment">///                         ]),</span>
+<span class="doccomment">///                         text(&quot;]&quot;)</span>
+<span class="doccomment">///                     ]).should_expand(true),</span>
+<span class="doccomment">///                 )).should_expand(true),</span>
+<span class="doccomment">///                 text(&quot;)&quot;)</span>
+<span class="doccomment">///             ),</span>
+<span class="doccomment">///         )</span>
+<span class="doccomment">///     ]</span>
+<span class="doccomment">/// )?;</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// let document = formatted.into_document();</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// assert_eq!(</span>
+<span class="doccomment">///     &quot;expect(a).toMatch([\n\t1,\n\t2,\n\t3\n])&quot;,</span>
+<span class="doccomment">///     Formatted::new(document.clone(), SimpleFormatContext::default())</span>
+<span class="doccomment">///         .print()?</span>
+<span class="doccomment">///         .as_code()</span>
+<span class="doccomment">/// );</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// # Ok(())</span>
+<span class="doccomment">/// # }</span>
+<span class="doccomment">/// ```</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// The first variant fits because all its content up to the first line break fit on the line without exceeding</span>
+<span class="doccomment">/// the configured print width.</span>
+<span class="doccomment">///</span>
 <span class="doccomment">/// ## Complexity</span>
 <span class="doccomment">/// Be mindful of using this IR element as it has a considerable performance penalty:</span>
 <span class="doccomment">/// * There are multiple representation for the same content. This results in increased memory usage</span>
@@ -680,19 +814,20 @@
 <span class="doccomment">///   complexity if used in nested structures.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// ## Behavior</span>
-<span class="doccomment">/// This IR is similar to Prettier&#39;s `conditionalGroup`. It provides similar functionality but</span>
-<span class="doccomment">/// differs in that Prettier automatically wraps each variant in a `Group`. Rome doesn&#39;t do so.</span>
-<span class="doccomment">/// You can wrap the variant content in a group if you want to use soft line breaks.</span>
-<span class="doccomment">/// Unlike in Prettier, the printer will try to fit **only the first variant** in [`Flat`] mode,</span>
-<span class="doccomment">/// then it will try to fit the rest of the variants in [`Expanded`] mode.</span>
+<span class="doccomment">/// This IR is similar to Prettier&#39;s `conditionalGroup`. The printer measures each variant, except the [`MostExpanded`], in [`Flat`] mode</span>
+<span class="doccomment">/// to find the first variant that fits and prints this variant in [`Flat`] mode. If no variant fits, then</span>
+<span class="doccomment">/// the printer falls back to printing the [`MostExpanded`] variant in `[`Expanded`] mode.</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// A variant that is measured in [`Expanded`] mode will be considered to fit if it can be printed without</span>
-<span class="doccomment">/// overflowing the current line with all of its inner groups expanded. Those inner groups could still end</span>
-<span class="doccomment">/// up being printed in flat mode if they fit on the line while printing. But there is currently no way</span>
-<span class="doccomment">/// to enforce that a specific group inside a variant must be flat when measuring if that variant fits.</span>
+<span class="doccomment">/// The definition of *fits* differs to groups in that the printer only tests if it is possible to print</span>
+<span class="doccomment">/// the content up to the first non-soft line break without exceeding the configured print width.</span>
+<span class="doccomment">/// This definition differs from groups as that non-soft line breaks make group expand.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// [crate::BestFitting] acts as a &quot;break&quot; boundary, meaning that it is considered to fit</span>
+<span class="doccomment">///</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// [`Flat`]: crate::format_element::PrintMode::Flat</span>
 <span class="doccomment">/// [`Expanded`]: crate::format_element::PrintMode::Expanded</span>
+<span class="doccomment">/// [`MostExpanded`]: crate::format_element::BestFitting::most_expanded</span>
 <span class="attribute">#[<span class="ident">macro_export</span>]</span>
 <span class="macro">macro_rules!</span> <span class="ident">best_fitting</span> {
     (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">least_expanded</span>:<span class="ident">expr</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">tail</span>:<span class="ident">expr</span>),<span class="op">+</span> $(,)<span class="question-mark">?</span>) =&gt; {{
@@ -762,14 +897,14 @@
             [
                 <span class="ident">text</span>(<span class="string">&quot;aVeryLongIdentifier&quot;</span>),
                 <span class="ident">soft_line_break_or_space</span>(),
-                <span class="macro">best_fitting!</span>(
-                    <span class="macro">format_args!</span>(<span class="ident">text</span>(
-                        <span class="string">&quot;Something that will not fit on a 30 character print width.&quot;</span>
-                    ),),
-                    <span class="macro">format_args!</span>[
+                <span class="macro">best_fitting!</span>[
+                    <span class="macro">format_args!</span>[<span class="ident">text</span>(
+                        <span class="string">&quot;Something that will not fit on a line with 30 character print width.&quot;</span>
+                    )],
+                    <span class="macro">format_args!</span>[<span class="ident">group</span>(<span class="kw-2">&amp;</span><span class="macro">format_args!</span>[
                         <span class="ident">text</span>(<span class="string">&quot;Start&quot;</span>),
                         <span class="ident">soft_line_break</span>(),
-                        <span class="kw-2">&amp;</span><span class="ident">group</span>(<span class="kw-2">&amp;</span><span class="ident">soft_block_indent</span>(<span class="kw-2">&amp;</span><span class="macro">format_args!</span>[
+                        <span class="ident">group</span>(<span class="kw-2">&amp;</span><span class="ident">soft_block_indent</span>(<span class="kw-2">&amp;</span><span class="macro">format_args!</span>[
                             <span class="ident">text</span>(<span class="string">&quot;1,&quot;</span>),
                             <span class="ident">soft_line_break_or_space</span>(),
                             <span class="ident">text</span>(<span class="string">&quot;2,&quot;</span>),
@@ -777,7 +912,7 @@
                             <span class="ident">text</span>(<span class="string">&quot;3&quot;</span>),
                         ])),
                         <span class="ident">soft_line_break_or_space</span>(),
-                        <span class="kw-2">&amp;</span><span class="ident">soft_block_indent</span>(<span class="kw-2">&amp;</span><span class="macro">format_args!</span>[
+                        <span class="ident">soft_block_indent</span>(<span class="kw-2">&amp;</span><span class="macro">format_args!</span>[
                             <span class="ident">text</span>(<span class="string">&quot;1,&quot;</span>),
                             <span class="ident">soft_line_break_or_space</span>(),
                             <span class="ident">text</span>(<span class="string">&quot;2,&quot;</span>),
@@ -792,9 +927,10 @@
                         ]),
                         <span class="ident">soft_line_break_or_space</span>(),
                         <span class="ident">text</span>(<span class="string">&quot;End&quot;</span>)
-                    ],
+                    ])
+                    .<span class="ident">should_expand</span>(<span class="bool-val">true</span>)],
                     <span class="macro">format_args!</span>(<span class="ident">text</span>(<span class="string">&quot;Most&quot;</span>), <span class="ident">hard_line_break</span>(), <span class="ident">text</span>(<span class="string">&quot;Expanded&quot;</span>))
-                )
+                ]
             ]
         )
         .<span class="ident">unwrap</span>();

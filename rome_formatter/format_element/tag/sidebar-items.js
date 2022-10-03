@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":[["DedentMode",""],["Tag","A Tag marking the start and end of some content to which some special formatting should be applied."],["TagKind","The kind of a [Tag]."],["VerbatimKind",""]],"struct":[["Align",""],["Condition",""],["LabelId",""]]};
+window.SIDEBAR_ITEMS = {"enum":[["DedentMode",""],["GroupMode",""],["Tag","A Tag marking the start and end of some content to which some special formatting should be applied."],["TagKind","The kind of a [Tag]."],["VerbatimKind",""]],"struct":[["Align",""],["Condition",""],["Group",""],["LabelId",""]]};

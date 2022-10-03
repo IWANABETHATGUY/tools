@@ -735,6 +735,12 @@
 <span id="735">735</span>
 <span id="736">736</span>
 <span id="737">737</span>
+<span id="738">738</span>
+<span id="739">739</span>
+<span id="740">740</span>
+<span id="741">741</span>
+<span id="742">742</span>
+<span id="743">743</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Extensions for things which are not easily generated in ast expr nodes</span>
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::numbers::parse_js_number</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::{
@@ -1299,10 +1305,16 @@
             <span class="ident">JsAnyExpression::JsPostUpdateExpression</span>(<span class="kw">_</span>)
             <span class="op">|</span> <span class="ident">JsAnyExpression::JsPreUpdateExpression</span>(<span class="kw">_</span>) =&gt; <span class="ident">OperatorPrecedence::Update</span>,
             <span class="ident">JsAnyExpression::JsCallExpression</span>(<span class="kw">_</span>)
-            <span class="op">|</span> <span class="ident">JsAnyExpression::JsNewExpression</span>(<span class="kw">_</span>)
             <span class="op">|</span> <span class="ident">JsAnyExpression::JsImportCallExpression</span>(<span class="kw">_</span>)
             <span class="op">|</span> <span class="ident">JsAnyExpression::JsSuperExpression</span>(<span class="kw">_</span>) =&gt; <span class="ident">OperatorPrecedence::LeftHandSide</span>,
 
+            <span class="ident">JsAnyExpression::JsNewExpression</span>(<span class="ident">expression</span>) =&gt; {
+                <span class="kw">if</span> <span class="ident">expression</span>.<span class="ident">arguments</span>().<span class="ident">is_none</span>() {
+                    <span class="ident">OperatorPrecedence::NewWithoutArguments</span>
+                } <span class="kw">else</span> {
+                    <span class="ident">OperatorPrecedence::LeftHandSide</span>
+                }
+            }
             <span class="ident">JsAnyExpression::JsComputedMemberExpression</span>(<span class="kw">_</span>)
             <span class="op">|</span> <span class="ident">JsAnyExpression::JsStaticMemberExpression</span>(<span class="kw">_</span>)
             <span class="op">|</span> <span class="ident">JsAnyExpression::ImportMeta</span>(<span class="kw">_</span>)

@@ -47,13 +47,6 @@
 <span id="47">47</span>
 <span id="48">48</span>
 <span id="49">49</span>
-<span id="50">50</span>
-<span id="51">51</span>
-<span id="52">52</span>
-<span id="53">53</span>
-<span id="54">54</span>
-<span id="55">55</span>
-<span id="56">56</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">deny</span>(<span class="ident">rust_2018_idioms</span>)]</span>
 
 <span class="kw">use</span> <span class="ident">serde</span>::{<span class="ident">Deserialize</span>, <span class="ident">Serialize</span>};
@@ -65,12 +58,11 @@
 <span class="kw">mod</span> <span class="ident">emit</span>;
 <span class="kw">mod</span> <span class="ident">suggestion</span>;
 
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">diagnostic</span>::{<span class="ident">Diagnostic</span>, <span class="ident">Footer</span>, <span class="ident">SubDiagnostic</span>};
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">diagnostic</span>::{<span class="ident">Diagnostic</span>, <span class="ident">Footer</span>, <span class="ident">Severity</span>, <span class="ident">SubDiagnostic</span>};
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">emit::Emitter</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">file::Span</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">suggestion</span>::<span class="kw-2">*</span>;
 
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">rome_console::codespan::Severity</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">termcolor</span>;
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">Debug</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Hash</span>, <span class="ident">Serialize</span>, <span class="ident">Deserialize</span>)]</span>
@@ -101,12 +93,6 @@
     <span class="doccomment">/// The suggestion may be what the user intended, but it is uncertain.</span>
     <span class="doccomment">/// The suggestion should result in valid JavaScript/TypeScript code if it is applied.</span>
     <span class="ident">MaybeIncorrect</span>,
-    <span class="doccomment">/// The suggestion contains placeholders like `(...)` or `{ /* fields */ }`.</span>
-    <span class="doccomment">/// The suggestion cannot be applied automatically because it will not result in valid JavaScript/TypeScript code.</span>
-    <span class="doccomment">/// The user will need to fill in the placeholders.</span>
-    <span class="ident">HasPlaceholders</span>,
-    <span class="doccomment">/// The applicability of the suggestion is unknown.</span>
-    <span class="ident">Unspecified</span>,
 }
 
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MAXIMUM_DISPLAYABLE_DIAGNOSTICS</span>: <span class="ident">u16</span> <span class="op">=</span> <span class="number">200</span>;

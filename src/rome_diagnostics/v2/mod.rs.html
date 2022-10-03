@@ -47,7 +47,7 @@
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">rome_console</span> <span class="kw">as</span> <span class="ident">console</span>;
 
 <span class="comment">// Re-export macros from utility crates</span>
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">rome_diagnostics_categories</span>::{<span class="ident">category</span>, <span class="ident">Category</span>};
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">rome_diagnostics_categories</span>::{<span class="ident">category</span>, <span class="ident">category_concat</span>, <span class="ident">Category</span>};
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">rome_diagnostics_macros::Diagnostic</span>;
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">advice</span>::{
@@ -57,7 +57,7 @@
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">diagnostic</span>::{<span class="ident">Diagnostic</span>, <span class="ident">DiagnosticTags</span>, <span class="ident">Severity</span>};
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">display</span>::{<span class="ident">set_bottom_frame</span>, <span class="ident">Backtrace</span>, <span class="ident">PrintDescription</span>, <span class="ident">PrintDiagnostic</span>};
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">error</span>::{<span class="ident">Error</span>, <span class="prelude-ty">Result</span>};
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">location</span>::{<span class="ident">FileId</span>, <span class="ident">FilePath</span>, <span class="ident">Location</span>, <span class="ident">Resource</span>, <span class="ident">SourceCode</span>};
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">location</span>::{<span class="ident">FileId</span>, <span class="ident">FilePath</span>, <span class="ident">LineIndex</span>, <span class="ident">LineIndexBuf</span>, <span class="ident">Location</span>, <span class="ident">Resource</span>, <span class="ident">SourceCode</span>};
 
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">prelude</span> {
     <span class="doccomment">//! Anonymously re-exports all the traits declared by this module, this is</span>

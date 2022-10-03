@@ -427,35 +427,43 @@
 <span id="427">427</span>
 <span id="428">428</span>
 <span id="429">429</span>
+<span id="430">430</span>
+<span id="431">431</span>
+<span id="432">432</span>
+<span id="433">433</span>
+<span id="434">434</span>
+<span id="435">435</span>
+<span id="436">436</span>
+<span id="437">437</span>
 </pre><pre class="rust"><code><span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">document</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">tag</span>;
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::format_element::tag</span>::{<span class="ident">LabelId</span>, <span class="ident">Tag</span>};
+<span class="kw">use</span> <span class="ident">std::borrow::Cow</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">TagKind</span>, <span class="ident">TextSize</span>};
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">target_pointer_width</span> <span class="op">=</span> <span class="string">&quot;64&quot;</span>)]</span>
 <span class="kw">use</span> <span class="ident">rome_rowan::static_assert</span>;
 <span class="kw">use</span> <span class="ident">rome_rowan::SyntaxTokenText</span>;
-<span class="kw">use</span> <span class="ident">std::borrow::Cow</span>;
 <span class="kw">use</span> <span class="ident">std::hash</span>::{<span class="ident">Hash</span>, <span class="ident">Hasher</span>};
 <span class="kw">use</span> <span class="ident">std::ops::Deref</span>;
 <span class="kw">use</span> <span class="ident">std::rc::Rc</span>;
 
 <span class="doccomment">/// Language agnostic IR for formatting source code.</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// Use the helper functions like [crate::space], [crate::soft_line_break] etc. defined in this file to create elements.</span>
+<span class="doccomment">/// Use the helper functions like [crate::builders::space], [crate::builders::soft_line_break] etc. defined in this file to create elements.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">FormatElement</span> {
-    <span class="doccomment">/// A space token, see [crate::space] for documentation.</span>
+    <span class="doccomment">/// A space token, see [crate::builders::space] for documentation.</span>
     <span class="ident">Space</span>,
 
-    <span class="doccomment">/// A new line, see [crate::soft_line_break], [crate::hard_line_break], and [crate::soft_line_break_or_space] for documentation.</span>
+    <span class="doccomment">/// A new line, see [crate::builders::soft_line_break], [crate::builders::hard_line_break], and [crate::builders::soft_line_break_or_space] for documentation.</span>
     <span class="ident">Line</span>(<span class="ident">LineMode</span>),
 
     <span class="doccomment">/// Forces the parent group to print in expanded mode.</span>
     <span class="ident">ExpandParent</span>,
 
-    <span class="doccomment">/// A text that should be printed as is, see [crate::text] for documentation and examples.</span>
+    <span class="doccomment">/// A text that should be printed as is, see [crate::builders::text] for documentation and examples.</span>
     <span class="ident">Text</span>(<span class="ident">Text</span>),
 
     <span class="doccomment">/// Prevents that line suffixes move past this boundary. Forces the printer to print any pending</span>
@@ -495,13 +503,13 @@
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">LineMode</span> {
-    <span class="doccomment">/// See [crate::soft_line_break_or_space] for documentation.</span>
+    <span class="doccomment">/// See [crate::builders::soft_line_break_or_space] for documentation.</span>
     <span class="ident">SoftOrSpace</span>,
-    <span class="doccomment">/// See [crate::soft_line_break] for documentation.</span>
+    <span class="doccomment">/// See [crate::builders::soft_line_break] for documentation.</span>
     <span class="ident">Soft</span>,
-    <span class="doccomment">/// See [crate::hard_line_break] for documentation.</span>
+    <span class="doccomment">/// See [crate::builders::hard_line_break] for documentation.</span>
     <span class="ident">Hard</span>,
-    <span class="doccomment">/// See [crate::empty_line] for documentation.</span>
+    <span class="doccomment">/// See [crate::builders::empty_line] for documentation.</span>
     <span class="ident">Empty</span>,
 }
 
@@ -569,7 +577,7 @@
     }
 }
 
-<span class="doccomment">/// See [crate::text] for documentation</span>
+<span class="doccomment">/// See [crate::builders::text] for documentation</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Eq</span>, <span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Text</span> {
     <span class="doccomment">/// Token constructed by the formatter from a static string</span>
@@ -703,13 +711,16 @@
     <span class="kw">fn</span> <span class="ident">will_break</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
         <span class="kw">match</span> <span class="self">self</span> {
             <span class="ident">FormatElement::ExpandParent</span> =&gt; <span class="bool-val">true</span>,
+            <span class="ident">FormatElement::Tag</span>(<span class="ident">Tag::StartGroup</span>(<span class="ident">group</span>)) =&gt; <span class="op">!</span><span class="ident">group</span>.<span class="ident">mode</span>().<span class="ident">is_flat</span>(),
             <span class="ident">FormatElement::Line</span>(<span class="ident">line_mode</span>) =&gt; <span class="macro">matches!</span>(<span class="ident">line_mode</span>, <span class="ident">LineMode::Hard</span> <span class="op">|</span> <span class="ident">LineMode::Empty</span>),
             <span class="ident">FormatElement::Text</span>(<span class="ident">text</span>) =&gt; <span class="ident">text</span>.<span class="ident">contains</span>(<span class="string">&#39;\n&#39;</span>),
             <span class="ident">FormatElement::Interned</span>(<span class="ident">interned</span>) =&gt; <span class="ident">interned</span>.<span class="ident">will_break</span>(),
-            <span class="ident">FormatElement::LineSuffixBoundary</span>
-            <span class="op">|</span> <span class="ident">FormatElement::Space</span>
-            <span class="op">|</span> <span class="ident">FormatElement::Tag</span>(<span class="kw">_</span>)
-            <span class="op">|</span> <span class="ident">FormatElement::BestFitting</span>(<span class="kw">_</span>) =&gt; <span class="bool-val">false</span>,
+            <span class="comment">// Traverse into the most flat version because the content is guaranteed to expand when even</span>
+            <span class="comment">// the most flat version contains some content that forces a break.</span>
+            <span class="ident">FormatElement::BestFitting</span>(<span class="ident">best_fitting</span>) =&gt; <span class="ident">best_fitting</span>.<span class="ident">most_flat</span>().<span class="ident">will_break</span>(),
+            <span class="ident">FormatElement::LineSuffixBoundary</span> <span class="op">|</span> <span class="ident">FormatElement::Space</span> <span class="op">|</span> <span class="ident">FormatElement::Tag</span>(<span class="kw">_</span>) =&gt; {
+                <span class="bool-val">false</span>
+            }
         }
     }
 
@@ -761,7 +772,7 @@
     <span class="doccomment">/// ## Safety</span>
     <span class="doccomment">/// The slice must contain at least two variants.</span>
     <span class="attribute">#[<span class="ident">doc</span>(<span class="ident">hidden</span>)]</span>
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">from_vec_unchecked</span>(<span class="ident">variants</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span>[<span class="ident">FormatElement</span>]<span class="op">&gt;</span><span class="op">&gt;</span>) -&gt; <span class="self">Self</span> {
+    <span class="kw">pub</span> <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">from_vec_unchecked</span>(<span class="ident">variants</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span>[<span class="ident">FormatElement</span>]<span class="op">&gt;</span><span class="op">&gt;</span>) -&gt; <span class="self">Self</span> {
         <span class="macro">debug_assert!</span>(
             <span class="ident">variants</span>.<span class="ident">len</span>() <span class="op">&gt;</span><span class="op">=</span> <span class="number">2</span>,
             <span class="string">&quot;Requires at least the least expanded and most expanded variants&quot;</span>
@@ -800,7 +811,7 @@
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">FormatElements</span> {
     <span class="doccomment">/// Returns true if this [FormatElement] is guaranteed to break across multiple lines by the printer.</span>
     <span class="doccomment">/// This is the case if this format element recursively contains a:</span>
-    <span class="doccomment">/// * [crate::empty_line] or [crate::hard_line_break]</span>
+    <span class="doccomment">/// * [crate::builders::empty_line] or [crate::builders::hard_line_break]</span>
     <span class="doccomment">/// * A token containing &#39;\n&#39;</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// Use this with caution, this is only a heuristic and the printer may print the element over multiple</span>
@@ -828,8 +839,13 @@
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_normalize_newlines</span>() {
         <span class="macro">assert_eq!</span>(<span class="ident">normalize_newlines</span>(<span class="string">&quot;a\nb&quot;</span>, <span class="ident">LINE_TERMINATORS</span>), <span class="string">&quot;a\nb&quot;</span>);
+        <span class="macro">assert_eq!</span>(<span class="ident">normalize_newlines</span>(<span class="string">&quot;a\n\n\nb&quot;</span>, <span class="ident">LINE_TERMINATORS</span>), <span class="string">&quot;a\n\n\nb&quot;</span>);
         <span class="macro">assert_eq!</span>(<span class="ident">normalize_newlines</span>(<span class="string">&quot;a\rb&quot;</span>, <span class="ident">LINE_TERMINATORS</span>), <span class="string">&quot;a\nb&quot;</span>);
         <span class="macro">assert_eq!</span>(<span class="ident">normalize_newlines</span>(<span class="string">&quot;a\r\nb&quot;</span>, <span class="ident">LINE_TERMINATORS</span>), <span class="string">&quot;a\nb&quot;</span>);
+        <span class="macro">assert_eq!</span>(
+            <span class="ident">normalize_newlines</span>(<span class="string">&quot;a\r\n\r\n\r\nb&quot;</span>, <span class="ident">LINE_TERMINATORS</span>),
+            <span class="string">&quot;a\n\n\nb&quot;</span>
+        );
         <span class="macro">assert_eq!</span>(<span class="ident">normalize_newlines</span>(<span class="string">&quot;a\u{2028}b&quot;</span>, <span class="ident">LINE_TERMINATORS</span>), <span class="string">&quot;a\nb&quot;</span>);
         <span class="macro">assert_eq!</span>(<span class="ident">normalize_newlines</span>(<span class="string">&quot;a\u{2029}b&quot;</span>, <span class="ident">LINE_TERMINATORS</span>), <span class="string">&quot;a\nb&quot;</span>);
     }

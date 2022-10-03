@@ -149,6 +149,7 @@
 <span id="149">149</span>
 <span id="150">150</span>
 <span id="151">151</span>
+<span id="152">152</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">rome_analyze</span>::{
     <span class="ident">context::RuleContext</span>, <span class="ident">declare_rule</span>, <span class="ident">ActionCategory</span>, <span class="ident">Ast</span>, <span class="ident">Rule</span>, <span class="ident">RuleCategory</span>, <span class="ident">RuleDiagnostic</span>,
 };
@@ -229,6 +230,7 @@
         <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">query</span>();
 
         <span class="prelude-val">Some</span>(<span class="ident">RuleDiagnostic::new</span>(
+            <span class="macro">rule_category!</span>(),
             <span class="ident">node</span>.<span class="ident">range</span>(),
             <span class="macro">markup!</span> {
                 <span class="string">&quot;Do not use the &quot;</span>{<span class="ident">state</span>.<span class="ident">operator_kind</span>}<span class="string">&quot; operator to compare against -0.&quot;</span>

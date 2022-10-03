@@ -203,12 +203,15 @@
 <span id="203">203</span>
 <span id="204">204</span>
 <span id="205">205</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">rome_console::codespan::SourceFile</span>;
-<span class="kw">use</span> <span class="ident">rome_rowan</span>::{<span class="ident">Language</span>, <span class="ident">SyntaxElement</span>, <span class="ident">SyntaxNode</span>, <span class="ident">SyntaxToken</span>, <span class="ident">TextRange</span>, <span class="ident">TextSize</span>};
+<span id="206">206</span>
+<span id="207">207</span>
+<span id="208">208</span>
+</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">rome_rowan</span>::{<span class="ident">Language</span>, <span class="ident">SyntaxElement</span>, <span class="ident">SyntaxNode</span>, <span class="ident">SyntaxToken</span>, <span class="ident">TextRange</span>, <span class="ident">TextSize</span>};
 <span class="kw">use</span> <span class="ident">serde</span>::{<span class="ident">Deserialize</span>, <span class="ident">Serialize</span>};
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">collections::HashMap</span>, <span class="ident">fmt::Debug</span>, <span class="ident">ops::Range</span>};
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::v2::FileId</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::v2</span>::{<span class="ident">LineIndex</span>, <span class="ident">LineIndexBuf</span>, <span class="ident">SourceCode</span>};
 
 <span class="doccomment">/// A value which can be used as the range inside of a diagnostic.</span>
 <span class="doccomment">///</span>
@@ -337,7 +340,7 @@
     <span class="kw">fn</span> <span class="ident">name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">id</span>: <span class="ident">FileId</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span>;
 
     <span class="doccomment">/// Returns the source of the file identified by the id.</span>
-    <span class="kw">fn</span> <span class="ident">source</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">id</span>: <span class="ident">FileId</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">SourceFile</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span><span class="op">&gt;</span>;
+    <span class="kw">fn</span> <span class="ident">source</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">id</span>: <span class="ident">FileId</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">SourceCode</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;_</span> <span class="ident">str</span>, <span class="kw-2">&amp;</span><span class="lifetime">&#39;_</span> <span class="ident">LineIndex</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 }
 
 <span class="doccomment">/// A file database that contains only one file.</span>
@@ -345,14 +348,14 @@
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SimpleFile</span> {
     <span class="ident">name</span>: <span class="ident">String</span>,
     <span class="ident">source</span>: <span class="ident">String</span>,
-    <span class="ident">line_starts</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">TextSize</span><span class="op">&gt;</span>,
+    <span class="ident">line_starts</span>: <span class="ident">LineIndexBuf</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">SimpleFile</span> {
     <span class="doccomment">/// Create a new file with the name and source.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">name</span>: <span class="ident">String</span>, <span class="ident">source</span>: <span class="ident">String</span>) -&gt; <span class="self">Self</span> {
         <span class="self">Self</span> {
-            <span class="ident">line_starts</span>: <span class="ident">SourceFile::line_starts</span>(<span class="kw-2">&amp;</span><span class="ident">source</span>).<span class="ident">collect</span>(),
+            <span class="ident">line_starts</span>: <span class="ident">LineIndexBuf::from_source_text</span>(<span class="kw-2">&amp;</span><span class="ident">source</span>),
             <span class="ident">name</span>,
             <span class="ident">source</span>,
         }
@@ -369,8 +372,11 @@
         <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">name</span>)
     }
 
-    <span class="kw">fn</span> <span class="ident">source</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_id</span>: <span class="ident">FileId</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">SourceFile</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-        <span class="prelude-val">Some</span>(<span class="ident">SourceFile::new</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">source</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">line_starts</span>))
+    <span class="kw">fn</span> <span class="ident">source</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_id</span>: <span class="ident">FileId</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">SourceCode</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;_</span> <span class="ident">str</span>, <span class="kw-2">&amp;</span><span class="lifetime">&#39;_</span> <span class="ident">LineIndex</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+        <span class="prelude-val">Some</span>(<span class="ident">SourceCode</span> {
+            <span class="ident">text</span>: <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">source</span>,
+            <span class="ident">line_starts</span>: <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">line_starts</span>),
+        })
     }
 }
 
@@ -404,7 +410,7 @@
         <span class="self">self</span>.<span class="ident">files</span>.<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="ident">id</span>)<span class="question-mark">?</span>.<span class="ident">name</span>(<span class="ident">id</span>)
     }
 
-    <span class="kw">fn</span> <span class="ident">source</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">id</span>: <span class="ident">FileId</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">SourceFile</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">source</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">id</span>: <span class="ident">FileId</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">SourceCode</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;_</span> <span class="ident">str</span>, <span class="kw-2">&amp;</span><span class="lifetime">&#39;_</span> <span class="ident">LineIndex</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">files</span>.<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="ident">id</span>)<span class="question-mark">?</span>.<span class="ident">source</span>(<span class="ident">id</span>)
     }
 }

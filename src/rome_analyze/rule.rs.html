@@ -447,12 +447,67 @@
 <span id="447">447</span>
 <span id="448">448</span>
 <span id="449">449</span>
+<span id="450">450</span>
+<span id="451">451</span>
+<span id="452">452</span>
+<span id="453">453</span>
+<span id="454">454</span>
+<span id="455">455</span>
+<span id="456">456</span>
+<span id="457">457</span>
+<span id="458">458</span>
+<span id="459">459</span>
+<span id="460">460</span>
+<span id="461">461</span>
+<span id="462">462</span>
+<span id="463">463</span>
+<span id="464">464</span>
+<span id="465">465</span>
+<span id="466">466</span>
+<span id="467">467</span>
+<span id="468">468</span>
+<span id="469">469</span>
+<span id="470">470</span>
+<span id="471">471</span>
+<span id="472">472</span>
+<span id="473">473</span>
+<span id="474">474</span>
+<span id="475">475</span>
+<span id="476">476</span>
+<span id="477">477</span>
+<span id="478">478</span>
+<span id="479">479</span>
+<span id="480">480</span>
+<span id="481">481</span>
+<span id="482">482</span>
+<span id="483">483</span>
+<span id="484">484</span>
+<span id="485">485</span>
+<span id="486">486</span>
+<span id="487">487</span>
+<span id="488">488</span>
+<span id="489">489</span>
+<span id="490">490</span>
+<span id="491">491</span>
+<span id="492">492</span>
+<span id="493">493</span>
+<span id="494">494</span>
+<span id="495">495</span>
+<span id="496">496</span>
+<span id="497">497</span>
+<span id="498">498</span>
+<span id="499">499</span>
+<span id="500">500</span>
+<span id="501">501</span>
+<span id="502">502</span>
+<span id="503">503</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::categories</span>::{<span class="ident">ActionCategory</span>, <span class="ident">RuleCategory</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::context::RuleContext</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::registry</span>::{<span class="ident">RuleLanguage</span>, <span class="ident">RuleSuppressions</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">AnalysisFilter</span>, <span class="ident">AnalyzerDiagnostic</span>, <span class="ident">Phase</span>, <span class="ident">Phases</span>, <span class="ident">Queryable</span>, <span class="ident">RuleRegistry</span>};
 <span class="kw">use</span> <span class="ident">rome_console::fmt::Display</span>;
 <span class="kw">use</span> <span class="ident">rome_console</span>::{<span class="ident">markup</span>, <span class="ident">MarkupBuf</span>};
+<span class="kw">use</span> <span class="ident">rome_diagnostics::v2::Category</span>;
 <span class="kw">use</span> <span class="ident">rome_diagnostics</span>::{<span class="ident">file::FileId</span>, <span class="ident">Applicability</span>, <span class="ident">Severity</span>};
 <span class="kw">use</span> <span class="ident">rome_diagnostics</span>::{<span class="ident">DiagnosticTag</span>, <span class="ident">Footer</span>, <span class="ident">Span</span>};
 <span class="kw">use</span> <span class="ident">rome_rowan</span>::{<span class="ident">BatchMutation</span>, <span class="ident">Language</span>, <span class="ident">TextRange</span>};
@@ -586,12 +641,43 @@
 <span class="doccomment">///         deprecated: &quot;Use the rule `noAnotherVar`&quot;</span>
 <span class="doccomment">///     }</span>
 <span class="doccomment">/// }</span>
+<span class="doccomment">/// ```</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// ## Category Macro</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// Declaring a rule using `declare_rule!` will cause a new `rule_category!`</span>
+<span class="doccomment">/// macro to be declared in the surrounding module. This macro can be used to</span>
+<span class="doccomment">/// refer to the corresponding diagnostic category for this lint rule, if it</span>
+<span class="doccomment">/// has one. Using this macro instead of getting the category for a diagnostic</span>
+<span class="doccomment">/// by dynamically parsing its string name has the advantage of statically</span>
+<span class="doccomment">/// injecting the category at compile time and checking that it is correctly</span>
+<span class="doccomment">/// registered to the `rome_diagnostics` library</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// ```ignore</span>
+<span class="doccomment">/// declare_rule! {</span>
+<span class="doccomment">///     /// Documentation</span>
+<span class="doccomment">///     pub(crate) ExampleRule {</span>
+<span class="doccomment">///         version: &quot;0.7.0&quot;,</span>
+<span class="doccomment">///         name: &quot;ruleName&quot;</span>
+<span class="doccomment">///     }</span>
+<span class="doccomment">/// }</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// impl Rule for ExampleRule {</span>
+<span class="doccomment">///     fn diagnostic(ctx: &amp;RuleContext&lt;Self&gt;, _state: &amp;Self::State) -&gt; Option&lt;RuleDiagnostic&gt; {</span>
+<span class="doccomment">///         Some(RuleDiagnostic::new(</span>
+<span class="doccomment">///             rule_category!(),</span>
+<span class="doccomment">///             ctx.query().text_trimmed_range(),</span>
+<span class="doccomment">///             &quot;message&quot;,</span>
+<span class="doccomment">///         ))</span>
+<span class="doccomment">///     }</span>
+<span class="doccomment">/// }</span>
+<span class="doccomment">/// ```</span>
 <span class="doccomment">///</span>
 <span class="attribute">#[<span class="ident">macro_export</span>]</span>
 <span class="macro">macro_rules!</span> <span class="ident">declare_rule</span> {
     ( $( <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>:<span class="ident">literal</span>]</span> )<span class="op">+</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">vis</span>:<span class="ident">vis</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">id</span>:<span class="ident">ident</span> {
         <span class="ident">version</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">version</span>:<span class="ident">literal</span>,
-        <span class="ident">name</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">literal</span>,
+        <span class="ident">name</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">tt</span>,
         $( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">key</span>:<span class="ident">ident</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">value</span>:<span class="ident">expr</span>, )<span class="op">*</span>
     } ) =&gt; {
         $( <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>]</span> )<span class="op">*</span>
@@ -600,6 +686,16 @@
         <span class="kw">impl</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::RuleMeta</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">id</span> {
             <span class="kw">const</span> <span class="ident">METADATA</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::RuleMetadata</span> <span class="op">=</span>
                 <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::RuleMetadata::new</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">version</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>, <span class="macro">concat!</span>( $( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>, <span class="string">&quot;\n&quot;</span>, )<span class="op">*</span> )) $( .<span class="macro-nonterminal">$</span><span class="macro-nonterminal">key</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">value</span>) )<span class="kw-2">*</span>;
+        }
+
+        <span class="comment">// Declare a new `rule_category!` macro in the module context that</span>
+        <span class="comment">// expands to the category of this rule</span>
+        <span class="comment">// This is implemented by calling the `group_category!` macro from the</span>
+        <span class="comment">// parent module (that should be declared by a call to `declare_group!`)</span>
+        <span class="comment">// and providing it with the name of this rule as a string literal token</span>
+        <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">unused_macros</span>)]</span>
+        <span class="macro">macro_rules!</span> <span class="ident">rule_category</span> {
+            () =&gt; { <span class="macro">super::group_category!</span>( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> ) };
         }
     };
 }
@@ -619,18 +715,33 @@
 <span class="doccomment">/// and implement the [RuleGroup] trait for it</span>
 <span class="attribute">#[<span class="ident">macro_export</span>]</span>
 <span class="macro">macro_rules!</span> <span class="ident">declare_group</span> {
-    ( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">vis</span>:<span class="ident">vis</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">id</span>:<span class="ident">ident</span> { <span class="ident">name</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">literal</span>, <span class="ident">rules</span>: [ $( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">rule</span>:<span class="ident">ty</span>, )<span class="op">*</span> ] } ) =&gt; {
+    ( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">vis</span>:<span class="ident">vis</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">id</span>:<span class="ident">ident</span> { <span class="ident">name</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">tt</span>, <span class="ident">rules</span>: [ $( $( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">rule</span>:<span class="ident">ident</span> )::<span class="op">*</span> , )<span class="op">*</span> ] } ) =&gt; {
         <span class="macro-nonterminal">$</span><span class="macro-nonterminal">vis</span> <span class="kw">enum</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">id</span> {}
 
         <span class="kw">impl</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::RuleGroup</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">id</span> {
-            <span class="kw">type</span> <span class="ident">Language</span> <span class="op">=</span> <span class="op">&lt;</span>( $( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">rule</span>, )<span class="op">*</span> ) <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::GroupLanguage</span><span class="op">&gt;</span><span class="ident">::Language</span>;
+            <span class="kw">type</span> <span class="ident">Language</span> <span class="op">=</span> <span class="op">&lt;</span>( $( $( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">rule</span> )::<span class="op">*</span> , )<span class="op">*</span> ) <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::GroupLanguage</span><span class="op">&gt;</span><span class="ident">::Language</span>;
 
             <span class="kw">const</span> <span class="ident">NAME</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>;
 
             <span class="kw">fn</span> <span class="ident">push_rules</span>(<span class="ident">registry</span>: <span class="kw-2">&amp;mut</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::RuleRegistry</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Language</span><span class="op">&gt;</span>, <span class="ident">filter</span>: <span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::AnalysisFilter</span>) {
-                $( <span class="kw">if</span> <span class="ident">filter</span>.<span class="ident">match_rule</span>::<span class="op">&lt;</span><span class="self">Self</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">rule</span><span class="op">&gt;</span>() { <span class="ident">registry</span>.<span class="ident">push</span>::<span class="op">&lt;</span><span class="self">Self</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">rule</span><span class="op">&gt;</span>(); } )<span class="op">*</span>
+                $( <span class="kw">if</span> <span class="ident">filter</span>.<span class="ident">match_rule</span>::<span class="op">&lt;</span><span class="self">Self</span>, $( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">rule</span> )::<span class="kw-2">*</span><span class="op">&gt;</span>() { <span class="ident">registry</span>.<span class="ident">push</span>::<span class="op">&lt;</span><span class="self">Self</span>, $( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">rule</span> )::<span class="kw-2">*</span><span class="op">&gt;</span>(); } )<span class="op">*</span>
             }
         }
+
+        <span class="comment">// Declare a `group_category!` macro in the context of this module (and</span>
+        <span class="comment">// all its children). This macro takes the name of a rule as a string</span>
+        <span class="comment">// literal token and expands to the category of the lint rule with this</span>
+        <span class="comment">// name within this group.</span>
+        <span class="comment">// This is implemented by calling the `category_concat!` macro with the</span>
+        <span class="comment">// &quot;lint&quot; prefix, the name of this group, and the rule name argument</span>
+        <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">unused_macros</span>)]</span>
+        <span class="macro">macro_rules!</span> <span class="ident">group_category</span> {
+            ( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">rule_name</span>:<span class="ident">tt</span> ) =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::category_concat!</span>( <span class="string">&quot;lint&quot;</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">rule_name</span> ) };
+        }
+
+        <span class="comment">// Re-export the macro for child modules, so `declare_rule!` can access</span>
+        <span class="comment">// the category of its parent group by using the `super` module</span>
+        <span class="kw">pub</span>(<span class="self">self</span>) <span class="kw">use</span> <span class="ident">group_category</span>;
     };
 }
 
@@ -767,6 +878,7 @@
 
 <span class="doccomment">/// Diagnostic object returned by a single analysis rule</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">RuleDiagnostic</span> {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">category</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">Category</span>,
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">span</span>: <span class="ident">TextRange</span>,
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">title</span>: <span class="ident">MarkupBuf</span>,
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">summary</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
@@ -781,8 +893,9 @@
 <span class="kw">impl</span> <span class="ident">RuleDiagnostic</span> {
     <span class="doccomment">/// Creates a new [`RuleDiagnostic`] with a severity and title that will be</span>
     <span class="doccomment">/// used in a builder-like way to modify labels.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">span</span>: <span class="kw">impl</span> <span class="ident">Span</span>, <span class="ident">title</span>: <span class="kw">impl</span> <span class="ident">Display</span>) -&gt; <span class="self">Self</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">category</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">Category</span>, <span class="ident">span</span>: <span class="kw">impl</span> <span class="ident">Span</span>, <span class="ident">title</span>: <span class="kw">impl</span> <span class="ident">Display</span>) -&gt; <span class="self">Self</span> {
         <span class="self">Self</span> {
+            <span class="ident">category</span>,
             <span class="ident">span</span>: <span class="ident">span</span>.<span class="ident">as_range</span>(),
             <span class="ident">title</span>: <span class="macro">markup!</span>({ <span class="ident">title</span> }).<span class="ident">to_owned</span>(),
             <span class="ident">summary</span>: <span class="prelude-val">None</span>,
@@ -879,13 +992,8 @@
     <span class="doccomment">/// Convert this [`RuleDiagnostic`] into an instance of [`AnalyzerDiagnostic`] by</span>
     <span class="doccomment">/// injecting the name of the rule that emitted it and the ID of the file</span>
     <span class="doccomment">/// the rule was being run on</span>
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">into_analyzer_diagnostic</span>(
-        <span class="self">self</span>,
-        <span class="ident">file_id</span>: <span class="ident">FileId</span>,
-        <span class="ident">code</span>: <span class="ident">String</span>,
-        <span class="ident">code_link</span>: <span class="ident">String</span>,
-    ) -&gt; <span class="ident">AnalyzerDiagnostic</span> {
-        <span class="ident">AnalyzerDiagnostic::from_rule_diagnostic</span>(<span class="ident">file_id</span>, <span class="ident">code</span>, <span class="ident">code_link</span>, <span class="self">self</span>)
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">into_analyzer_diagnostic</span>(<span class="self">self</span>, <span class="ident">file_id</span>: <span class="ident">FileId</span>) -&gt; <span class="ident">AnalyzerDiagnostic</span> {
+        <span class="ident">AnalyzerDiagnostic::from_rule_diagnostic</span>(<span class="ident">file_id</span>, <span class="self">self</span>)
     }
 }
 

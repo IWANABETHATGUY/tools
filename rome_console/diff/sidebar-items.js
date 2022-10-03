@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":[["DiffMode","Determines how a diff should be printed in the console"]],"struct":[["Diff","Utility struct to print a diff between two texts in the console"]]};

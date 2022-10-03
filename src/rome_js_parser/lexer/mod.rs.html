@@ -2095,6 +2095,50 @@
 <span id="2095">2095</span>
 <span id="2096">2096</span>
 <span id="2097">2097</span>
+<span id="2098">2098</span>
+<span id="2099">2099</span>
+<span id="2100">2100</span>
+<span id="2101">2101</span>
+<span id="2102">2102</span>
+<span id="2103">2103</span>
+<span id="2104">2104</span>
+<span id="2105">2105</span>
+<span id="2106">2106</span>
+<span id="2107">2107</span>
+<span id="2108">2108</span>
+<span id="2109">2109</span>
+<span id="2110">2110</span>
+<span id="2111">2111</span>
+<span id="2112">2112</span>
+<span id="2113">2113</span>
+<span id="2114">2114</span>
+<span id="2115">2115</span>
+<span id="2116">2116</span>
+<span id="2117">2117</span>
+<span id="2118">2118</span>
+<span id="2119">2119</span>
+<span id="2120">2120</span>
+<span id="2121">2121</span>
+<span id="2122">2122</span>
+<span id="2123">2123</span>
+<span id="2124">2124</span>
+<span id="2125">2125</span>
+<span id="2126">2126</span>
+<span id="2127">2127</span>
+<span id="2128">2128</span>
+<span id="2129">2129</span>
+<span id="2130">2130</span>
+<span id="2131">2131</span>
+<span id="2132">2132</span>
+<span id="2133">2133</span>
+<span id="2134">2134</span>
+<span id="2135">2135</span>
+<span id="2136">2136</span>
+<span id="2137">2137</span>
+<span id="2138">2138</span>
+<span id="2139">2139</span>
+<span id="2140">2140</span>
+<span id="2141">2141</span>
 </pre><pre class="rust"><code><span class="doccomment">//! An extremely fast, lookup table based, ECMAScript lexer which yields SyntaxKind tokens used by the rome-js parser.</span>
 <span class="doccomment">//! For the purposes of error recovery, tokens may have an error attached to them, which is reflected in the Iterator Item.</span>
 <span class="doccomment">//! The lexer will also yield `COMMENT` and `WHITESPACE` tokens.</span>
@@ -2126,7 +2170,7 @@
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;highlight&quot;</span>)]</span>
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">highlight</span>::<span class="kw-2">*</span>;
 
-<span class="kw">use</span> <span class="ident">rome_diagnostics::Diagnostic</span>;
+<span class="kw">use</span> <span class="ident">rome_diagnostics</span>::{<span class="ident">v2::category</span>, <span class="ident">Diagnostic</span>};
 <span class="kw">use</span> <span class="ident">tables::derived_property</span>::<span class="kw-2">*</span>;
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">use</span> <span class="ident">buffered_lexer::BufferedLexer</span>;
@@ -2501,7 +2545,7 @@
                             <span class="self">self</span>.<span class="ident">diagnostics</span>.<span class="ident">push</span>(
                                 <span class="ident">Diagnostic::error</span>(
                                     <span class="self">self</span>.<span class="ident">file_id</span>,
-                                    <span class="string">&quot;&quot;</span>,
+                                    <span class="macro">category!</span>(<span class="string">&quot;parse&quot;</span>),
                                     <span class="string">&quot;Unexpected token. Did you mean `{&#39;&gt;&#39;}` or `&amp;gt;`?&quot;</span>,
                                 )
                                 .<span class="ident">primary</span>(<span class="self">self</span>.<span class="ident">position</span>..<span class="self">self</span>.<span class="ident">position</span> <span class="op">+</span> <span class="number">1</span>, <span class="string">&quot;&quot;</span>),
@@ -2512,7 +2556,7 @@
                             <span class="self">self</span>.<span class="ident">diagnostics</span>.<span class="ident">push</span>(
                                 <span class="ident">Diagnostic::error</span>(
                                     <span class="self">self</span>.<span class="ident">file_id</span>,
-                                    <span class="string">&quot;&quot;</span>,
+                                    <span class="macro">category!</span>(<span class="string">&quot;parse&quot;</span>),
                                     <span class="string">&quot;Unexpected token. Did you mean `{&#39;}&#39;}` or `&amp;rbrace;`?&quot;</span>,
                                 )
                                 .<span class="ident">primary</span>(<span class="self">self</span>.<span class="ident">position</span>..<span class="self">self</span>.<span class="ident">position</span> <span class="op">+</span> <span class="number">1</span>, <span class="string">&quot;&quot;</span>),
@@ -2765,7 +2809,7 @@
             <span class="comment">// We should not yield diagnostics on a unicode char boundary. That wont make codespan panic</span>
             <span class="comment">// but it may cause a panic for other crates which just consume the diagnostics</span>
             <span class="kw">let</span> <span class="ident">invalid</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">current_char_unchecked</span>();
-            <span class="kw">let</span> <span class="ident">err</span> <span class="op">=</span> <span class="ident">Diagnostic::error</span>(<span class="self">self</span>.<span class="ident">file_id</span>, <span class="string">&quot;&quot;</span>, <span class="string">&quot;expected hex digits for a unicode code point escape, but encountered an invalid character&quot;</span>)
+            <span class="kw">let</span> <span class="ident">err</span> <span class="op">=</span> <span class="ident">Diagnostic::error</span>(<span class="self">self</span>.<span class="ident">file_id</span>, <span class="macro">category!</span>(<span class="string">&quot;parse&quot;</span>), <span class="string">&quot;expected hex digits for a unicode code point escape, but encountered an invalid character&quot;</span>)
                 .<span class="ident">primary</span>(<span class="self">self</span>.<span class="ident">position</span>.. <span class="self">self</span>.<span class="ident">position</span> <span class="op">+</span> <span class="ident">invalid</span>.<span class="ident">len_utf8</span>(), <span class="string">&quot;&quot;</span>);
             <span class="self">self</span>.<span class="ident">diagnostics</span>.<span class="ident">push</span>(<span class="ident">err</span>);
             <span class="self">self</span>.<span class="ident">position</span> <span class="op">-</span><span class="op">=</span> <span class="number">1</span>;
@@ -2795,9 +2839,12 @@
                 <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">chr</span>) <span class="op">=</span> <span class="ident">res</span> {
                     <span class="prelude-val">Ok</span>(<span class="ident">chr</span>)
                 } <span class="kw">else</span> {
-                    <span class="kw">let</span> <span class="ident">err</span> <span class="op">=</span>
-                        <span class="ident">Diagnostic::error</span>(<span class="self">self</span>.<span class="ident">file_id</span>, <span class="string">&quot;&quot;</span>, <span class="string">&quot;invalid codepoint for unicode escape&quot;</span>)
-                            .<span class="ident">primary</span>(<span class="ident">start</span>..<span class="self">self</span>.<span class="ident">position</span>, <span class="string">&quot;&quot;</span>);
+                    <span class="kw">let</span> <span class="ident">err</span> <span class="op">=</span> <span class="ident">Diagnostic::error</span>(
+                        <span class="self">self</span>.<span class="ident">file_id</span>,
+                        <span class="macro">category!</span>(<span class="string">&quot;parse&quot;</span>),
+                        <span class="string">&quot;invalid codepoint for unicode escape&quot;</span>,
+                    )
+                    .<span class="ident">primary</span>(<span class="ident">start</span>..<span class="self">self</span>.<span class="ident">position</span>, <span class="string">&quot;&quot;</span>);
                     <span class="self">self</span>.<span class="ident">diagnostics</span>.<span class="ident">push</span>(<span class="ident">err</span>);
                     <span class="prelude-val">Err</span>(())
                 }
@@ -2806,7 +2853,7 @@
             <span class="kw">_</span> =&gt; {
                 <span class="kw">let</span> <span class="ident">err</span> <span class="op">=</span> <span class="ident">Diagnostic::error</span>(
                     <span class="self">self</span>.<span class="ident">file_id</span>,
-                    <span class="string">&quot;&quot;</span>,
+                    <span class="macro">category!</span>(<span class="string">&quot;parse&quot;</span>),
                     <span class="string">&quot;out of bounds codepoint for unicode codepoint escape sequence&quot;</span>,
                 )
                 .<span class="ident">primary</span>(<span class="ident">start</span>..<span class="self">self</span>.<span class="ident">position</span>, <span class="string">&quot;&quot;</span>)
@@ -2877,12 +2924,15 @@
     <span class="kw">fn</span> <span class="ident">validate_hex_escape</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="ident">bool</span> {
         <span class="self">self</span>.<span class="ident">assert_byte</span>(<span class="string">b&#39;x&#39;</span>);
 
-        <span class="kw">let</span> <span class="ident">diagnostic</span> <span class="op">=</span>
-            <span class="ident">Diagnostic::error</span>(<span class="self">self</span>.<span class="ident">file_id</span>, <span class="string">&quot;&quot;</span>, <span class="string">&quot;invalid digits after hex escape sequence&quot;</span>)
-                .<span class="ident">primary</span>(
-                    (<span class="self">self</span>.<span class="ident">position</span> <span class="op">-</span> <span class="number">1</span>)..(<span class="self">self</span>.<span class="ident">position</span> <span class="op">+</span> <span class="number">1</span>),
-                    <span class="string">&quot;Expected 2 hex digits following this&quot;</span>,
-                );
+        <span class="kw">let</span> <span class="ident">diagnostic</span> <span class="op">=</span> <span class="ident">Diagnostic::error</span>(
+            <span class="self">self</span>.<span class="ident">file_id</span>,
+            <span class="macro">category!</span>(<span class="string">&quot;parse&quot;</span>),
+            <span class="string">&quot;invalid digits after hex escape sequence&quot;</span>,
+        )
+        .<span class="ident">primary</span>(
+            (<span class="self">self</span>.<span class="ident">position</span> <span class="op">-</span> <span class="number">1</span>)..(<span class="self">self</span>.<span class="ident">position</span> <span class="op">+</span> <span class="number">1</span>),
+            <span class="string">&quot;Expected 2 hex digits following this&quot;</span>,
+        );
 
         <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="number">2</span> {
             <span class="kw">match</span> <span class="self">self</span>.<span class="ident">next_byte_bounded</span>() {
@@ -2935,11 +2985,12 @@
                 }
             }
         } <span class="kw">else</span> {
-            <span class="self">self</span>.<span class="ident">diagnostics</span>
-                .<span class="ident">push</span>(<span class="ident">Diagnostic::error</span>(<span class="self">self</span>.<span class="ident">file_id</span>, <span class="string">&quot;&quot;</span>, <span class="string">&quot;&quot;</span>).<span class="ident">primary</span>(
+            <span class="self">self</span>.<span class="ident">diagnostics</span>.<span class="ident">push</span>(
+                <span class="ident">Diagnostic::error</span>(<span class="self">self</span>.<span class="ident">file_id</span>, <span class="macro">category!</span>(<span class="string">&quot;parse&quot;</span>), <span class="string">&quot;&quot;</span>).<span class="ident">primary</span>(
                     <span class="ident">cur</span>..<span class="ident">cur</span> <span class="op">+</span> <span class="number">1</span>,
                     <span class="string">&quot;expected an escape sequence following a backslash, but found none&quot;</span>,
-                ));
+                ),
+            );
             <span class="bool-val">false</span>
         }
     }
@@ -2997,10 +3048,13 @@
                     <span class="ident">valid</span> <span class="op">&amp;=</span> <span class="self">self</span>.<span class="ident">consume_escape_sequence</span>();
                 }
                 <span class="string">b&#39;\r&#39;</span> <span class="op">|</span> <span class="string">b&#39;\n&#39;</span> <span class="kw">if</span> <span class="op">!</span><span class="ident">jsx_attribute</span> =&gt; {
-                    <span class="kw">let</span> <span class="ident">unterminated</span> <span class="op">=</span>
-                        <span class="ident">Diagnostic::error</span>(<span class="self">self</span>.<span class="ident">file_id</span>, <span class="string">&quot;&quot;</span>, <span class="string">&quot;unterminated string literal&quot;</span>)
-                            .<span class="ident">primary</span>(<span class="ident">start</span>..<span class="self">self</span>.<span class="ident">position</span>, <span class="string">&quot;&quot;</span>)
-                            .<span class="ident">secondary</span>(<span class="self">self</span>.<span class="ident">position</span>..<span class="self">self</span>.<span class="ident">position</span> <span class="op">+</span> <span class="number">2</span>, <span class="string">&quot;line breaks here&quot;</span>);
+                    <span class="kw">let</span> <span class="ident">unterminated</span> <span class="op">=</span> <span class="ident">Diagnostic::error</span>(
+                        <span class="self">self</span>.<span class="ident">file_id</span>,
+                        <span class="macro">category!</span>(<span class="string">&quot;parse&quot;</span>),
+                        <span class="string">&quot;unterminated string literal&quot;</span>,
+                    )
+                    .<span class="ident">primary</span>(<span class="ident">start</span>..<span class="self">self</span>.<span class="ident">position</span>, <span class="string">&quot;&quot;</span>)
+                    .<span class="ident">secondary</span>(<span class="self">self</span>.<span class="ident">position</span>..<span class="self">self</span>.<span class="ident">position</span> <span class="op">+</span> <span class="number">2</span>, <span class="string">&quot;line breaks here&quot;</span>);
                     <span class="self">self</span>.<span class="ident">diagnostics</span>.<span class="ident">push</span>(<span class="ident">unterminated</span>);
                     <span class="kw">return</span> <span class="bool-val">false</span>;
                 }
@@ -3018,9 +3072,13 @@
             }
         }
 
-        <span class="kw">let</span> <span class="ident">unterminated</span> <span class="op">=</span> <span class="ident">Diagnostic::error</span>(<span class="self">self</span>.<span class="ident">file_id</span>, <span class="string">&quot;&quot;</span>, <span class="string">&quot;unterminated string literal&quot;</span>)
-            .<span class="ident">primary</span>(<span class="self">self</span>.<span class="ident">position</span>..<span class="self">self</span>.<span class="ident">position</span>, <span class="string">&quot;input ends here&quot;</span>)
-            .<span class="ident">secondary</span>(<span class="ident">start</span>..<span class="ident">start</span> <span class="op">+</span> <span class="number">1</span>, <span class="string">&quot;string literal starts here&quot;</span>);
+        <span class="kw">let</span> <span class="ident">unterminated</span> <span class="op">=</span> <span class="ident">Diagnostic::error</span>(
+            <span class="self">self</span>.<span class="ident">file_id</span>,
+            <span class="macro">category!</span>(<span class="string">&quot;parse&quot;</span>),
+            <span class="string">&quot;unterminated string literal&quot;</span>,
+        )
+        .<span class="ident">primary</span>(<span class="self">self</span>.<span class="ident">position</span>..<span class="self">self</span>.<span class="ident">position</span>, <span class="string">&quot;input ends here&quot;</span>)
+        .<span class="ident">secondary</span>(<span class="ident">start</span>..<span class="ident">start</span> <span class="op">+</span> <span class="number">1</span>, <span class="string">&quot;string literal starts here&quot;</span>);
         <span class="self">self</span>.<span class="ident">diagnostics</span>.<span class="ident">push</span>(<span class="ident">unterminated</span>);
 
         <span class="bool-val">false</span>
@@ -3312,7 +3370,7 @@
 
         <span class="kw">let</span> <span class="ident">err_diag</span> <span class="op">=</span> <span class="ident">Diagnostic::error</span>(
             <span class="self">self</span>.<span class="ident">file_id</span>,
-            <span class="string">&quot;&quot;</span>,
+            <span class="macro">category!</span>(<span class="string">&quot;parse&quot;</span>),
             <span class="string">&quot;numeric separators are only allowed between two digits&quot;</span>,
         )
         .<span class="ident">primary</span>(<span class="self">self</span>.<span class="ident">position</span>..<span class="self">self</span>.<span class="ident">position</span> <span class="op">+</span> <span class="number">1</span>, <span class="string">&quot;&quot;</span>);
@@ -3357,7 +3415,7 @@
                         <span class="self">self</span>.<span class="ident">diagnostics</span>.<span class="ident">push</span>(
                             <span class="ident">Diagnostic::error</span>(
                                 <span class="self">self</span>.<span class="ident">file_id</span>,
-                                <span class="string">&quot;&quot;</span>,
+                                <span class="macro">category!</span>(<span class="string">&quot;parse&quot;</span>),
                                 <span class="string">&quot;numeric separator can not be used after leading 0&quot;</span>,
                             )
                             .<span class="ident">primary</span>(<span class="self">self</span>.<span class="ident">position</span>..<span class="self">self</span>.<span class="ident">position</span>, <span class="string">&quot;&quot;</span>),
@@ -3369,8 +3427,12 @@
                 <span class="prelude-val">Some</span>(<span class="string">b&#39;.&#39;</span>) =&gt; {
                     <span class="kw">if</span> <span class="ident">leading_zero</span> {
                         <span class="self">self</span>.<span class="ident">diagnostics</span>.<span class="ident">push</span>(
-                            <span class="ident">Diagnostic::error</span>(<span class="self">self</span>.<span class="ident">file_id</span>, <span class="string">&quot;&quot;</span>, <span class="string">&quot;unexpected number&quot;</span>)
-                                .<span class="ident">primary</span>(<span class="ident">start</span>..<span class="self">self</span>.<span class="ident">position</span> <span class="op">+</span> <span class="number">1</span>, <span class="string">&quot;&quot;</span>),
+                            <span class="ident">Diagnostic::error</span>(
+                                <span class="self">self</span>.<span class="ident">file_id</span>,
+                                <span class="macro">category!</span>(<span class="string">&quot;parse&quot;</span>),
+                                <span class="string">&quot;unexpected number&quot;</span>,
+                            )
+                            .<span class="ident">primary</span>(<span class="ident">start</span>..<span class="self">self</span>.<span class="ident">position</span> <span class="op">+</span> <span class="number">1</span>, <span class="string">&quot;&quot;</span>),
                         );
                     }
                     <span class="kw">return</span> <span class="self">self</span>.<span class="ident">read_float</span>();
@@ -3402,7 +3464,7 @@
                         <span class="self">self</span>.<span class="ident">diagnostics</span>.<span class="ident">push</span>(
                             <span class="ident">Diagnostic::error</span>(
                                 <span class="self">self</span>.<span class="ident">file_id</span>,
-                                <span class="string">&quot;&quot;</span>,
+                                <span class="macro">category!</span>(<span class="string">&quot;parse&quot;</span>),
                                 <span class="string">&quot;Octal literals are not allowed for BigInts.&quot;</span>,
                             )
                             .<span class="ident">primary</span>(<span class="ident">start</span>..<span class="self">self</span>.<span class="ident">position</span> <span class="op">+</span> <span class="number">1</span>, <span class="string">&quot;&quot;</span>),
@@ -3504,7 +3566,7 @@
             <span class="self">self</span>.<span class="ident">consume_ident</span>();
             <span class="kw">let</span> <span class="ident">err</span> <span class="op">=</span> <span class="ident">Diagnostic::error</span>(
                 <span class="self">self</span>.<span class="ident">file_id</span>,
-                <span class="string">&quot;&quot;</span>,
+                <span class="macro">category!</span>(<span class="string">&quot;parse&quot;</span>),
                 <span class="string">&quot;numbers cannot be followed by identifiers directly after&quot;</span>,
             )
             .<span class="ident">primary</span>(<span class="ident">err_start</span>..<span class="self">self</span>.<span class="ident">position</span>, <span class="string">&quot;an identifier cannot appear here&quot;</span>);
@@ -3537,7 +3599,7 @@
         } <span class="kw">else</span> {
             <span class="kw">let</span> <span class="ident">err</span> <span class="op">=</span> <span class="ident">Diagnostic::error</span>(
                 <span class="self">self</span>.<span class="ident">file_id</span>,
-                <span class="string">&quot;&quot;</span>,
+                <span class="macro">category!</span>(<span class="string">&quot;parse&quot;</span>),
                 <span class="string">&quot;expected `!` following a `#`, but found none&quot;</span>,
             )
             .<span class="ident">primary</span>(<span class="number">0usize</span>..<span class="number">1usize</span>, <span class="string">&quot;&quot;</span>);
@@ -3579,12 +3641,16 @@
                     }
                 }
 
-                <span class="kw">let</span> <span class="ident">err</span> <span class="op">=</span> <span class="ident">Diagnostic::error</span>(<span class="self">self</span>.<span class="ident">file_id</span>, <span class="string">&quot;&quot;</span>, <span class="string">&quot;unterminated block comment&quot;</span>)
-                    .<span class="ident">primary</span>(
-                        <span class="self">self</span>.<span class="ident">position</span>..<span class="self">self</span>.<span class="ident">position</span> <span class="op">+</span> <span class="number">1</span>,
-                        <span class="string">&quot;... but the file ends here&quot;</span>,
-                    )
-                    .<span class="ident">secondary</span>(<span class="ident">start</span>..<span class="ident">start</span> <span class="op">+</span> <span class="number">2</span>, <span class="string">&quot;A block comment starts here&quot;</span>);
+                <span class="kw">let</span> <span class="ident">err</span> <span class="op">=</span> <span class="ident">Diagnostic::error</span>(
+                    <span class="self">self</span>.<span class="ident">file_id</span>,
+                    <span class="macro">category!</span>(<span class="string">&quot;parse&quot;</span>),
+                    <span class="string">&quot;unterminated block comment&quot;</span>,
+                )
+                .<span class="ident">primary</span>(
+                    <span class="self">self</span>.<span class="ident">position</span>..<span class="self">self</span>.<span class="ident">position</span> <span class="op">+</span> <span class="number">1</span>,
+                    <span class="string">&quot;... but the file ends here&quot;</span>,
+                )
+                .<span class="ident">secondary</span>(<span class="ident">start</span>..<span class="ident">start</span> <span class="op">+</span> <span class="number">2</span>, <span class="string">&quot;A block comment starts here&quot;</span>);
                 <span class="self">self</span>.<span class="ident">diagnostics</span>.<span class="ident">push</span>(<span class="ident">err</span>);
 
                 <span class="ident">JsSyntaxKind::COMMENT</span>
@@ -3617,7 +3683,12 @@
 
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">flag_err</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">flag</span>: <span class="ident">char</span>) -&gt; <span class="ident">Diagnostic</span> {
-        <span class="ident">Diagnostic::error</span>(<span class="self">self</span>.<span class="ident">file_id</span>, <span class="string">&quot;&quot;</span>, <span class="macro">format!</span>(<span class="string">&quot;duplicate flag `{}`&quot;</span>, <span class="ident">flag</span>)).<span class="ident">primary</span>(
+        <span class="ident">Diagnostic::error</span>(
+            <span class="self">self</span>.<span class="ident">file_id</span>,
+            <span class="macro">category!</span>(<span class="string">&quot;parse&quot;</span>),
+            <span class="macro">format!</span>(<span class="string">&quot;duplicate flag `{}`&quot;</span>, <span class="ident">flag</span>),
+        )
+        .<span class="ident">primary</span>(
             <span class="self">self</span>.<span class="ident">position</span>..<span class="self">self</span>.<span class="ident">position</span> <span class="op">+</span> <span class="number">1</span>,
             <span class="string">&quot;this flag was already used&quot;</span>,
         )
@@ -3706,11 +3777,15 @@
                                 }
                                 <span class="kw">_</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">cur_ident_part</span>().<span class="ident">is_some</span>() =&gt; {
                                     <span class="self">self</span>.<span class="ident">diagnostics</span>.<span class="ident">push</span>(
-                                        <span class="ident">Diagnostic::error</span>(<span class="self">self</span>.<span class="ident">file_id</span>, <span class="string">&quot;&quot;</span>, <span class="string">&quot;invalid regex flag&quot;</span>)
-                                            .<span class="ident">primary</span>(
-                                                <span class="ident">chr_start</span>..<span class="self">self</span>.<span class="ident">position</span> <span class="op">+</span> <span class="number">1</span>,
-                                                <span class="string">&quot;this is not a valid regex flag&quot;</span>,
-                                            ),
+                                        <span class="ident">Diagnostic::error</span>(
+                                            <span class="self">self</span>.<span class="ident">file_id</span>,
+                                            <span class="macro">category!</span>(<span class="string">&quot;parse&quot;</span>),
+                                            <span class="string">&quot;invalid regex flag&quot;</span>,
+                                        )
+                                        .<span class="ident">primary</span>(
+                                            <span class="ident">chr_start</span>..<span class="self">self</span>.<span class="ident">position</span> <span class="op">+</span> <span class="number">1</span>,
+                                            <span class="string">&quot;this is not a valid regex flag&quot;</span>,
+                                        ),
                                     );
                                 }
                                 <span class="kw">_</span> =&gt; <span class="kw">break</span>,
@@ -3729,7 +3804,7 @@
                         <span class="self">self</span>.<span class="ident">diagnostics</span>.<span class="ident">push</span>(
                             <span class="ident">Diagnostic::error</span>(
                                 <span class="self">self</span>.<span class="ident">file_id</span>,
-                                <span class="string">&quot;&quot;</span>,
+                                <span class="macro">category!</span>(<span class="string">&quot;parse&quot;</span>),
                                 <span class="string">&quot;expected a character after a regex escape, but found none&quot;</span>,
                             )
                             .<span class="ident">primary</span>(
@@ -3743,9 +3818,13 @@
                 }
                 <span class="string">b&#39;\r&#39;</span> <span class="op">|</span> <span class="string">b&#39;\n&#39;</span> =&gt; {
                     <span class="self">self</span>.<span class="ident">diagnostics</span>.<span class="ident">push</span>(
-                        <span class="ident">Diagnostic::error</span>(<span class="self">self</span>.<span class="ident">file_id</span>, <span class="string">&quot;&quot;</span>, <span class="string">&quot;unterminated regex literal&quot;</span>)
-                            .<span class="ident">primary</span>(<span class="self">self</span>.<span class="ident">position</span>..<span class="self">self</span>.<span class="ident">position</span>, <span class="string">&quot;...but the line ends here&quot;</span>)
-                            .<span class="ident">secondary</span>(<span class="ident">start</span>..<span class="ident">start</span> <span class="op">+</span> <span class="number">1</span>, <span class="string">&quot;a regex literal starts there...&quot;</span>),
+                        <span class="ident">Diagnostic::error</span>(
+                            <span class="self">self</span>.<span class="ident">file_id</span>,
+                            <span class="macro">category!</span>(<span class="string">&quot;parse&quot;</span>),
+                            <span class="string">&quot;unterminated regex literal&quot;</span>,
+                        )
+                        .<span class="ident">primary</span>(<span class="self">self</span>.<span class="ident">position</span>..<span class="self">self</span>.<span class="ident">position</span>, <span class="string">&quot;...but the line ends here&quot;</span>)
+                        .<span class="ident">secondary</span>(<span class="ident">start</span>..<span class="ident">start</span> <span class="op">+</span> <span class="number">1</span>, <span class="string">&quot;a regex literal starts there...&quot;</span>),
                     );
 
                     <span class="kw">return</span> <span class="ident">JsSyntaxKind::JS_REGEX_LITERAL</span>;
@@ -3757,12 +3836,13 @@
                         <span class="kw">let</span> <span class="ident">chr</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">current_char_unchecked</span>();
                         <span class="kw">if</span> <span class="ident">is_linebreak</span>(<span class="ident">chr</span>) {
                             <span class="self">self</span>.<span class="ident">diagnostics</span>.<span class="ident">push</span>(
-                                <span class="ident">Diagnostic::error</span>(<span class="self">self</span>.<span class="ident">file_id</span>, <span class="string">&quot;&quot;</span>, <span class="string">&quot;unterminated regex literal&quot;</span>)
-                                    .<span class="ident">primary</span>(
-                                        <span class="self">self</span>.<span class="ident">position</span>..<span class="self">self</span>.<span class="ident">position</span>,
-                                        <span class="string">&quot;...but the line ends here&quot;</span>,
-                                    )
-                                    .<span class="ident">secondary</span>(<span class="ident">start</span>..<span class="ident">start</span> <span class="op">+</span> <span class="number">1</span>, <span class="string">&quot;a regex literal starts there...&quot;</span>),
+                                <span class="ident">Diagnostic::error</span>(
+                                    <span class="self">self</span>.<span class="ident">file_id</span>,
+                                    <span class="macro">category!</span>(<span class="string">&quot;parse&quot;</span>),
+                                    <span class="string">&quot;unterminated regex literal&quot;</span>,
+                                )
+                                .<span class="ident">primary</span>(<span class="self">self</span>.<span class="ident">position</span>..<span class="self">self</span>.<span class="ident">position</span>, <span class="string">&quot;...but the line ends here&quot;</span>)
+                                .<span class="ident">secondary</span>(<span class="ident">start</span>..<span class="ident">start</span> <span class="op">+</span> <span class="number">1</span>, <span class="string">&quot;a regex literal starts there...&quot;</span>),
                             );
                             <span class="kw">return</span> <span class="ident">JsSyntaxKind::JS_REGEX_LITERAL</span>;
                         } <span class="kw">else</span> {
@@ -3774,9 +3854,13 @@
         }
 
         <span class="self">self</span>.<span class="ident">diagnostics</span>.<span class="ident">push</span>(
-            <span class="ident">Diagnostic::error</span>(<span class="self">self</span>.<span class="ident">file_id</span>, <span class="string">&quot;&quot;</span>, <span class="string">&quot;unterminated regex literal&quot;</span>)
-                .<span class="ident">primary</span>(<span class="self">self</span>.<span class="ident">position</span>..<span class="self">self</span>.<span class="ident">position</span>, <span class="string">&quot;...but the file ends here&quot;</span>)
-                .<span class="ident">secondary</span>(<span class="ident">start</span>..<span class="ident">start</span> <span class="op">+</span> <span class="number">1</span>, <span class="string">&quot;a regex literal starts there...&quot;</span>),
+            <span class="ident">Diagnostic::error</span>(
+                <span class="self">self</span>.<span class="ident">file_id</span>,
+                <span class="macro">category!</span>(<span class="string">&quot;parse&quot;</span>),
+                <span class="string">&quot;unterminated regex literal&quot;</span>,
+            )
+            .<span class="ident">primary</span>(<span class="self">self</span>.<span class="ident">position</span>..<span class="self">self</span>.<span class="ident">position</span>, <span class="string">&quot;...but the file ends here&quot;</span>)
+            .<span class="ident">secondary</span>(<span class="ident">start</span>..<span class="ident">start</span> <span class="op">+</span> <span class="number">1</span>, <span class="string">&quot;a regex literal starts there...&quot;</span>),
         );
 
         <span class="ident">JsSyntaxKind::JS_REGEX_LITERAL</span>
@@ -4016,7 +4100,7 @@
                                 <span class="self">self</span>.<span class="ident">current_flags</span> <span class="op">|</span><span class="op">=</span> <span class="ident">TokenFlags::UNICODE_ESCAPE</span>;
                                 <span class="self">self</span>.<span class="ident">resolve_identifier</span>(<span class="ident">chr</span>)
                             } <span class="kw">else</span> {
-                                <span class="kw">let</span> <span class="ident">err</span> <span class="op">=</span> <span class="ident">Diagnostic::error</span>(<span class="self">self</span>.<span class="ident">file_id</span>, <span class="string">&quot;&quot;</span>, <span class="string">&quot;unexpected unicode escape&quot;</span>)
+                                <span class="kw">let</span> <span class="ident">err</span> <span class="op">=</span> <span class="ident">Diagnostic::error</span>(<span class="self">self</span>.<span class="ident">file_id</span>, <span class="macro">category!</span>(<span class="string">&quot;parse&quot;</span>), <span class="string">&quot;unexpected unicode escape&quot;</span>)
                                     .<span class="ident">primary</span>(<span class="ident">start</span>..<span class="self">self</span>.<span class="ident">position</span>, <span class="string">&quot;this escape is unexpected, as it does not designate the start of an identifier&quot;</span>);
                                 <span class="self">self</span>.<span class="ident">diagnostics</span>.<span class="ident">push</span>(<span class="ident">err</span>);
                                 <span class="self">self</span>.<span class="ident">next_byte</span>();
@@ -4028,7 +4112,7 @@
                 } <span class="kw">else</span> {
                     <span class="kw">let</span> <span class="ident">err</span> <span class="op">=</span> <span class="ident">Diagnostic::error</span>(
                         <span class="self">self</span>.<span class="ident">file_id</span>,
-                        <span class="string">&quot;&quot;</span>,
+                        <span class="macro">category!</span>(<span class="string">&quot;parse&quot;</span>),
                         <span class="macro">format!</span>(<span class="string">&quot;unexpected token `{}`&quot;</span>, <span class="ident">byte</span> <span class="kw">as</span> <span class="ident">char</span>),
                     )
                     .<span class="ident">primary</span>(<span class="ident">start</span>..<span class="self">self</span>.<span class="ident">position</span> <span class="op">+</span> <span class="number">1</span>, <span class="string">&quot;&quot;</span>);
@@ -4076,7 +4160,7 @@
                     } <span class="kw">else</span> {
                         <span class="kw">let</span> <span class="ident">err</span> <span class="op">=</span> <span class="ident">Diagnostic::error</span>(
                             <span class="self">self</span>.<span class="ident">file_id</span>,
-                            <span class="string">&quot;&quot;</span>,
+                            <span class="macro">category!</span>(<span class="string">&quot;parse&quot;</span>),
                             <span class="macro">format!</span>(<span class="string">&quot;Unexpected token `{}`&quot;</span>, <span class="ident">chr</span> <span class="kw">as</span> <span class="ident">char</span>),
                         )
                         .<span class="ident">primary</span>(<span class="ident">start</span>..<span class="self">self</span>.<span class="ident">position</span> <span class="op">+</span> <span class="number">1</span>, <span class="string">&quot;&quot;</span>);
@@ -4091,7 +4175,7 @@
             <span class="kw">_</span> =&gt; {
                 <span class="kw">let</span> <span class="ident">err</span> <span class="op">=</span> <span class="ident">Diagnostic::error</span>(
                     <span class="self">self</span>.<span class="ident">file_id</span>,
-                    <span class="string">&quot;&quot;</span>,
+                    <span class="macro">category!</span>(<span class="string">&quot;parse&quot;</span>),
                     <span class="macro">format!</span>(<span class="string">&quot;unexpected token `{}`&quot;</span>, <span class="ident">byte</span> <span class="kw">as</span> <span class="ident">char</span>),
                 )
                 .<span class="ident">primary</span>(<span class="ident">start</span>..<span class="self">self</span>.<span class="ident">position</span> <span class="op">+</span> <span class="number">1</span>, <span class="string">&quot;&quot;</span>);
@@ -4152,8 +4236,12 @@
 
         <span class="kw">match</span> <span class="ident">token</span> {
             <span class="prelude-val">None</span> =&gt; {
-                <span class="kw">let</span> <span class="ident">err</span> <span class="op">=</span> <span class="ident">Diagnostic::error</span>(<span class="self">self</span>.<span class="ident">file_id</span>, <span class="string">&quot;&quot;</span>, <span class="string">&quot;unterminated template literal&quot;</span>)
-                    .<span class="ident">primary</span>(<span class="ident">start</span>..<span class="self">self</span>.<span class="ident">position</span> <span class="op">+</span> <span class="number">1</span>, <span class="string">&quot;&quot;</span>);
+                <span class="kw">let</span> <span class="ident">err</span> <span class="op">=</span> <span class="ident">Diagnostic::error</span>(
+                    <span class="self">self</span>.<span class="ident">file_id</span>,
+                    <span class="macro">category!</span>(<span class="string">&quot;parse&quot;</span>),
+                    <span class="string">&quot;unterminated template literal&quot;</span>,
+                )
+                .<span class="ident">primary</span>(<span class="ident">start</span>..<span class="self">self</span>.<span class="ident">position</span> <span class="op">+</span> <span class="number">1</span>, <span class="string">&quot;&quot;</span>);
                 <span class="self">self</span>.<span class="ident">diagnostics</span>.<span class="ident">push</span>(<span class="ident">err</span>);
                 <span class="ident">JsSyntaxKind::TEMPLATE_CHUNK</span>
             }

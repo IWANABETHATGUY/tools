@@ -168,6 +168,7 @@
 <span id="168">168</span>
 <span id="169">169</span>
 <span id="170">170</span>
+<span id="171">171</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">rome_analyze</span>::{
     <span class="ident">context::RuleContext</span>, <span class="ident">declare_rule</span>, <span class="ident">ActionCategory</span>, <span class="ident">Ast</span>, <span class="ident">Rule</span>, <span class="ident">RuleCategory</span>, <span class="ident">RuleDiagnostic</span>,
 };
@@ -242,6 +243,7 @@
         <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">query</span>();
 
         <span class="prelude-val">Some</span>(<span class="ident">RuleDiagnostic::new</span>(
+            <span class="macro">rule_category!</span>(),
             <span class="ident">node</span>.<span class="ident">range</span>(),
             <span class="macro">markup!</span> {
 

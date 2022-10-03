@@ -126,6 +126,7 @@
 <span id="126">126</span>
 <span id="127">127</span>
 <span id="128">128</span>
+<span id="129">129</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::semantic_services::Semantic</span>;
 <span class="kw">use</span> <span class="ident">rome_analyze</span>::{<span class="ident">context::RuleContext</span>, <span class="ident">declare_rule</span>, <span class="ident">Rule</span>, <span class="ident">RuleCategory</span>, <span class="ident">RuleDiagnostic</span>};
 <span class="kw">use</span> <span class="ident">rome_console::markup</span>;
@@ -235,6 +236,7 @@
 
         <span class="prelude-val">Some</span>(
             <span class="ident">RuleDiagnostic::new</span>(
+                <span class="macro">rule_category!</span>(),
                 <span class="ident">invalid_assign</span>.<span class="ident">syntax</span>().<span class="ident">text_trimmed_range</span>(),
                 <span class="macro">markup!</span> {
                     <span class="string">&quot;The imported variable &quot;</span><span class="op">&lt;</span><span class="ident">Emphasis</span><span class="op">&gt;</span>{<span class="ident">name</span>.<span class="ident">to_string</span>()}<span class="op">&lt;</span><span class="op">/</span><span class="ident">Emphasis</span><span class="op">&gt;</span><span class="string">&quot; is read-only&quot;</span>

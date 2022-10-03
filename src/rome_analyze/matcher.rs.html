@@ -376,7 +376,6 @@
 <span id="376">376</span>
 <span id="377">377</span>
 <span id="378">378</span>
-<span id="379">379</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">cmp::Ordering</span>, <span class="ident">collections::BinaryHeap</span>};
 
 <span class="kw">use</span> <span class="ident">rome_diagnostics::file::FileId</span>;
@@ -534,8 +533,7 @@
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">tests</span> {
-    <span class="kw">use</span> <span class="ident">rome_console::codespan::Severity</span>;
-    <span class="kw">use</span> <span class="ident">rome_diagnostics</span>::{<span class="ident">file::FileId</span>, <span class="ident">Diagnostic</span>};
+    <span class="kw">use</span> <span class="ident">rome_diagnostics</span>::{<span class="ident">file::FileId</span>, <span class="ident">v2::category</span>, <span class="ident">Diagnostic</span>, <span class="ident">Severity</span>};
     <span class="kw">use</span> <span class="ident">rome_rowan</span>::{
         <span class="ident">raw_language</span>::{<span class="ident">RawLanguage</span>, <span class="ident">RawLanguageKind</span>, <span class="ident">RawLanguageRoot</span>, <span class="ident">RawSyntaxTreeBuilder</span>},
         <span class="ident">AstNode</span>, <span class="ident">TextRange</span>, <span class="ident">TextSize</span>, <span class="ident">TriviaPiece</span>, <span class="ident">TriviaPieceKind</span>,
@@ -591,7 +589,7 @@
                             <span class="comment">// This is a random category for testing that&#39;s</span>
                             <span class="comment">// pretty much guaranteed to never be emitted by</span>
                             <span class="comment">// the analyzer</span>
-                            <span class="string">&quot;args/fileNotFound&quot;</span>,
+                            <span class="macro">category!</span>(<span class="string">&quot;args/fileNotFound&quot;</span>),
                             <span class="string">&quot;test_suppression&quot;</span>,
                         )
                         .<span class="ident">primary</span>(<span class="ident">span</span>, <span class="string">&quot;&quot;</span>),
@@ -737,19 +735,19 @@
             <span class="ident">diagnostics</span>.<span class="ident">as_slice</span>(),
             <span class="kw-2">&amp;</span>[
                 (
-                    <span class="ident">String::from</span>(<span class="string">&quot;suppressions/unknownGroup&quot;</span>),
+                    <span class="macro">category!</span>(<span class="string">&quot;suppressions/unknownGroup&quot;</span>),
                     <span class="ident">TextRange::new</span>(<span class="ident">TextSize::from</span>(<span class="number">47</span>), <span class="ident">TextSize::from</span>(<span class="number">62</span>))
                 ),
                 (
-                    <span class="ident">String::from</span>(<span class="string">&quot;args/fileNotFound&quot;</span>),
+                    <span class="macro">category!</span>(<span class="string">&quot;args/fileNotFound&quot;</span>),
                     <span class="ident">TextRange::new</span>(<span class="ident">TextSize::from</span>(<span class="number">63</span>), <span class="ident">TextSize::from</span>(<span class="number">74</span>))
                 ),
                 (
-                    <span class="ident">String::from</span>(<span class="string">&quot;suppressions/unknownRule&quot;</span>),
+                    <span class="macro">category!</span>(<span class="string">&quot;suppressions/unknownRule&quot;</span>),
                     <span class="ident">TextRange::new</span>(<span class="ident">TextSize::from</span>(<span class="number">76</span>), <span class="ident">TextSize::from</span>(<span class="number">96</span>))
                 ),
                 (
-                    <span class="ident">String::from</span>(<span class="string">&quot;args/fileNotFound&quot;</span>),
+                    <span class="macro">category!</span>(<span class="string">&quot;args/fileNotFound&quot;</span>),
                     <span class="ident">TextRange::new</span>(<span class="ident">TextSize::from</span>(<span class="number">97</span>), <span class="ident">TextSize::from</span>(<span class="number">108</span>))
                 ),
             ]

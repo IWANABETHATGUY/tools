@@ -605,13 +605,19 @@
 <span id="605">605</span>
 <span id="606">606</span>
 <span id="607">607</span>
+<span id="608">608</span>
+<span id="609">609</span>
+<span id="610">610</span>
+<span id="611">611</span>
+<span id="612">612</span>
+<span id="613">613</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::prelude</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::utils::jsx</span>::{
     <span class="ident">is_meaningful_jsx_text</span>, <span class="ident">is_whitespace_jsx_expression</span>, <span class="ident">jsx_split_children</span>, <span class="ident">JsxChild</span>,
     <span class="ident">JsxRawSpace</span>, <span class="ident">JsxSpace</span>,
 };
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::JsFormatter</span>;
-<span class="kw">use</span> <span class="ident">rome_formatter::format_element::tag::Tag</span>;
+<span class="kw">use</span> <span class="ident">rome_formatter::format_element::tag</span>::{<span class="ident">GroupMode</span>, <span class="ident">Tag</span>};
 <span class="kw">use</span> <span class="ident">rome_formatter</span>::{<span class="ident">format_args</span>, <span class="ident">write</span>, <span class="ident">CstFormatContext</span>, <span class="ident">FormatRuleWithOptions</span>, <span class="ident">VecBuffer</span>};
 <span class="kw">use</span> <span class="ident">rome_js_syntax</span>::{<span class="ident">JsxAnyChild</span>, <span class="ident">JsxChildList</span>};
 <span class="kw">use</span> <span class="ident">std::cell::RefCell</span>;
@@ -1146,7 +1152,13 @@
                         <span class="ident">elements</span>,
                         <span class="ident">FormatElement::Tag</span>(<span class="ident">Tag::EndFill</span>),
                     ])<span class="question-mark">?</span>,
-                    <span class="ident">MultilineLayout::NoFill</span> =&gt; <span class="ident">f</span>.<span class="ident">write_element</span>(<span class="ident">elements</span>)<span class="question-mark">?</span>,
+                    <span class="ident">MultilineLayout::NoFill</span> =&gt; <span class="ident">f</span>.<span class="ident">write_elements</span>([
+                        <span class="ident">FormatElement::Tag</span>(<span class="ident">Tag::StartGroup</span>(
+                            <span class="ident">tag::Group::new</span>().<span class="ident">with_mode</span>(<span class="ident">GroupMode::Expand</span>),
+                        )),
+                        <span class="ident">elements</span>,
+                        <span class="ident">FormatElement::Tag</span>(<span class="ident">Tag::EndGroup</span>),
+                    ])<span class="question-mark">?</span>,
                 };
             }
 

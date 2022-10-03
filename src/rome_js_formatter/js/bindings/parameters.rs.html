@@ -283,11 +283,11 @@
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::prelude</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">rome_formatter</span>::{<span class="ident">write</span>, <span class="ident">CstFormatContext</span>};
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::js::expressions::call_arguments::is_test_call_expression</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::js::lists::parameter_list</span>::{
     <span class="ident">AnyParameter</span>, <span class="ident">FormatJsAnyParameterList</span>, <span class="ident">JsAnyParameterList</span>,
 };
 
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::utils::test_call::is_test_call_expression</span>;
 <span class="kw">use</span> <span class="ident">rome_js_syntax</span>::{
     <span class="ident">JsAnyConstructorParameter</span>, <span class="ident">JsAnyFormalParameter</span>, <span class="ident">JsCallExpression</span>, <span class="ident">JsConstructorParameters</span>,
     <span class="ident">JsParameters</span>, <span class="ident">JsSyntaxKind</span>, <span class="ident">JsSyntaxToken</span>, <span class="ident">TsType</span>,

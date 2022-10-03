@@ -113,6 +113,7 @@
 <span id="113">113</span>
 <span id="114">114</span>
 <span id="115">115</span>
+<span id="116">116</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::react</span>::{<span class="ident">jsx_member_name_is_react_fragment</span>, <span class="ident">jsx_reference_identifier_is_fragment</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::semantic_services::Semantic</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::JsRuleAction</span>;
@@ -217,6 +218,7 @@
 
         <span class="prelude-val">Some</span>(
             <span class="ident">RuleDiagnostic::new</span>(
+                <span class="macro">rule_category!</span>(),
                 <span class="ident">node</span>.<span class="ident">syntax</span>().<span class="ident">text_trimmed_range</span>(),
                 <span class="macro">markup!</span> {
                     <span class="string">&quot;Use shorthand syntax for Fragment elements instead of standard syntax.&quot;</span>

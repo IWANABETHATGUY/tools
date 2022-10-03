@@ -906,9 +906,6 @@
 <span id="906">906</span>
 <span id="907">907</span>
 <span id="908">908</span>
-<span id="909">909</span>
-<span id="910">910</span>
-<span id="911">911</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Rome&#39;s official JavaScript formatter.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! ## Implement the formatter</span>
@@ -1772,12 +1769,9 @@ function() {
     <span class="comment">// use this test check if your snippet prints as you wish, without using a snapshot</span>
     <span class="kw">fn</span> <span class="ident">quick_test</span>() {
         <span class="kw">let</span> <span class="ident">src</span> <span class="op">=</span> <span class="string">r#&quot;
-new Test()
-  .test()
-  .test([, 0])
-  .test();
-
-&quot;#</span>;
+function test() {
+return srcPipe.pipe(generator.stream).pipe(compile()).pipe(gulp.dest(out));
+}&quot;#</span>;
         <span class="kw">let</span> <span class="ident">syntax</span> <span class="op">=</span> <span class="ident">SourceType::jsx</span>();
         <span class="kw">let</span> <span class="ident">tree</span> <span class="op">=</span> <span class="ident">parse</span>(<span class="ident">src</span>, <span class="ident">FileId::zero</span>(), <span class="ident">syntax</span>);
         <span class="kw">let</span> <span class="ident">options</span> <span class="op">=</span> <span class="ident">JsFormatOptions::new</span>(<span class="ident">syntax</span>);

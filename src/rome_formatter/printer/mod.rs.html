@@ -1492,6 +1492,15 @@
 <span id="1492">1492</span>
 <span id="1493">1493</span>
 <span id="1494">1494</span>
+<span id="1495">1495</span>
+<span id="1496">1496</span>
+<span id="1497">1497</span>
+<span id="1498">1498</span>
+<span id="1499">1499</span>
+<span id="1500">1500</span>
+<span id="1501">1501</span>
+<span id="1502">1502</span>
+<span id="1503">1503</span>
 </pre><pre class="rust"><code><span class="kw">mod</span> <span class="ident">call_stack</span>;
 <span class="kw">mod</span> <span class="ident">line_suffixes</span>;
 <span class="kw">mod</span> <span class="ident">printer_options</span>;
@@ -1669,19 +1678,11 @@
 
                     <span class="self">self</span>.<span class="ident">state</span>.<span class="ident">pending_space</span> <span class="op">=</span> <span class="bool-val">false</span>;
                     <span class="self">self</span>.<span class="ident">state</span>.<span class="ident">pending_indent</span> <span class="op">=</span> <span class="ident">args</span>.<span class="ident">indention</span>();
-
-                    <span class="comment">// Fit&#39;s only tests if groups up to the first line break fit.</span>
-                    <span class="comment">// The next group must re-measure if it still fits.</span>
-                    <span class="self">self</span>.<span class="ident">state</span>.<span class="ident">measured_group_fits</span> <span class="op">=</span> <span class="bool-val">false</span>;
                 }
             }
 
             <span class="ident">FormatElement::ExpandParent</span> =&gt; {
-                <span class="comment">// No-op, only has an effect on `fits`</span>
-                <span class="macro">debug_assert!</span>(
-                    <span class="op">!</span><span class="ident">args</span>.<span class="ident">mode</span>().<span class="ident">is_flat</span>(),
-                    <span class="string">&quot;Fits should always return false for `ExpandParent`&quot;</span>
-                );
+                <span class="comment">// Handled in `Document::propagate_expands()</span>
             }
 
             <span class="ident">FormatElement::LineSuffixBoundary</span> =&gt; {
@@ -1697,38 +1698,40 @@
                 <span class="ident">queue</span>.<span class="ident">extend_back</span>(<span class="ident">content</span>);
             }
 
-            <span class="ident">FormatElement::Tag</span>(<span class="ident">StartGroup</span>(<span class="ident">id</span>)) =&gt; {
-                <span class="kw">let</span> <span class="ident">group_mode</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">args</span>.<span class="ident">mode</span>() {
-                    <span class="ident">PrintMode::Flat</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">state</span>.<span class="ident">measured_group_fits</span> =&gt; {
-                        <span class="comment">// A parent group has already verified that this group fits on a single line</span>
-                        <span class="comment">// Thus, just continue in flat mode</span>
-                        <span class="ident">stack</span>.<span class="ident">push</span>(<span class="ident">TagKind::Group</span>, <span class="ident">args</span>);
-                        <span class="ident">PrintMode::Flat</span>
-                    }
-                    <span class="comment">// The printer is either in expanded mode or it&#39;s necessary to re-measure if the group fits</span>
-                    <span class="comment">// because the printer printed a line break</span>
-                    <span class="kw">_</span> =&gt; {
-                        <span class="comment">// Measure to see if the group fits up on a single line. If that&#39;s the case,</span>
-                        <span class="comment">// print the group in &quot;flat&quot; mode, otherwise continue in expanded mode</span>
-                        <span class="ident">stack</span>.<span class="ident">push</span>(<span class="ident">TagKind::Group</span>, <span class="ident">args</span>.<span class="ident">with_print_mode</span>(<span class="ident">PrintMode::Flat</span>));
-                        <span class="kw">let</span> <span class="ident">fits</span> <span class="op">=</span> <span class="ident">fits_on_line</span>(<span class="ident">AllPredicate</span>, <span class="ident">queue</span>, <span class="ident">stack</span>, <span class="self">self</span>)<span class="question-mark">?</span>;
-                        <span class="ident">stack</span>.<span class="ident">pop</span>(<span class="ident">TagKind::Group</span>)<span class="question-mark">?</span>;
-
-                        <span class="kw">let</span> <span class="ident">mode</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">fits</span> {
-                            <span class="self">self</span>.<span class="ident">state</span>.<span class="ident">measured_group_fits</span> <span class="op">=</span> <span class="bool-val">true</span>;
+            <span class="ident">FormatElement::Tag</span>(<span class="ident">StartGroup</span>(<span class="ident">group</span>)) =&gt; {
+                <span class="kw">let</span> <span class="ident">group_mode</span> <span class="op">=</span> <span class="kw">if</span> <span class="op">!</span><span class="ident">group</span>.<span class="ident">mode</span>().<span class="ident">is_flat</span>() {
+                    <span class="ident">PrintMode::Expanded</span>
+                } <span class="kw">else</span> {
+                    <span class="kw">match</span> <span class="ident">args</span>.<span class="ident">mode</span>() {
+                        <span class="ident">PrintMode::Flat</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">state</span>.<span class="ident">measured_group_fits</span> =&gt; {
+                            <span class="comment">// A parent group has already verified that this group fits on a single line</span>
+                            <span class="comment">// Thus, just continue in flat mode</span>
                             <span class="ident">PrintMode::Flat</span>
-                        } <span class="kw">else</span> {
-                            <span class="ident">PrintMode::Expanded</span>
-                        };
+                        }
+                        <span class="comment">// The printer is either in expanded mode or it&#39;s necessary to re-measure if the group fits</span>
+                        <span class="comment">// because the printer printed a line break</span>
+                        <span class="kw">_</span> =&gt; {
+                            <span class="self">self</span>.<span class="ident">state</span>.<span class="ident">measured_group_fits</span> <span class="op">=</span> <span class="bool-val">true</span>;
 
-                        <span class="ident">stack</span>.<span class="ident">push</span>(<span class="ident">TagKind::Group</span>, <span class="ident">args</span>.<span class="ident">with_print_mode</span>(<span class="ident">mode</span>));
+                            <span class="comment">// Measure to see if the group fits up on a single line. If that&#39;s the case,</span>
+                            <span class="comment">// print the group in &quot;flat&quot; mode, otherwise continue in expanded mode</span>
+                            <span class="ident">stack</span>.<span class="ident">push</span>(<span class="ident">TagKind::Group</span>, <span class="ident">args</span>.<span class="ident">with_print_mode</span>(<span class="ident">PrintMode::Flat</span>));
+                            <span class="kw">let</span> <span class="ident">fits</span> <span class="op">=</span> <span class="ident">fits_on_line</span>(<span class="ident">AllPredicate</span>, <span class="ident">queue</span>, <span class="ident">stack</span>, <span class="self">self</span>)<span class="question-mark">?</span>;
+                            <span class="ident">stack</span>.<span class="ident">pop</span>(<span class="ident">TagKind::Group</span>)<span class="question-mark">?</span>;
 
-                        <span class="ident">mode</span>
+                            <span class="kw">if</span> <span class="ident">fits</span> {
+                                <span class="ident">PrintMode::Flat</span>
+                            } <span class="kw">else</span> {
+                                <span class="ident">PrintMode::Expanded</span>
+                            }
+                        }
                     }
                 };
 
-                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">id</span>) <span class="op">=</span> <span class="ident">id</span> {
-                    <span class="self">self</span>.<span class="ident">state</span>.<span class="ident">group_modes</span>.<span class="ident">insert_print_mode</span>(<span class="kw-2">*</span><span class="ident">id</span>, <span class="ident">group_mode</span>);
+                <span class="ident">stack</span>.<span class="ident">push</span>(<span class="ident">TagKind::Group</span>, <span class="ident">args</span>.<span class="ident">with_print_mode</span>(<span class="ident">group_mode</span>));
+
+                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">id</span>) <span class="op">=</span> <span class="ident">group</span>.<span class="ident">id</span>() {
+                    <span class="self">self</span>.<span class="ident">state</span>.<span class="ident">group_modes</span>.<span class="ident">insert_print_mode</span>(<span class="ident">id</span>, <span class="ident">group_mode</span>);
                 }
             }
 
@@ -1869,33 +1872,31 @@
     ) -&gt; <span class="ident">PrintResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="ident">stack</span>.<span class="ident">top</span>();
 
-        <span class="kw">if</span> <span class="ident">args</span>.<span class="ident">mode</span>().<span class="ident">is_flat</span>() {
+        <span class="kw">if</span> <span class="ident">args</span>.<span class="ident">mode</span>().<span class="ident">is_flat</span>() <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">state</span>.<span class="ident">measured_group_fits</span> {
             <span class="ident">queue</span>.<span class="ident">extend_back</span>(<span class="ident">best_fitting</span>.<span class="ident">most_flat</span>());
             <span class="self">self</span>.<span class="ident">print_entry</span>(<span class="ident">queue</span>, <span class="ident">stack</span>, <span class="ident">args</span>)
         } <span class="kw">else</span> {
+            <span class="self">self</span>.<span class="ident">state</span>.<span class="ident">measured_group_fits</span> <span class="op">=</span> <span class="bool-val">true</span>;
+
             <span class="kw">let</span> <span class="ident">normal_variants</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">best_fitting</span>.<span class="ident">variants</span>()[..<span class="ident">best_fitting</span>.<span class="ident">variants</span>().<span class="ident">len</span>() <span class="op">-</span> <span class="number">1</span>];
 
-            <span class="kw">for</span> (<span class="ident">index</span>, <span class="ident">variant</span>) <span class="kw">in</span> <span class="ident">normal_variants</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
+            <span class="kw">for</span> <span class="ident">variant</span> <span class="kw">in</span> <span class="ident">normal_variants</span>.<span class="ident">iter</span>() {
                 <span class="comment">// Test if this variant fits and if so, use it. Otherwise try the next</span>
                 <span class="comment">// variant.</span>
 
                 <span class="comment">// Try to fit only the first variant on a single line</span>
-                <span class="kw">let</span> <span class="ident">mode</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">index</span> <span class="op">==</span> <span class="number">0</span> {
-                    <span class="ident">PrintMode::Flat</span>
-                } <span class="kw">else</span> {
-                    <span class="ident">PrintMode::Expanded</span>
-                };
-
                 <span class="kw">if</span> <span class="op">!</span><span class="macro">matches!</span>(<span class="ident">variant</span>.<span class="ident">first</span>(), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">FormatElement::Tag</span>(<span class="ident">Tag::StartEntry</span>))) {
                     <span class="kw">return</span> <span class="ident">invalid_start_tag</span>(<span class="ident">TagKind::Entry</span>, <span class="ident">variant</span>.<span class="ident">first</span>());
                 }
+
+                <span class="kw">let</span> <span class="ident">entry_args</span> <span class="op">=</span> <span class="ident">args</span>.<span class="ident">with_print_mode</span>(<span class="ident">PrintMode::Flat</span>);
 
                 <span class="comment">// Skip the first element because we want to override the args for the entry and the</span>
                 <span class="comment">// args must be popped from the stack as soon as it sees the matching end entry.</span>
                 <span class="kw">let</span> <span class="ident">content</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">variant</span>[<span class="number">1</span>..];
 
                 <span class="ident">queue</span>.<span class="ident">extend_back</span>(<span class="ident">content</span>);
-                <span class="ident">stack</span>.<span class="ident">push</span>(<span class="ident">TagKind::Entry</span>, <span class="ident">args</span>.<span class="ident">with_print_mode</span>(<span class="ident">mode</span>));
+                <span class="ident">stack</span>.<span class="ident">push</span>(<span class="ident">TagKind::Entry</span>, <span class="ident">entry_args</span>);
                 <span class="kw">let</span> <span class="ident">variant_fits</span> <span class="op">=</span> <span class="ident">fits_on_line</span>(<span class="ident">AllPredicate</span>, <span class="ident">queue</span>, <span class="ident">stack</span>, <span class="self">self</span>)<span class="question-mark">?</span>;
                 <span class="ident">stack</span>.<span class="ident">pop</span>(<span class="ident">TagKind::Entry</span>)<span class="question-mark">?</span>;
 
@@ -1904,10 +1905,8 @@
                 <span class="macro">debug_assert_eq!</span>(<span class="ident">popped_slice</span>, <span class="prelude-val">Some</span>(<span class="ident">content</span>));
 
                 <span class="kw">if</span> <span class="ident">variant_fits</span> {
-                    <span class="self">self</span>.<span class="ident">state</span>.<span class="ident">measured_group_fits</span> <span class="op">=</span> <span class="bool-val">true</span>;
-
                     <span class="ident">queue</span>.<span class="ident">extend_back</span>(<span class="ident">variant</span>);
-                    <span class="kw">return</span> <span class="self">self</span>.<span class="ident">print_entry</span>(<span class="ident">queue</span>, <span class="ident">stack</span>, <span class="ident">args</span>.<span class="ident">with_print_mode</span>(<span class="ident">mode</span>));
+                    <span class="kw">return</span> <span class="self">self</span>.<span class="ident">print_entry</span>(<span class="ident">queue</span>, <span class="ident">stack</span>, <span class="ident">entry_args</span>);
                 }
             }
 
@@ -1938,12 +1937,10 @@
         }
 
         <span class="comment">// Print the first item</span>
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">current_fits</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">fits_fill_entry</span>(
-            <span class="ident">SingleEntryPredicate::default</span>(),
-            <span class="ident">queue</span>,
-            <span class="ident">stack</span>,
-            <span class="ident">PrintMode::Flat</span>,
-        )<span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">current_fits</span> <span class="op">=</span>
+            <span class="self">self</span>.<span class="ident">fits_fill_entry</span>(<span class="ident">SingleEntryPredicate::default</span>(), <span class="ident">queue</span>, <span class="ident">stack</span>)<span class="question-mark">?</span>;
+
+        <span class="self">self</span>.<span class="ident">state</span>.<span class="ident">measured_group_fits</span> <span class="op">=</span> <span class="ident">current_fits</span>;
 
         <span class="self">self</span>.<span class="ident">print_entry</span>(
             <span class="ident">queue</span>,
@@ -1960,15 +1957,12 @@
             <span class="comment">// A line break in expanded mode is always necessary if the current item didn&#39;t fit.</span>
             <span class="comment">// otherwise see if both contents fit on the line.</span>
             <span class="kw">let</span> <span class="ident">all_fits</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">current_fits</span> {
-                <span class="self">self</span>.<span class="ident">fits_fill_entry</span>(
-                    <span class="ident">SeparatorItemPairPredicate::default</span>(),
-                    <span class="ident">queue</span>,
-                    <span class="ident">stack</span>,
-                    <span class="ident">PrintMode::Flat</span>,
-                )<span class="question-mark">?</span>
+                <span class="self">self</span>.<span class="ident">fits_fill_entry</span>(<span class="ident">SeparatorItemPairPredicate::default</span>(), <span class="ident">queue</span>, <span class="ident">stack</span>)<span class="question-mark">?</span>
             } <span class="kw">else</span> {
                 <span class="bool-val">false</span>
             };
+
+            <span class="self">self</span>.<span class="ident">state</span>.<span class="ident">measured_group_fits</span> <span class="op">=</span> <span class="ident">all_fits</span>;
 
             <span class="kw">let</span> <span class="ident">separator_mode</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">all_fits</span> {
                 <span class="ident">PrintMode::Flat</span>
@@ -1989,12 +1983,10 @@
                 <span class="self">self</span>.<span class="ident">print_entry</span>(<span class="ident">queue</span>, <span class="ident">stack</span>, <span class="ident">args</span>.<span class="ident">with_print_mode</span>(<span class="ident">PrintMode::Flat</span>))<span class="question-mark">?</span>;
             } <span class="kw">else</span> {
                 <span class="comment">// Test if item fits now</span>
-                <span class="kw">let</span> <span class="ident">next_fits</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">fits_fill_entry</span>(
-                    <span class="ident">SingleEntryPredicate::default</span>(),
-                    <span class="ident">queue</span>,
-                    <span class="ident">stack</span>,
-                    <span class="ident">PrintMode::Flat</span>,
-                )<span class="question-mark">?</span>;
+                <span class="kw">let</span> <span class="ident">next_fits</span> <span class="op">=</span>
+                    <span class="self">self</span>.<span class="ident">fits_fill_entry</span>(<span class="ident">SingleEntryPredicate::default</span>(), <span class="ident">queue</span>, <span class="ident">stack</span>)<span class="question-mark">?</span>;
+
+                <span class="self">self</span>.<span class="ident">state</span>.<span class="ident">measured_group_fits</span> <span class="op">=</span> <span class="ident">next_fits</span>;
 
                 <span class="self">self</span>.<span class="ident">print_entry</span>(
                     <span class="ident">queue</span>,
@@ -2022,7 +2014,6 @@
         <span class="ident">predicate</span>: <span class="ident">P</span>,
         <span class="ident">queue</span>: <span class="kw-2">&amp;mut</span> <span class="ident">PrintQueue</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
         <span class="ident">stack</span>: <span class="kw-2">&amp;mut</span> <span class="ident">PrintCallStack</span>,
-        <span class="ident">mode</span>: <span class="ident">PrintMode</span>,
     ) -&gt; <span class="ident">PrintResult</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">P</span>: <span class="ident">FitsPredicate</span>,
@@ -2033,10 +2024,9 @@
             <span class="kw">return</span> <span class="ident">invalid_start_tag</span>(<span class="ident">TagKind::Entry</span>, <span class="ident">start_entry</span>);
         }
 
-        <span class="comment">// Create a virtual group around each fill entry</span>
-        <span class="ident">stack</span>.<span class="ident">push</span>(<span class="ident">TagKind::Group</span>, <span class="ident">stack</span>.<span class="ident">top</span>().<span class="ident">with_print_mode</span>(<span class="ident">mode</span>));
+        <span class="ident">stack</span>.<span class="ident">push</span>(<span class="ident">TagKind::Fill</span>, <span class="ident">stack</span>.<span class="ident">top</span>().<span class="ident">with_print_mode</span>(<span class="ident">PrintMode::Flat</span>));
         <span class="kw">let</span> <span class="ident">fits</span> <span class="op">=</span> <span class="ident">fits_on_line</span>(<span class="ident">predicate</span>, <span class="ident">queue</span>, <span class="ident">stack</span>, <span class="self">self</span>)<span class="question-mark">?</span>;
-        <span class="ident">stack</span>.<span class="ident">pop</span>(<span class="ident">TagKind::Group</span>)<span class="question-mark">?</span>;
+        <span class="ident">stack</span>.<span class="ident">pop</span>(<span class="ident">TagKind::Fill</span>)<span class="question-mark">?</span>;
 
         <span class="prelude-val">Ok</span>(<span class="ident">fits</span>)
     }
@@ -2103,9 +2093,14 @@
             <span class="self">self</span>.<span class="ident">state</span>
                 .<span class="ident">buffer</span>
                 .<span class="ident">push_str</span>(<span class="self">self</span>.<span class="ident">options</span>.<span class="ident">line_ending</span>.<span class="ident">as_str</span>());
+
             <span class="self">self</span>.<span class="ident">state</span>.<span class="ident">generated_line</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
             <span class="self">self</span>.<span class="ident">state</span>.<span class="ident">generated_column</span> <span class="op">=</span> <span class="number">0</span>;
             <span class="self">self</span>.<span class="ident">state</span>.<span class="ident">line_width</span> <span class="op">=</span> <span class="number">0</span>;
+
+            <span class="comment">// Fit&#39;s only tests if groups up to the first line break fit.</span>
+            <span class="comment">// The next group must re-measure if it still fits.</span>
+            <span class="self">self</span>.<span class="ident">state</span>.<span class="ident">measured_group_fits</span> <span class="op">=</span> <span class="bool-val">false</span>;
         } <span class="kw">else</span> {
             <span class="self">self</span>.<span class="ident">state</span>.<span class="ident">buffer</span>.<span class="ident">push</span>(<span class="ident">char</span>);
             <span class="self">self</span>.<span class="ident">state</span>.<span class="ident">generated_column</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
@@ -2290,6 +2285,7 @@
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">fits_state</span> <span class="op">=</span> <span class="ident">FitsState</span> {
         <span class="ident">pending_indent</span>: <span class="ident">printer</span>.<span class="ident">state</span>.<span class="ident">pending_indent</span>,
         <span class="ident">pending_space</span>: <span class="ident">printer</span>.<span class="ident">state</span>.<span class="ident">pending_space</span>,
+        <span class="ident">must_be_flat</span>: <span class="macro">matches!</span>(<span class="ident">fits_stack</span>.<span class="ident">top_kind</span>(), <span class="prelude-val">Some</span>(<span class="ident">TagKind::Fill</span>)),
         <span class="ident">line_width</span>: <span class="ident">printer</span>.<span class="ident">state</span>.<span class="ident">line_width</span>,
         <span class="ident">has_line_suffix</span>: <span class="ident">printer</span>.<span class="ident">state</span>.<span class="ident">line_suffixes</span>.<span class="ident">has_pending</span>(),
         <span class="ident">group_modes</span>: <span class="kw-2">&amp;mut</span> <span class="ident">printer</span>.<span class="ident">state</span>.<span class="ident">group_modes</span>,
@@ -2375,7 +2371,11 @@
                     }
                     <span class="ident">LineMode::Soft</span> =&gt; {}
                     <span class="ident">LineMode::Hard</span> <span class="op">|</span> <span class="ident">LineMode::Empty</span> =&gt; {
-                        <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">Fits::No</span>);
+                        <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="kw">if</span> <span class="ident">state</span>.<span class="ident">must_be_flat</span> {
+                            <span class="ident">Fits::No</span>
+                        } <span class="kw">else</span> {
+                            <span class="ident">Fits::Yes</span>
+                        });
                     }
                 }
             } <span class="kw">else</span> {
@@ -2400,10 +2400,11 @@
                 <span class="kw">let</span> <span class="ident">char_width</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">c</span> {
                     <span class="string">&#39;\t&#39;</span> =&gt; <span class="ident">options</span>.<span class="ident">tab_width</span>,
                     <span class="string">&#39;\n&#39;</span> =&gt; {
-                        <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="kw">match</span> <span class="ident">args</span>.<span class="ident">mode</span>() {
-                            <span class="ident">PrintMode::Flat</span> =&gt; <span class="ident">Fits::No</span>,
-                            <span class="ident">PrintMode::Expanded</span> =&gt; <span class="ident">Fits::Yes</span>,
-                        })
+                        <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="kw">if</span> <span class="ident">state</span>.<span class="ident">must_be_flat</span> {
+                            <span class="ident">Fits::No</span>
+                        } <span class="kw">else</span> {
+                            <span class="ident">Fits::Yes</span>
+                        });
                     }
                     <span class="kw">_</span> =&gt; <span class="number">1</span>,
                 };
@@ -2424,17 +2425,23 @@
         }
 
         <span class="ident">FormatElement::ExpandParent</span> =&gt; {
-            <span class="kw">if</span> <span class="ident">args</span>.<span class="ident">mode</span>().<span class="ident">is_flat</span>() {
+            <span class="kw">if</span> <span class="ident">state</span>.<span class="ident">must_be_flat</span> {
                 <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">Fits::No</span>);
             }
         }
 
-        <span class="ident">FormatElement::BestFitting</span>(<span class="ident">best_fitting</span>) =&gt; <span class="kw">match</span> <span class="ident">args</span>.<span class="ident">mode</span>() {
-            <span class="ident">PrintMode::Flat</span> =&gt; {
-                <span class="ident">queue</span>.<span class="ident">extend_back</span>(<span class="ident">best_fitting</span>.<span class="ident">most_flat</span>());
+        <span class="ident">FormatElement::BestFitting</span>(<span class="ident">best_fitting</span>) =&gt; {
+            <span class="kw">let</span> <span class="ident">slice</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">args</span>.<span class="ident">mode</span>() {
+                <span class="ident">PrintMode::Flat</span> =&gt; <span class="ident">best_fitting</span>.<span class="ident">most_flat</span>(),
+                <span class="ident">PrintMode::Expanded</span> =&gt; <span class="ident">best_fitting</span>.<span class="ident">most_expanded</span>(),
+            };
+
+            <span class="kw">if</span> <span class="op">!</span><span class="macro">matches!</span>(<span class="ident">slice</span>.<span class="ident">first</span>(), <span class="prelude-val">Some</span>(<span class="ident">FormatElement::Tag</span>(<span class="ident">Tag::StartEntry</span>))) {
+                <span class="kw">return</span> <span class="ident">invalid_start_tag</span>(<span class="ident">TagKind::Entry</span>, <span class="ident">slice</span>.<span class="ident">first</span>());
             }
-            <span class="ident">PrintMode::Expanded</span> =&gt; <span class="ident">queue</span>.<span class="ident">extend_back</span>(<span class="ident">best_fitting</span>.<span class="ident">most_expanded</span>()),
-        },
+
+            <span class="ident">queue</span>.<span class="ident">extend_back</span>(<span class="ident">slice</span>);
+        }
 
         <span class="ident">FormatElement::Interned</span>(<span class="ident">content</span>) =&gt; <span class="ident">queue</span>.<span class="ident">extend_back</span>(<span class="ident">content</span>),
 
@@ -2457,11 +2464,21 @@
             <span class="ident">stack</span>.<span class="ident">push</span>(<span class="ident">TagKind::Align</span>, <span class="ident">args</span>.<span class="ident">set_indent_align</span>(<span class="ident">align</span>.<span class="ident">count</span>()));
         }
 
-        <span class="ident">FormatElement::Tag</span>(<span class="ident">StartGroup</span>(<span class="ident">id</span>)) =&gt; {
-            <span class="ident">stack</span>.<span class="ident">push</span>(<span class="ident">TagKind::Group</span>, <span class="ident">args</span>);
+        <span class="ident">FormatElement::Tag</span>(<span class="ident">StartGroup</span>(<span class="ident">group</span>)) =&gt; {
+            <span class="kw">if</span> <span class="ident">state</span>.<span class="ident">must_be_flat</span> <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">group</span>.<span class="ident">mode</span>().<span class="ident">is_flat</span>() {
+                <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">Fits::No</span>);
+            }
 
-            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">id</span>) <span class="op">=</span> <span class="ident">id</span> {
-                <span class="ident">state</span>.<span class="ident">group_modes</span>.<span class="ident">insert_print_mode</span>(<span class="kw-2">*</span><span class="ident">id</span>, <span class="ident">args</span>.<span class="ident">mode</span>());
+            <span class="kw">let</span> <span class="ident">group_mode</span> <span class="op">=</span> <span class="kw">if</span> <span class="op">!</span><span class="ident">group</span>.<span class="ident">mode</span>().<span class="ident">is_flat</span>() {
+                <span class="ident">PrintMode::Expanded</span>
+            } <span class="kw">else</span> {
+                <span class="ident">args</span>.<span class="ident">mode</span>()
+            };
+
+            <span class="ident">stack</span>.<span class="ident">push</span>(<span class="ident">TagKind::Group</span>, <span class="ident">args</span>.<span class="ident">with_print_mode</span>(<span class="ident">group_mode</span>));
+
+            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">id</span>) <span class="op">=</span> <span class="ident">group</span>.<span class="ident">id</span>() {
+                <span class="ident">state</span>.<span class="ident">group_modes</span>.<span class="ident">insert_print_mode</span>(<span class="ident">id</span>, <span class="ident">group_mode</span>);
             }
         }
 
@@ -2591,6 +2608,7 @@
     <span class="ident">pending_indent</span>: <span class="ident">Indention</span>,
     <span class="ident">pending_space</span>: <span class="ident">bool</span>,
     <span class="ident">has_line_suffix</span>: <span class="ident">bool</span>,
+    <span class="ident">must_be_flat</span>: <span class="ident">bool</span>,
     <span class="ident">line_width</span>: <span class="ident">usize</span>,
     <span class="ident">group_modes</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;group</span> <span class="kw-2">mut</span> <span class="ident">GroupModes</span>,
 }
@@ -2601,7 +2619,7 @@
     <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::printer</span>::{<span class="ident">LineEnding</span>, <span class="ident">PrintWidth</span>, <span class="ident">Printer</span>, <span class="ident">PrinterOptions</span>};
     <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">format_args</span>, <span class="ident">write</span>, <span class="ident">Document</span>, <span class="ident">FormatState</span>, <span class="ident">IndentStyle</span>, <span class="ident">Printed</span>, <span class="ident">VecBuffer</span>};
 
-    <span class="kw">fn</span> <span class="ident">format</span>(<span class="ident">root</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Format</span><span class="op">&lt;</span>()<span class="op">&gt;</span>) -&gt; <span class="ident">Printed</span> {
+    <span class="kw">fn</span> <span class="ident">format</span>(<span class="ident">root</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Format</span><span class="op">&lt;</span><span class="ident">SimpleFormatContext</span><span class="op">&gt;</span>) -&gt; <span class="ident">Printed</span> {
         <span class="ident">format_with_options</span>(
             <span class="ident">root</span>,
             <span class="ident">PrinterOptions</span> {
@@ -2611,14 +2629,14 @@
         )
     }
 
-    <span class="kw">fn</span> <span class="ident">format_with_options</span>(<span class="ident">root</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Format</span><span class="op">&lt;</span>()<span class="op">&gt;</span>, <span class="ident">options</span>: <span class="ident">PrinterOptions</span>) -&gt; <span class="ident">Printed</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">state</span> <span class="op">=</span> <span class="ident">FormatState::new</span>(());
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">VecBuffer::new</span>(<span class="kw-2">&amp;mut</span> <span class="ident">state</span>);
-
-        <span class="macro">write!</span>(<span class="kw-2">&amp;mut</span> <span class="ident">buffer</span>, [<span class="ident">root</span>]).<span class="ident">unwrap</span>();
+    <span class="kw">fn</span> <span class="ident">format_with_options</span>(
+        <span class="ident">root</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Format</span><span class="op">&lt;</span><span class="ident">SimpleFormatContext</span><span class="op">&gt;</span>,
+        <span class="ident">options</span>: <span class="ident">PrinterOptions</span>,
+    ) -&gt; <span class="ident">Printed</span> {
+        <span class="kw">let</span> <span class="ident">formatted</span> <span class="op">=</span> <span class="macro">crate::format!</span>(<span class="ident">SimpleFormatContext::default</span>(), [<span class="ident">root</span>]).<span class="ident">unwrap</span>();
 
         <span class="ident">Printer::new</span>(<span class="ident">options</span>)
-            .<span class="ident">print</span>(<span class="kw-2">&amp;</span><span class="ident">Document::from</span>(<span class="ident">buffer</span>.<span class="ident">into_vec</span>()))
+            .<span class="ident">print</span>(<span class="ident">formatted</span>.<span class="ident">document</span>())
             .<span class="ident">expect</span>(<span class="string">&quot;Document to be valid&quot;</span>)
     }
 
@@ -2964,11 +2982,11 @@ Group 1 breaks&quot;#</span>
     }
 
     <span class="kw">struct</span> <span class="ident">FormatArrayElements</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-        <span class="ident">items</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw">dyn</span> <span class="ident">Format</span><span class="op">&lt;</span>()<span class="op">&gt;</span><span class="op">&gt;</span>,
+        <span class="ident">items</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw">dyn</span> <span class="ident">Format</span><span class="op">&lt;</span><span class="ident">SimpleFormatContext</span><span class="op">&gt;</span><span class="op">&gt;</span>,
     }
 
-    <span class="kw">impl</span> <span class="ident">Format</span><span class="op">&lt;</span>()<span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">FormatArrayElements</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span> {
-        <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Formatter</span><span class="op">&lt;</span>()<span class="op">&gt;</span>) -&gt; <span class="ident">FormatResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+    <span class="kw">impl</span> <span class="ident">Format</span><span class="op">&lt;</span><span class="ident">SimpleFormatContext</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">FormatArrayElements</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span> {
+        <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Formatter</span><span class="op">&lt;</span><span class="ident">SimpleFormatContext</span><span class="op">&gt;</span>) -&gt; <span class="ident">FormatResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
             <span class="macro">write!</span>(
                 <span class="ident">f</span>,
                 [<span class="ident">group</span>(<span class="kw-2">&amp;</span><span class="macro">format_args!</span>(

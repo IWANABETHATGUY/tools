@@ -1519,6 +1519,47 @@
 <span id="1519">1519</span>
 <span id="1520">1520</span>
 <span id="1521">1521</span>
+<span id="1522">1522</span>
+<span id="1523">1523</span>
+<span id="1524">1524</span>
+<span id="1525">1525</span>
+<span id="1526">1526</span>
+<span id="1527">1527</span>
+<span id="1528">1528</span>
+<span id="1529">1529</span>
+<span id="1530">1530</span>
+<span id="1531">1531</span>
+<span id="1532">1532</span>
+<span id="1533">1533</span>
+<span id="1534">1534</span>
+<span id="1535">1535</span>
+<span id="1536">1536</span>
+<span id="1537">1537</span>
+<span id="1538">1538</span>
+<span id="1539">1539</span>
+<span id="1540">1540</span>
+<span id="1541">1541</span>
+<span id="1542">1542</span>
+<span id="1543">1543</span>
+<span id="1544">1544</span>
+<span id="1545">1545</span>
+<span id="1546">1546</span>
+<span id="1547">1547</span>
+<span id="1548">1548</span>
+<span id="1549">1549</span>
+<span id="1550">1550</span>
+<span id="1551">1551</span>
+<span id="1552">1552</span>
+<span id="1553">1553</span>
+<span id="1554">1554</span>
+<span id="1555">1555</span>
+<span id="1556">1556</span>
+<span id="1557">1557</span>
+<span id="1558">1558</span>
+<span id="1559">1559</span>
+<span id="1560">1560</span>
+<span id="1561">1561</span>
+<span id="1562">1562</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Infrastructure for code formatting</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! This module defines [FormatElement], an IR to format code documents and provides a mean to print</span>
@@ -1561,26 +1602,26 @@
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::formatter::Formatter</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::group_id::UniqueGroupIdBuilder</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::prelude</span>::{<span class="ident">syntax_token_cow_slice</span>, <span class="ident">TagKind</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::prelude::TagKind</span>;
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::format_element::document::Document</span>;
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">debug_assertions</span>)]</span>
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::printed_tokens::PrintedTokens</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::printer</span>::{<span class="ident">Printer</span>, <span class="ident">PrinterOptions</span>};
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">arguments</span>::{<span class="ident">Argument</span>, <span class="ident">Arguments</span>};
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">buffer</span>::{<span class="ident">Buffer</span>, <span class="ident">BufferExtensions</span>, <span class="ident">BufferSnapshot</span>, <span class="ident">Inspect</span>, <span class="ident">PreambleBuffer</span>, <span class="ident">VecBuffer</span>};
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">builders</span>::{
-    <span class="ident">block_indent</span>, <span class="ident">empty_line</span>, <span class="ident">get_lines_before</span>, <span class="ident">group</span>, <span class="ident">hard_line_break</span>, <span class="ident">if_group_breaks</span>,
-    <span class="ident">if_group_fits_on_line</span>, <span class="ident">indent</span>, <span class="ident">labelled</span>, <span class="ident">line_suffix</span>, <span class="ident">soft_block_indent</span>, <span class="ident">soft_line_break</span>,
-    <span class="ident">soft_line_break_or_space</span>, <span class="ident">soft_line_indent_or_space</span>, <span class="ident">space</span>, <span class="ident">text</span>, <span class="ident">BestFitting</span>,
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">buffer</span>::{
+    <span class="ident">Buffer</span>, <span class="ident">BufferExtensions</span>, <span class="ident">BufferSnapshot</span>, <span class="ident">Inspect</span>, <span class="ident">PreambleBuffer</span>, <span class="ident">RemoveSoftLinesBuffer</span>,
+    <span class="ident">VecBuffer</span>,
 };
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">builders::BestFitting</span>;
 
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::builders::syntax_token_cow_slice</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::comments</span>::{<span class="ident">CommentStyle</span>, <span class="ident">Comments</span>, <span class="ident">SourceComment</span>};
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">format_element</span>::{<span class="ident">normalize_newlines</span>, <span class="ident">FormatElement</span>, <span class="ident">Text</span>, <span class="ident">LINE_TERMINATORS</span>};
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">group_id::GroupId</span>;
 <span class="kw">use</span> <span class="ident">rome_rowan</span>::{
     <span class="ident">Language</span>, <span class="ident">SyntaxElement</span>, <span class="ident">SyntaxError</span>, <span class="ident">SyntaxNode</span>, <span class="ident">SyntaxResult</span>, <span class="ident">SyntaxToken</span>, <span class="ident">SyntaxTriviaPiece</span>,
-    <span class="ident">TextRange</span>, <span class="ident">TextSize</span>, <span class="ident">TokenAtOffset</span>,
+    <span class="ident">TextLen</span>, <span class="ident">TextRange</span>, <span class="ident">TextSize</span>, <span class="ident">TokenAtOffset</span>,
 };
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">source_map</span>::{<span class="ident">TransformSourceMap</span>, <span class="ident">TransformSourceMapBuilder</span>};
 <span class="kw">use</span> <span class="ident">std::error::Error</span>;
@@ -2089,6 +2130,14 @@
 
     <span class="doccomment">/// In case printing the document failed because it has an invalid structure.</span>
     <span class="ident">InvalidDocument</span>(<span class="ident">InvalidDocumentError</span>),
+
+    <span class="doccomment">/// Formatting failed because some content encountered a situation where a layout</span>
+    <span class="doccomment">/// choice by an enclosing [`Format`] resulted in a poor layout for a child [`Format`].</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// It&#39;s up to an enclosing [`Format`] to handle the error and pick another layout.</span>
+    <span class="doccomment">/// This error should not be raised if there&#39;s no outer [`Format`] handling the poor layout error,</span>
+    <span class="doccomment">/// avoiding that formatting of the whole document fails.</span>
+    <span class="ident">PoorLayout</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">std::fmt::Display</span> <span class="kw">for</span> <span class="ident">FormatError</span> {
@@ -2100,6 +2149,9 @@
                 <span class="string">&quot;formatting range {input:?} is larger than syntax tree {tree:?}&quot;</span>
             ),
             <span class="ident">FormatError::InvalidDocument</span>(<span class="ident">error</span>) =&gt; <span class="macro">std::write!</span>(<span class="ident">fmt</span>, <span class="string">&quot;Invalid document: {error}\n\n This is an internal Rome error. Please report if necessary.&quot;</span>),
+            <span class="ident">FormatError::PoorLayout</span> =&gt; {
+                <span class="macro">std::write!</span>(<span class="ident">fmt</span>, <span class="string">&quot;Poor layout: The formatter wasn&#39;t able to pick a good layout for your document. This is an internal Rome error. Please report if necessary.&quot;</span>)
+            }
         }
     }
 }
@@ -2481,10 +2533,10 @@
 
     <span class="ident">buffer</span>.<span class="ident">write_fmt</span>(<span class="ident">arguments</span>)<span class="question-mark">?</span>;
 
-    <span class="prelude-val">Ok</span>(<span class="ident">Formatted::new</span>(
-        <span class="ident">Document::from</span>(<span class="ident">buffer</span>.<span class="ident">into_vec</span>()),
-        <span class="ident">state</span>.<span class="ident">into_context</span>(),
-    ))
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">document</span> <span class="op">=</span> <span class="ident">Document::from</span>(<span class="ident">buffer</span>.<span class="ident">into_vec</span>());
+    <span class="ident">document</span>.<span class="ident">propagate_expand</span>();
+
+    <span class="prelude-val">Ok</span>(<span class="ident">Formatted::new</span>(<span class="ident">document</span>, <span class="ident">state</span>.<span class="ident">into_context</span>()))
 }
 
 <span class="doccomment">/// Entry point for formatting a [SyntaxNode] for a specific language.</span>
@@ -2553,17 +2605,18 @@
 
         <span class="macro">write!</span>(<span class="ident">buffer</span>, [<span class="ident">format_node</span>])<span class="question-mark">?</span>;
 
-        <span class="kw">let</span> <span class="ident">document</span> <span class="op">=</span> <span class="ident">Document::from</span>(<span class="ident">buffer</span>.<span class="ident">into_vec</span>());
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">document</span> <span class="op">=</span> <span class="ident">Document::from</span>(<span class="ident">buffer</span>.<span class="ident">into_vec</span>());
+        <span class="ident">document</span>.<span class="ident">propagate_expand</span>();
 
         <span class="ident">state</span>.<span class="ident">assert_formatted_all_tokens</span>(<span class="kw-2">&amp;</span><span class="ident">root</span>);
-        {
-            <span class="kw">let</span> <span class="ident">comments</span> <span class="op">=</span> <span class="ident">state</span>.<span class="ident">context</span>().<span class="ident">comments</span>();
 
-            <span class="ident">comments</span>.<span class="ident">assert_checked_all_suppressions</span>(<span class="kw-2">&amp;</span><span class="ident">root</span>);
-            <span class="ident">comments</span>.<span class="ident">assert_formatted_all_comments</span>();
-        }
+        <span class="kw">let</span> <span class="ident">context</span> <span class="op">=</span> <span class="ident">state</span>.<span class="ident">into_context</span>();
+        <span class="kw">let</span> <span class="ident">comments</span> <span class="op">=</span> <span class="ident">context</span>.<span class="ident">comments</span>();
 
-        <span class="prelude-val">Ok</span>(<span class="ident">Formatted::new</span>(<span class="ident">document</span>, <span class="ident">state</span>.<span class="ident">into_context</span>()))
+        <span class="ident">comments</span>.<span class="ident">assert_checked_all_suppressions</span>(<span class="kw-2">&amp;</span><span class="ident">root</span>);
+        <span class="ident">comments</span>.<span class="ident">assert_formatted_all_comments</span>();
+
+        <span class="prelude-val">Ok</span>(<span class="ident">Formatted::new</span>(<span class="ident">document</span>, <span class="ident">context</span>))
     })
 }
 
@@ -2916,12 +2969,17 @@
     <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Formatter</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>) -&gt; <span class="ident">FormatResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">range</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">text_range</span>();
 
+        <span class="comment">// Trim start/end and update the range</span>
+        <span class="kw">let</span> <span class="ident">trimmed</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">text</span>().<span class="ident">trim_start</span>();
+        <span class="kw">let</span> <span class="ident">trimmed_start</span> <span class="op">=</span> <span class="ident">range</span>.<span class="ident">start</span>() <span class="op">+</span> (<span class="ident">range</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="ident">trimmed</span>.<span class="ident">text_len</span>());
+        <span class="kw">let</span> <span class="ident">trimmed</span> <span class="op">=</span> <span class="ident">trimmed</span>.<span class="ident">trim_end</span>();
+
         <span class="macro">write!</span>(
             <span class="ident">f</span>,
             [<span class="ident">syntax_token_cow_slice</span>(
-                <span class="ident">normalize_newlines</span>(<span class="self">self</span>.<span class="ident">text</span>().<span class="ident">trim</span>(), <span class="ident">LINE_TERMINATORS</span>),
+                <span class="ident">normalize_newlines</span>(<span class="ident">trimmed</span>, <span class="ident">LINE_TERMINATORS</span>),
                 <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">token</span>(),
-                <span class="ident">range</span>.<span class="ident">start</span>()
+                <span class="ident">trimmed_start</span>
             )]
         )
     }
@@ -2997,6 +3055,30 @@
         }
     }
 
+    <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">debug_assertions</span>))]</span>
+    <span class="attribute">#[<span class="ident">inline</span>]</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_token_tracking_disabled</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="kw">_</span>: <span class="ident">bool</span>) {}
+
+    <span class="doccomment">/// Disables or enables token tracking for a portion of the code.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// It can be useful to disable the token tracking when it is necessary to re-format a node with different parameters.</span>
+    <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">debug_assertions</span>)]</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_token_tracking_disabled</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">enabled</span>: <span class="ident">bool</span>) {
+        <span class="self">self</span>.<span class="ident">printed_tokens</span>.<span class="ident">set_disabled</span>(<span class="ident">enabled</span>)
+    }
+
+    <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">debug_assertions</span>))]</span>
+    <span class="attribute">#[<span class="ident">inline</span>]</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_token_tracking_disabled</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
+        <span class="bool-val">false</span>
+    }
+
+    <span class="doccomment">/// Returns `true` if token tracking is currently disabled.</span>
+    <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">debug_assertions</span>)]</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_token_tracking_disabled</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
+        <span class="self">self</span>.<span class="ident">printed_tokens</span>.<span class="ident">is_disabled</span>()
+    }
+
     <span class="doccomment">/// Asserts in debug builds that all tokens have been printed.</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">assert_formatted_all_tokens</span><span class="op">&lt;</span><span class="ident">L</span>: <span class="ident">Language</span><span class="op">&gt;</span>(
@@ -3018,7 +3100,7 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">snapshot</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">FormatStateSnapshot</span> {
         <span class="ident">FormatStateSnapshot</span> {
             <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">debug_assertions</span>)]</span>
-            <span class="ident">printed_tokens</span>: <span class="self">self</span>.<span class="ident">printed_tokens</span>.<span class="ident">clone</span>(),
+            <span class="ident">printed_tokens</span>: <span class="self">self</span>.<span class="ident">printed_tokens</span>.<span class="ident">snapshot</span>(),
         }
     }
 
@@ -3030,7 +3112,7 @@
 
         <span class="macro">cfg_if::cfg_if!</span> {
             <span class="kw">if</span> <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">debug_assertions</span>)]</span> {
-                <span class="self">self</span>.<span class="ident">printed_tokens</span> <span class="op">=</span> <span class="ident">printed_tokens</span>;
+                <span class="self">self</span>.<span class="ident">printed_tokens</span>.<span class="ident">restore</span>(<span class="ident">printed_tokens</span>);
             }
         }
     }
@@ -3038,7 +3120,7 @@
 
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">FormatStateSnapshot</span> {
     <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">debug_assertions</span>)]</span>
-    <span class="ident">printed_tokens</span>: <span class="ident">PrintedTokens</span>,
+    <span class="ident">printed_tokens</span>: <span class="ident">printed_tokens::PrintedTokensSnapshot</span>,
 }
 </code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="rome_formatter" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0 (a55dd71d5 2022-09-19)" ></div></body></html>

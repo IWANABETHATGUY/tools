@@ -101,7 +101,9 @@
 <span id="101">101</span>
 <span id="102">102</span>
 <span id="103">103</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::react::is_react_create_element</span>;
+<span id="104">104</span>
+<span id="105">105</span>
+</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::react</span>::{<span class="ident">ReactApiCall</span>, <span class="ident">ReactCreateElementCall</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::semantic_services::Semantic</span>;
 <span class="kw">use</span> <span class="ident">rome_analyze::context::RuleContext</span>;
 <span class="kw">use</span> <span class="ident">rome_analyze</span>::{<span class="ident">declare_rule</span>, <span class="ident">Rule</span>, <span class="ident">RuleCategory</span>, <span class="ident">RuleDiagnostic</span>};
@@ -162,7 +164,8 @@
             }
             <span class="ident">NoChildrenPropQuery::JsCallExpression</span>(<span class="ident">call_expression</span>) =&gt; {
                 <span class="kw">let</span> <span class="ident">model</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">model</span>();
-                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">react_create_element</span>) <span class="op">=</span> <span class="ident">is_react_create_element</span>(<span class="ident">call_expression</span>, <span class="ident">model</span>)
+                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">react_create_element</span>) <span class="op">=</span>
+                    <span class="ident">ReactCreateElementCall::from_call_expression</span>(<span class="ident">call_expression</span>, <span class="ident">model</span>)
                 {
                     <span class="kw">let</span> <span class="ident">children_prop</span> <span class="op">=</span> <span class="ident">react_create_element</span>.<span class="ident">find_prop_by_name</span>(<span class="string">&quot;children&quot;</span>);
 
@@ -195,6 +198,7 @@
 
         <span class="prelude-val">Some</span>(
             <span class="ident">RuleDiagnostic::new</span>(
+                <span class="macro">rule_category!</span>(),
                 <span class="ident">range</span>,
                 <span class="macro">markup!</span> {
                     <span class="string">&quot;Avoid passing &quot;</span><span class="op">&lt;</span><span class="ident">Emphasis</span><span class="op">&gt;</span><span class="string">&quot;children&quot;</span><span class="op">&lt;</span><span class="op">/</span><span class="ident">Emphasis</span><span class="op">&gt;</span><span class="string">&quot; using a prop&quot;</span>

@@ -102,13 +102,6 @@
 <span id="102">102</span>
 <span id="103">103</span>
 <span id="104">104</span>
-<span id="105">105</span>
-<span id="106">106</span>
-<span id="107">107</span>
-<span id="108">108</span>
-<span id="109">109</span>
-<span id="110">110</span>
-<span id="111">111</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">IndentStyle</span>, <span class="ident">LineWidth</span>};
 
 <span class="doccomment">/// Options that affect how the [crate::Printer] prints the format tokens</span>
@@ -133,13 +126,6 @@
 <span class="kw">impl</span> <span class="ident">PrintWidth</span> {
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">width</span>: <span class="ident">u32</span>) -&gt; <span class="self">Self</span> {
         <span class="self">Self</span>(<span class="ident">width</span>)
-    }
-
-    <span class="doccomment">/// Returns a print width that guarantees that any content, regardless of its width, fits on the line.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// This has the effect that the printer never prints a line break for any soft line break.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">infinite</span>() -&gt; <span class="self">Self</span> {
-        <span class="self">Self</span>(<span class="ident">u32::MAX</span>)
     }
 }
 

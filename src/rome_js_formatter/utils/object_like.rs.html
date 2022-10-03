@@ -69,6 +69,8 @@
 <span id="69">69</span>
 <span id="70">70</span>
 <span id="71">71</span>
+<span id="72">72</span>
+<span id="73">73</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::prelude</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::utils::node_has_leading_newline</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::JsFormatContext</span>;
@@ -131,10 +133,12 @@
                 <span class="ident">f</span>,
                 [<span class="ident">format_dangling_comments</span>(<span class="self">self</span>.<span class="ident">syntax</span>()).<span class="ident">with_block_indent</span>(),]
             )<span class="question-mark">?</span>;
-        } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">members_have_leading_newline</span>() {
-            <span class="macro">write!</span>(<span class="ident">f</span>, [<span class="ident">block_indent</span>(<span class="kw-2">&amp;</span><span class="ident">members</span>)])<span class="question-mark">?</span>;
         } <span class="kw">else</span> {
-            <span class="macro">write!</span>(<span class="ident">f</span>, [<span class="ident">group</span>(<span class="kw-2">&amp;</span><span class="ident">soft_space_or_block_indent</span>(<span class="kw-2">&amp;</span><span class="ident">members</span>))])<span class="question-mark">?</span>;
+            <span class="kw">let</span> <span class="ident">should_expand</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">members_have_leading_newline</span>();
+            <span class="macro">write!</span>(
+                <span class="ident">f</span>,
+                [<span class="ident">group</span>(<span class="kw-2">&amp;</span><span class="ident">soft_space_or_block_indent</span>(<span class="kw-2">&amp;</span><span class="ident">members</span>)).<span class="ident">should_expand</span>(<span class="ident">should_expand</span>)]
+            )<span class="question-mark">?</span>;
         }
 
         <span class="macro">write!</span>(<span class="ident">f</span>, [<span class="self">self</span>.<span class="ident">r_curly_token</span>().<span class="ident">format</span>()])

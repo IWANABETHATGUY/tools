@@ -113,12 +113,13 @@
 <span id="113">113</span>
 <span id="114">114</span>
 <span id="115">115</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::react</span>::{<span class="ident">is_react_create_element</span>, <span class="ident">ReactCreateElementCall</span>};
+<span id="116">116</span>
+</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::react::ReactCreateElementCall</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::semantic_services::Semantic</span>;
 <span class="kw">use</span> <span class="ident">rome_analyze::context::RuleContext</span>;
 <span class="kw">use</span> <span class="ident">rome_analyze</span>::{<span class="ident">declare_rule</span>, <span class="ident">Rule</span>, <span class="ident">RuleCategory</span>, <span class="ident">RuleDiagnostic</span>};
-<span class="kw">use</span> <span class="ident">rome_console::codespan::Severity</span>;
 <span class="kw">use</span> <span class="ident">rome_console::markup</span>;
+<span class="kw">use</span> <span class="ident">rome_diagnostics::Severity</span>;
 <span class="kw">use</span> <span class="ident">rome_js_syntax</span>::{<span class="ident">JsCallExpression</span>, <span class="ident">JsLiteralMemberName</span>, <span class="ident">JsxAnyAttributeName</span>, <span class="ident">JsxAttribute</span>};
 <span class="kw">use</span> <span class="ident">rome_rowan</span>::{<span class="ident">declare_node_union</span>, <span class="ident">AstNode</span>};
 
@@ -180,7 +181,8 @@
                 }
             }
             <span class="ident">JsAnyCreateElement::JsCallExpression</span>(<span class="ident">call_expression</span>) =&gt; {
-                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">react_create_element</span>) <span class="op">=</span> <span class="ident">is_react_create_element</span>(<span class="ident">call_expression</span>, <span class="ident">model</span>)
+                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">react_create_element</span>) <span class="op">=</span>
+                    <span class="ident">ReactCreateElementCall::from_call_expression</span>(<span class="ident">call_expression</span>, <span class="ident">model</span>)
                 {
                     <span class="kw">let</span> <span class="ident">ReactCreateElementCall</span> { <span class="ident">props</span>, .. } <span class="op">=</span> <span class="ident">react_create_element</span>;
                     <span class="comment">// if we are inside a create element call, we inspect the second argument, which</span>
@@ -215,7 +217,7 @@
             <span class="ident">NoDangerState::Property</span>(<span class="ident">property</span>) =&gt; <span class="ident">property</span>.<span class="ident">syntax</span>().<span class="ident">text_trimmed_range</span>(),
         };
 
-        <span class="kw">let</span> <span class="ident">diagnostic</span> <span class="op">=</span> <span class="ident">RuleDiagnostic::new</span>(
+        <span class="kw">let</span> <span class="ident">diagnostic</span> <span class="op">=</span> <span class="ident">RuleDiagnostic::new</span>(<span class="macro">rule_category!</span>(),
             <span class="ident">text_range</span>,
             <span class="macro">markup!</span> {
                 <span class="string">&quot;Avoid passing content using the &quot;</span><span class="op">&lt;</span><span class="ident">Emphasis</span><span class="op">&gt;</span><span class="string">&quot;dangerouslySetInnerHTML&quot;</span><span class="op">&lt;</span><span class="op">/</span><span class="ident">Emphasis</span><span class="op">&gt;</span><span class="string">&quot; prop.&quot;</span>

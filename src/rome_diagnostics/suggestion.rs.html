@@ -18,37 +18,10 @@
 <span id="18">18</span>
 <span id="19">19</span>
 <span id="20">20</span>
-<span id="21">21</span>
-<span id="22">22</span>
-<span id="23">23</span>
-<span id="24">24</span>
-<span id="25">25</span>
-<span id="26">26</span>
-<span id="27">27</span>
-<span id="28">28</span>
-<span id="29">29</span>
-<span id="30">30</span>
-<span id="31">31</span>
-<span id="32">32</span>
-<span id="33">33</span>
-<span id="34">34</span>
-<span id="35">35</span>
-<span id="36">36</span>
-<span id="37">37</span>
-<span id="38">38</span>
-<span id="39">39</span>
-<span id="40">40</span>
-<span id="41">41</span>
-<span id="42">42</span>
-<span id="43">43</span>
-<span id="44">44</span>
-<span id="45">45</span>
-<span id="46">46</span>
-<span id="47">47</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">file::FileSpan</span>, <span class="kw-2">*</span>};
 <span class="kw">use</span> <span class="ident">rome_console::MarkupBuf</span>;
 <span class="kw">use</span> <span class="ident">rome_rowan::TextRange</span>;
-<span class="kw">use</span> <span class="ident">rome_text_edit::Indel</span>;
+<span class="kw">use</span> <span class="ident">rome_text_edit::TextEdit</span>;
 <span class="kw">use</span> <span class="ident">serde</span>::{<span class="ident">Deserialize</span>, <span class="ident">Serialize</span>};
 
 <span class="doccomment">/// A Suggestion that is provided by rslint, and</span>
@@ -59,38 +32,11 @@
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">CodeSuggestion</span> {
     <span class="doccomment">/// If the `FileId` is `None`, it&#39;s in the same file as</span>
     <span class="doccomment">/// his parent.</span>
-    <span class="kw">pub</span> <span class="ident">substitution</span>: <span class="ident">SuggestionChange</span>,
     <span class="kw">pub</span> <span class="ident">span</span>: <span class="ident">FileSpan</span>,
     <span class="kw">pub</span> <span class="ident">applicability</span>: <span class="ident">Applicability</span>,
     <span class="kw">pub</span> <span class="ident">msg</span>: <span class="ident">MarkupBuf</span>,
-    <span class="kw">pub</span> <span class="ident">style</span>: <span class="ident">SuggestionStyle</span>,
+    <span class="kw">pub</span> <span class="ident">suggestion</span>: <span class="ident">TextEdit</span>,
     <span class="kw">pub</span> <span class="ident">labels</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">TextRange</span><span class="op">&gt;</span>,
-}
-
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Hash</span>, <span class="ident">Serialize</span>, <span class="ident">Deserialize</span>)]</span>
-<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;schema&quot;</span>, <span class="ident">derive</span>(<span class="ident">schemars::JsonSchema</span>))]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">SuggestionChange</span> {
-    <span class="ident">Indels</span>(<span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Indel</span><span class="op">&gt;</span>),
-    <span class="ident">String</span>(<span class="ident">String</span>),
-}
-
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Hash</span>, <span class="ident">Serialize</span>, <span class="ident">Deserialize</span>)]</span>
-<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;schema&quot;</span>, <span class="ident">derive</span>(<span class="ident">schemars::JsonSchema</span>))]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">SuggestionStyle</span> {
-    <span class="doccomment">/// Do not show the suggestion at all</span>
-    <span class="ident">DontShow</span>,
-    <span class="doccomment">/// Show as inline but do not show the code</span>
-    <span class="ident">HideCode</span>,
-    <span class="doccomment">/// Show as inline, e.g. `help: do this: `code``</span>
-    <span class="ident">Inline</span>,
-    <span class="doccomment">/// Show as a separate block, e.g.</span>
-    <span class="doccomment">/// ```text</span>
-    <span class="doccomment">/// help: try this</span>
-    <span class="doccomment">///    |</span>
-    <span class="doccomment">///  2 | let a = 6;</span>
-    <span class="doccomment">///    |    ^</span>
-    <span class="doccomment">/// ```</span>
-    <span class="ident">Full</span>,
 }
 </code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="rome_diagnostics" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0 (a55dd71d5 2022-09-19)" ></div></body></html>

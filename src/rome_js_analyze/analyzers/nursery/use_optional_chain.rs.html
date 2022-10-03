@@ -859,6 +859,7 @@
 <span id="859">859</span>
 <span id="860">860</span>
 <span id="861">861</span>
+<span id="862">862</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">rome_analyze</span>::{
     <span class="ident">context::RuleContext</span>, <span class="ident">declare_rule</span>, <span class="ident">ActionCategory</span>, <span class="ident">Ast</span>, <span class="ident">Rule</span>, <span class="ident">RuleCategory</span>, <span class="ident">RuleDiagnostic</span>,
 };
@@ -991,6 +992,7 @@
         };
 
         <span class="prelude-val">Some</span>(<span class="ident">RuleDiagnostic::new</span>(
+            <span class="macro">rule_category!</span>(),
             <span class="ident">range</span>,
             <span class="macro">markup!</span> {
                 <span class="string">&quot;Change to an optional chain.&quot;</span>

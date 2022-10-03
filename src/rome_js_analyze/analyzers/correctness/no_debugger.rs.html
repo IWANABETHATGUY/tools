@@ -69,6 +69,7 @@
 <span id="69">69</span>
 <span id="70">70</span>
 <span id="71">71</span>
+<span id="72">72</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">rome_analyze</span>::{
     <span class="ident">context::RuleContext</span>, <span class="ident">declare_rule</span>, <span class="ident">ActionCategory</span>, <span class="ident">Ast</span>, <span class="ident">Rule</span>, <span class="ident">RuleCategory</span>, <span class="ident">RuleDiagnostic</span>,
 };
@@ -118,6 +119,7 @@
         <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">query</span>();
 
         <span class="prelude-val">Some</span>(<span class="ident">RuleDiagnostic::new</span>(
+            <span class="macro">rule_category!</span>(),
             <span class="ident">node</span>.<span class="ident">syntax</span>().<span class="ident">text_trimmed_range</span>(),
             <span class="macro">markup!</span> {
                 <span class="string">&quot;This is an unexpected use of the &quot;</span><span class="op">&lt;</span><span class="ident">Emphasis</span><span class="op">&gt;</span><span class="string">&quot;debugger&quot;</span><span class="op">&lt;</span><span class="op">/</span><span class="ident">Emphasis</span><span class="op">&gt;</span><span class="string">&quot; statement.&quot;</span>

@@ -186,13 +186,11 @@
 <span id="186">186</span>
 <span id="187">187</span>
 <span id="188">188</span>
-<span id="189">189</span>
-<span id="190">190</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::react::is_react_create_element</span>;
+</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::react</span>::{<span class="ident">ReactApiCall</span>, <span class="ident">ReactCreateElementCall</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::semantic_services::Semantic</span>;
 <span class="kw">use</span> <span class="ident">rome_analyze</span>::{<span class="ident">context::RuleContext</span>, <span class="ident">declare_rule</span>, <span class="ident">Rule</span>, <span class="ident">RuleCategory</span>, <span class="ident">RuleDiagnostic</span>};
-<span class="kw">use</span> <span class="ident">rome_console::codespan::Severity</span>;
 <span class="kw">use</span> <span class="ident">rome_console::markup</span>;
+<span class="kw">use</span> <span class="ident">rome_diagnostics::Severity</span>;
 <span class="kw">use</span> <span class="ident">rome_js_syntax</span>::{
     <span class="ident">JsCallExpression</span>, <span class="ident">JsObjectExpression</span>, <span class="ident">JsStringLiteralExpression</span>, <span class="ident">JsxAnyElementName</span>,
     <span class="ident">JsxOpeningElement</span>, <span class="ident">JsxString</span>,
@@ -290,48 +288,46 @@
             }
             <span class="ident">UseButtonTypeQuery::JsCallExpression</span>(<span class="ident">call_expression</span>) =&gt; {
                 <span class="kw">let</span> <span class="ident">model</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">model</span>();
-                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">react_create_element</span>) <span class="op">=</span> <span class="ident">is_react_create_element</span>(<span class="ident">call_expression</span>, <span class="ident">model</span>)
-                {
-                    <span class="comment">// first argument needs to be a string</span>
-                    <span class="kw">let</span> <span class="ident">first_argument</span> <span class="op">=</span> <span class="ident">react_create_element</span>
-                        .<span class="ident">element_type</span>
-                        .<span class="ident">as_js_any_expression</span>()<span class="question-mark">?</span>
-                        .<span class="ident">as_js_any_literal_expression</span>()<span class="question-mark">?</span>
-                        .<span class="ident">as_js_string_literal_expression</span>()<span class="question-mark">?</span>;
+                <span class="kw">let</span> <span class="ident">react_create_element</span> <span class="op">=</span>
+                    <span class="ident">ReactCreateElementCall::from_call_expression</span>(<span class="ident">call_expression</span>, <span class="ident">model</span>)<span class="question-mark">?</span>;
 
-                    <span class="comment">// case sensitive is important, &lt;button&gt; is different from &lt;Button&gt;</span>
-                    <span class="kw">if</span> <span class="ident">first_argument</span>.<span class="ident">inner_string_text</span>().<span class="ident">ok</span>()<span class="question-mark">?</span> <span class="op">==</span> <span class="string">&quot;button&quot;</span> {
-                        <span class="kw">return</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">props</span>) <span class="op">=</span> <span class="ident">react_create_element</span>.<span class="ident">props</span>.<span class="ident">as_ref</span>() {
-                            <span class="kw">let</span> <span class="ident">type_member</span> <span class="op">=</span> <span class="ident">react_create_element</span>.<span class="ident">find_prop_by_name</span>(<span class="string">&quot;type&quot;</span>);
-                            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">member</span>) <span class="op">=</span> <span class="ident">type_member</span> {
-                                <span class="kw">let</span> <span class="ident">property_value</span> <span class="op">=</span> <span class="ident">member</span>.<span class="ident">value</span>().<span class="ident">ok</span>()<span class="question-mark">?</span>;
-                                <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">property_value</span>
-                                    .<span class="ident">as_js_any_literal_expression</span>()<span class="question-mark">?</span>
-                                    .<span class="ident">as_js_string_literal_expression</span>()<span class="question-mark">?</span>;
+                <span class="comment">// first argument needs to be a string</span>
+                <span class="kw">let</span> <span class="ident">first_argument</span> <span class="op">=</span> <span class="ident">react_create_element</span>
+                    .<span class="ident">element_type</span>
+                    .<span class="ident">as_js_any_expression</span>()<span class="question-mark">?</span>
+                    .<span class="ident">as_js_any_literal_expression</span>()<span class="question-mark">?</span>
+                    .<span class="ident">as_js_string_literal_expression</span>()<span class="question-mark">?</span>;
 
-                                <span class="kw">if</span> <span class="op">!</span><span class="ident">ALLOWED_BUTTON_TYPES</span>
-                                    .<span class="ident">contains</span>(<span class="op">&amp;&amp;</span><span class="kw-2">*</span><span class="ident">value</span>.<span class="ident">inner_string_text</span>().<span class="ident">ok</span>()<span class="question-mark">?</span>)
-                                {
-                                    <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="ident">UseButtonTypeState</span> {
-                                        <span class="ident">node</span>: <span class="ident">UseButtonTypeNode::from</span>(<span class="ident">value</span>.<span class="ident">clone</span>()),
-                                        <span class="ident">missing_prop</span>: <span class="bool-val">false</span>,
-                                    });
-                                }
+                <span class="comment">// case sensitive is important, &lt;button&gt; is different from &lt;Button&gt;</span>
+                <span class="kw">if</span> <span class="ident">first_argument</span>.<span class="ident">inner_string_text</span>().<span class="ident">ok</span>()<span class="question-mark">?</span> <span class="op">==</span> <span class="string">&quot;button&quot;</span> {
+                    <span class="kw">return</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">props</span>) <span class="op">=</span> <span class="ident">react_create_element</span>.<span class="ident">props</span>.<span class="ident">as_ref</span>() {
+                        <span class="kw">let</span> <span class="ident">type_member</span> <span class="op">=</span> <span class="ident">react_create_element</span>.<span class="ident">find_prop_by_name</span>(<span class="string">&quot;type&quot;</span>);
+                        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">member</span>) <span class="op">=</span> <span class="ident">type_member</span> {
+                            <span class="kw">let</span> <span class="ident">property_value</span> <span class="op">=</span> <span class="ident">member</span>.<span class="ident">value</span>().<span class="ident">ok</span>()<span class="question-mark">?</span>;
+                            <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">property_value</span>
+                                .<span class="ident">as_js_any_literal_expression</span>()<span class="question-mark">?</span>
+                                .<span class="ident">as_js_string_literal_expression</span>()<span class="question-mark">?</span>;
+
+                            <span class="kw">if</span> <span class="op">!</span><span class="ident">ALLOWED_BUTTON_TYPES</span>.<span class="ident">contains</span>(<span class="op">&amp;&amp;</span><span class="kw-2">*</span><span class="ident">value</span>.<span class="ident">inner_string_text</span>().<span class="ident">ok</span>()<span class="question-mark">?</span>) {
+                                <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="ident">UseButtonTypeState</span> {
+                                    <span class="ident">node</span>: <span class="ident">UseButtonTypeNode::from</span>(<span class="ident">value</span>.<span class="ident">clone</span>()),
+                                    <span class="ident">missing_prop</span>: <span class="bool-val">false</span>,
+                                });
                             }
+                        }
 
-                            <span class="comment">// if we are here, it means that we haven&#39;t found the property &quot;type&quot; and</span>
-                            <span class="comment">// we have to return a diagnostic</span>
-                            <span class="prelude-val">Some</span>(<span class="ident">UseButtonTypeState</span> {
-                                <span class="ident">node</span>: <span class="ident">UseButtonTypeNode::from</span>(<span class="ident">props</span>.<span class="ident">clone</span>()),
-                                <span class="ident">missing_prop</span>: <span class="bool-val">false</span>,
-                            })
-                        } <span class="kw">else</span> {
-                            <span class="prelude-val">Some</span>(<span class="ident">UseButtonTypeState</span> {
-                                <span class="ident">node</span>: <span class="ident">UseButtonTypeNode::from</span>(<span class="ident">first_argument</span>.<span class="ident">clone</span>()),
-                                <span class="ident">missing_prop</span>: <span class="bool-val">true</span>,
-                            })
-                        };
-                    }
+                        <span class="comment">// if we are here, it means that we haven&#39;t found the property &quot;type&quot; and</span>
+                        <span class="comment">// we have to return a diagnostic</span>
+                        <span class="prelude-val">Some</span>(<span class="ident">UseButtonTypeState</span> {
+                            <span class="ident">node</span>: <span class="ident">UseButtonTypeNode::from</span>(<span class="ident">props</span>.<span class="ident">clone</span>()),
+                            <span class="ident">missing_prop</span>: <span class="bool-val">false</span>,
+                        })
+                    } <span class="kw">else</span> {
+                        <span class="prelude-val">Some</span>(<span class="ident">UseButtonTypeState</span> {
+                            <span class="ident">node</span>: <span class="ident">UseButtonTypeNode::from</span>(<span class="ident">first_argument</span>.<span class="ident">clone</span>()),
+                            <span class="ident">missing_prop</span>: <span class="bool-val">true</span>,
+                        })
+                    };
                 }
 
                 <span class="prelude-val">None</span>
@@ -349,7 +345,7 @@
                 <span class="string">&quot;Provide a valid &quot;</span><span class="op">&lt;</span><span class="ident">Emphasis</span><span class="op">&gt;</span><span class="string">&quot;type&quot;</span><span class="op">&lt;</span><span class="op">/</span><span class="ident">Emphasis</span><span class="op">&gt;</span><span class="string">&quot; prop for the &quot;</span><span class="op">&lt;</span><span class="ident">Emphasis</span><span class="op">&gt;</span><span class="string">&quot;button&quot;</span><span class="op">&lt;</span><span class="op">/</span><span class="ident">Emphasis</span><span class="op">&gt;</span><span class="string">&quot; element.&quot;</span>
             }).<span class="ident">to_owned</span>()
         };
-        <span class="prelude-val">Some</span>(<span class="ident">RuleDiagnostic::new</span>(
+        <span class="prelude-val">Some</span>(<span class="ident">RuleDiagnostic::new</span>(<span class="macro">rule_category!</span>(),
             <span class="ident">state</span>.<span class="ident">node</span>.<span class="ident">syntax</span>().<span class="ident">text_trimmed_range</span>(),
             <span class="ident">message</span>
         )

@@ -514,6 +514,7 @@
 <span id="514">514</span>
 <span id="515">515</span>
 <span id="516">516</span>
+<span id="517">517</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">rome_console::fmt</span>;
 
 <span class="kw">use</span> <span class="kw">super</span>::{
@@ -670,11 +671,12 @@
     <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">fmt::Debug</span>, <span class="ident">io</span>};
 
     <span class="kw">use</span> <span class="ident">rome_console</span>::{<span class="ident">fmt</span>, <span class="ident">markup</span>};
-    <span class="kw">use</span> <span class="ident">rome_text_edit::TextSize</span>;
+    <span class="kw">use</span> <span class="ident">rome_text_edit::TextEdit</span>;
 
     <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::v2</span>::{
         <span class="ident">diagnostic::internal::AsDiagnostic</span>, <span class="ident">Advices</span>, <span class="ident">Backtrace</span>, <span class="ident">Category</span>, <span class="ident">Diagnostic</span>,
-        <span class="ident">DiagnosticTags</span>, <span class="ident">Location</span>, <span class="ident">LogCategory</span>, <span class="ident">Resource</span>, <span class="ident">Severity</span>, <span class="ident">SourceCode</span>, <span class="ident">Visit</span>,
+        <span class="ident">DiagnosticTags</span>, <span class="ident">LineIndex</span>, <span class="ident">LineIndexBuf</span>, <span class="ident">Location</span>, <span class="ident">LogCategory</span>, <span class="ident">Resource</span>, <span class="ident">Severity</span>,
+        <span class="ident">SourceCode</span>, <span class="ident">Visit</span>,
     };
 
     <span class="doccomment">/// This trait is inherited by `DiagnosticExt` and `Context`, since it&#39;s</span>
@@ -911,7 +913,7 @@
     <span class="doccomment">/// uses `source_code` as its location source code if `source` doesn&#39;t</span>
     <span class="doccomment">/// return one.</span>
     <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">FileSourceCodeDiagnostic</span><span class="op">&lt;</span><span class="ident">E</span><span class="op">&gt;</span> {
-        <span class="kw">pub</span>(<span class="kw">super</span>) <span class="ident">source_code</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">SourceCode</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">TextSize</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+        <span class="kw">pub</span>(<span class="kw">super</span>) <span class="ident">source_code</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">SourceCode</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">LineIndexBuf</span><span class="op">&gt;</span><span class="op">&gt;</span>,
         <span class="kw">pub</span>(<span class="kw">super</span>) <span class="ident">source</span>: <span class="ident">E</span>,
     }
 
@@ -986,7 +988,7 @@
     <span class="doccomment">/// the location of code frame advices if they don&#39;t have one already.</span>
     <span class="kw">struct</span> <span class="ident">FileSourceCodeVisitor</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
         <span class="ident">visitor</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">Visit</span>,
-        <span class="ident">source_code</span>: <span class="ident">SourceCode</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span>, <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> [<span class="ident">TextSize</span>]<span class="op">&gt;</span>,
+        <span class="ident">source_code</span>: <span class="ident">SourceCode</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span>, <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">LineIndex</span><span class="op">&gt;</span>,
     }
 
     <span class="kw">impl</span> <span class="ident">Visit</span> <span class="kw">for</span> <span class="ident">FileSourceCodeVisitor</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span> {
@@ -1005,8 +1007,8 @@
             })
         }
 
-        <span class="kw">fn</span> <span class="ident">record_diff</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">prev</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">next</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="ident">io::Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-            <span class="self">self</span>.<span class="ident">visitor</span>.<span class="ident">record_diff</span>(<span class="ident">prev</span>, <span class="ident">next</span>)
+        <span class="kw">fn</span> <span class="ident">record_diff</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">diff</span>: <span class="kw-2">&amp;</span><span class="ident">TextEdit</span>) -&gt; <span class="ident">io::Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+            <span class="self">self</span>.<span class="ident">visitor</span>.<span class="ident">record_diff</span>(<span class="ident">diff</span>)
         }
 
         <span class="kw">fn</span> <span class="ident">record_backtrace</span>(
