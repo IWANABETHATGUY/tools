@@ -476,7 +476,18 @@
 <span id="476">476</span>
 <span id="477">477</span>
 <span id="478">478</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">rome_analyze</span>::{<span class="ident">AnalysisFilter</span>, <span class="ident">ControlFlow</span>, <span class="ident">Never</span>, <span class="ident">QueryMatch</span>, <span class="ident">RuleCategories</span>, <span class="ident">RuleFilter</span>};
+<span id="479">479</span>
+<span id="480">480</span>
+<span id="481">481</span>
+<span id="482">482</span>
+<span id="483">483</span>
+<span id="484">484</span>
+<span id="485">485</span>
+<span id="486">486</span>
+<span id="487">487</span>
+</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">rome_analyze</span>::{
+    <span class="ident">AnalysisFilter</span>, <span class="ident">AnalyzerOptions</span>, <span class="ident">ControlFlow</span>, <span class="ident">Never</span>, <span class="ident">QueryMatch</span>, <span class="ident">RuleCategories</span>, <span class="ident">RuleFilter</span>,
+};
 <span class="kw">use</span> <span class="ident">rome_diagnostics</span>::{<span class="ident">Applicability</span>, <span class="ident">CodeSuggestion</span>, <span class="ident">Diagnostic</span>};
 <span class="kw">use</span> <span class="ident">rome_formatter</span>::{<span class="ident">FormatError</span>, <span class="ident">Printed</span>};
 <span class="kw">use</span> <span class="ident">rome_fs::RomePath</span>;
@@ -484,7 +495,7 @@
 <span class="kw">use</span> <span class="ident">rome_js_formatter::context</span>::{<span class="ident">QuoteProperties</span>, <span class="ident">QuoteStyle</span>};
 <span class="kw">use</span> <span class="ident">rome_js_formatter</span>::{<span class="ident">context::JsFormatOptions</span>, <span class="ident">format_node</span>};
 <span class="kw">use</span> <span class="ident">rome_js_parser::Parse</span>;
-<span class="kw">use</span> <span class="ident">rome_js_semantic::semantic_model</span>;
+<span class="kw">use</span> <span class="ident">rome_js_semantic</span>::{<span class="ident">semantic_model</span>, <span class="ident">SemanticModelOptions</span>};
 <span class="kw">use</span> <span class="ident">rome_js_syntax</span>::{
     <span class="ident">JsAnyRoot</span>, <span class="ident">JsLanguage</span>, <span class="ident">JsSyntaxNode</span>, <span class="ident">SourceType</span>, <span class="ident">TextRange</span>, <span class="ident">TextSize</span>, <span class="ident">TokenAtOffset</span>,
 };
@@ -633,6 +644,7 @@
         <span class="ident">enabled_rules</span>: <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>[<span class="ident">RuleFilter::Rule</span>(<span class="string">&quot;js&quot;</span>, <span class="string">&quot;noDeadCode&quot;</span>)]),
         ..<span class="ident">AnalysisFilter::default</span>()
     };
+    <span class="kw">let</span> <span class="ident">options</span> <span class="op">=</span> <span class="ident">AnalyzerOptions::default</span>();
 
     <span class="ident">analyze_with_inspect_matcher</span>(
         <span class="ident">rome_path</span>.<span class="ident">file_id</span>(),
@@ -659,6 +671,7 @@
                 }
             }
         },
+        <span class="kw-2">&amp;</span><span class="ident">options</span>,
         <span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">ControlFlow</span>::<span class="op">&lt;</span><span class="ident">Never</span><span class="op">&gt;</span><span class="ident">::Continue</span>(()),
     );
 
@@ -689,7 +702,9 @@
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">diagnostics</span> <span class="op">=</span> <span class="ident">parse</span>.<span class="ident">into_diagnostics</span>();
 
     <span class="kw">let</span> <span class="ident">file_id</span> <span class="op">=</span> <span class="ident">rome_path</span>.<span class="ident">file_id</span>();
-    <span class="ident">analyze</span>(<span class="ident">file_id</span>, <span class="kw-2">&amp;</span><span class="ident">tree</span>, <span class="ident">filter</span>, <span class="op">|</span><span class="ident">signal</span><span class="op">|</span> {
+    <span class="kw">let</span> <span class="ident">options</span> <span class="op">=</span> <span class="ident">AnalyzerOptions::default</span>();
+
+    <span class="ident">analyze</span>(<span class="ident">file_id</span>, <span class="kw-2">&amp;</span><span class="ident">tree</span>, <span class="ident">filter</span>, <span class="kw-2">&amp;</span><span class="ident">options</span>, <span class="op">|</span><span class="ident">signal</span><span class="op">|</span> {
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">diagnostic</span>) <span class="op">=</span> <span class="ident">signal</span>.<span class="ident">diagnostic</span>() {
             <span class="comment">// We do now check if the severity of the diagnostics should be changed.</span>
             <span class="comment">// The configuration allows to change the severity of the diagnostics emitted by rules.</span>
@@ -739,7 +754,7 @@
             ..<span class="ident">AnalysisFilter::default</span>()
         };
 
-        <span class="kw">for</span> <span class="ident">meta</span> <span class="kw">in</span> <span class="ident">metadata</span>(<span class="ident">actions_filter</span>) {
+        <span class="kw">for</span> <span class="ident">meta</span> <span class="kw">in</span> <span class="ident">metadata</span>(<span class="kw-2">&amp;</span><span class="ident">actions_filter</span>) {
             <span class="ident">enabled_rules</span>.<span class="ident">push</span>(<span class="ident">RuleFilter::Rule</span>(<span class="ident">meta</span>.<span class="ident">group</span>, <span class="ident">meta</span>.<span class="ident">rule</span>.<span class="ident">name</span>));
         }
     }
@@ -753,7 +768,9 @@
     <span class="ident">filter</span>.<span class="ident">range</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">range</span>);
 
     <span class="kw">let</span> <span class="ident">file_id</span> <span class="op">=</span> <span class="ident">rome_path</span>.<span class="ident">file_id</span>();
-    <span class="ident">analyze</span>(<span class="ident">file_id</span>, <span class="kw-2">&amp;</span><span class="ident">tree</span>, <span class="ident">filter</span>, <span class="op">|</span><span class="ident">signal</span><span class="op">|</span> {
+    <span class="kw">let</span> <span class="ident">options</span> <span class="op">=</span> <span class="ident">AnalyzerOptions::default</span>();
+
+    <span class="ident">analyze</span>(<span class="ident">file_id</span>, <span class="kw-2">&amp;</span><span class="ident">tree</span>, <span class="ident">filter</span>, <span class="kw-2">&amp;</span><span class="ident">options</span>, <span class="op">|</span><span class="ident">signal</span><span class="op">|</span> {
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">action</span>) <span class="op">=</span> <span class="ident">signal</span>.<span class="ident">action</span>() {
             <span class="ident">actions</span>.<span class="ident">push</span>(<span class="ident">CodeAction</span> {
                 <span class="ident">category</span>: <span class="ident">action</span>.<span class="ident">category</span>,
@@ -797,8 +814,9 @@
     <span class="ident">filter</span>.<span class="ident">categories</span> <span class="op">=</span> <span class="ident">RuleCategories::SYNTAX</span> <span class="op">|</span> <span class="ident">RuleCategories::LINT</span>;
     <span class="kw">let</span> <span class="ident">file_id</span> <span class="op">=</span> <span class="ident">rome_path</span>.<span class="ident">file_id</span>();
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">skipped_suggested_fixes</span> <span class="op">=</span> <span class="number">0</span>;
+    <span class="kw">let</span> <span class="ident">options</span> <span class="op">=</span> <span class="ident">AnalyzerOptions::default</span>();
     <span class="kw">loop</span> {
-        <span class="kw">let</span> <span class="ident">action</span> <span class="op">=</span> <span class="ident">analyze</span>(<span class="ident">file_id</span>, <span class="kw-2">&amp;</span><span class="ident">tree</span>, <span class="ident">filter</span>, <span class="op">|</span><span class="ident">signal</span><span class="op">|</span> {
+        <span class="kw">let</span> <span class="ident">action</span> <span class="op">=</span> <span class="ident">analyze</span>(<span class="ident">file_id</span>, <span class="kw-2">&amp;</span><span class="ident">tree</span>, <span class="ident">filter</span>, <span class="kw-2">&amp;</span><span class="ident">options</span>, <span class="op">|</span><span class="ident">signal</span><span class="op">|</span> {
             <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">action</span>) <span class="op">=</span> <span class="ident">signal</span>.<span class="ident">action</span>() {
                 <span class="kw">match</span> <span class="ident">fix_file_mode</span> {
                     <span class="ident">FixFileMode::SafeFixes</span> =&gt; {
@@ -925,7 +943,7 @@
     <span class="ident">new_name</span>: <span class="ident">String</span>,
 ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">RenameResult</span>, <span class="ident">RomeError</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">root</span> <span class="op">=</span> <span class="ident">parse</span>.<span class="ident">tree</span>();
-    <span class="kw">let</span> <span class="ident">model</span> <span class="op">=</span> <span class="ident">semantic_model</span>(<span class="kw-2">&amp;</span><span class="ident">root</span>);
+    <span class="kw">let</span> <span class="ident">model</span> <span class="op">=</span> <span class="ident">semantic_model</span>(<span class="kw-2">&amp;</span><span class="ident">root</span>, <span class="ident">SemanticModelOptions::default</span>());
 
     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">node</span>) <span class="op">=</span> <span class="ident">parse</span>
         .<span class="ident">syntax</span>()

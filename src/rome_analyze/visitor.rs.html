@@ -176,6 +176,8 @@
 <span id="176">176</span>
 <span id="177">177</span>
 <span id="178">178</span>
+<span id="179">179</span>
+<span id="180">180</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::collections::BinaryHeap</span>;
 
 <span class="kw">use</span> <span class="ident">rome_diagnostics::file::FileId</span>;
@@ -184,7 +186,7 @@
 <span class="kw">use</span> <span class="kw">crate</span>::{
     <span class="ident">matcher::MatchQueryParams</span>,
     <span class="ident">registry</span>::{<span class="ident">NodeLanguage</span>, <span class="ident">Phases</span>},
-    <span class="ident">LanguageRoot</span>, <span class="ident">QueryMatch</span>, <span class="ident">QueryMatcher</span>, <span class="ident">ServiceBag</span>, <span class="ident">SignalEntry</span>,
+    <span class="ident">AnalyzerOptions</span>, <span class="ident">LanguageRoot</span>, <span class="ident">QueryMatch</span>, <span class="ident">QueryMatcher</span>, <span class="ident">ServiceBag</span>, <span class="ident">SignalEntry</span>,
 };
 
 <span class="doccomment">/// Mutable context objects shared by all visitors</span>
@@ -196,6 +198,7 @@
     <span class="kw">pub</span> <span class="ident">range</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">TextRange</span><span class="op">&gt;</span>,
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">query_matcher</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;query</span> <span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">QueryMatcher</span><span class="op">&lt;</span><span class="ident">L</span><span class="op">&gt;</span>,
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">signal_queue</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;query</span> <span class="kw-2">mut</span> <span class="ident">BinaryHeap</span><span class="op">&lt;</span><span class="ident">SignalEntry</span><span class="op">&lt;</span><span class="lifetime">&#39;phase</span>, <span class="ident">L</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">options</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;query</span> <span class="ident">AnalyzerOptions</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;phase</span>, <span class="lifetime">&#39;query</span>, <span class="ident">L</span>: <span class="ident">Language</span><span class="op">&gt;</span> <span class="ident">VisitorContext</span><span class="op">&lt;</span><span class="lifetime">&#39;phase</span>, <span class="lifetime">&#39;query</span>, <span class="ident">L</span><span class="op">&gt;</span> {
@@ -207,6 +210,7 @@
             <span class="ident">query</span>,
             <span class="ident">services</span>: <span class="self">self</span>.<span class="ident">services</span>,
             <span class="ident">signal_queue</span>: <span class="self">self</span>.<span class="ident">signal_queue</span>,
+            <span class="ident">options</span>: <span class="self">self</span>.<span class="ident">options</span>,
         })
     }
 }

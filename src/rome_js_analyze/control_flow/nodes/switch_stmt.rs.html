@@ -115,6 +115,9 @@
 <span id="115">115</span>
 <span id="116">116</span>
 <span id="117">117</span>
+<span id="118">118</span>
+<span id="119">119</span>
+<span id="120">120</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">rome_control_flow::builder::BlockId</span>;
 <span class="kw">use</span> <span class="ident">rome_js_syntax</span>::{<span class="ident">JsAnySwitchClause</span>, <span class="ident">JsLabeledStatement</span>, <span class="ident">JsSwitchStatement</span>, <span class="ident">JsSyntaxToken</span>};
 <span class="kw">use</span> <span class="ident">rome_rowan</span>::{<span class="ident">AstNode</span>, <span class="ident">SyntaxResult</span>};
@@ -143,6 +146,9 @@
         <span class="ident">builder</span>: <span class="kw-2">&amp;mut</span> <span class="ident">FunctionBuilder</span>,
         <span class="kw">_</span>: <span class="ident">StatementStack</span>,
     ) -&gt; <span class="ident">SyntaxResult</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
+        <span class="comment">// Execute the discriminant expression as a side-effect</span>
+        <span class="ident">builder</span>.<span class="ident">append_statement</span>().<span class="ident">with_node</span>(<span class="ident">node</span>.<span class="ident">discriminant</span>()<span class="question-mark">?</span>);
+
         <span class="kw">let</span> <span class="ident">entry_block</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">cursor</span>();
         <span class="kw">let</span> <span class="ident">break_block</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">append_block</span>();
 

@@ -699,7 +699,7 @@
     }
 
     <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span>: <span class="ident">fmt::Display</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>, <span class="ident">E</span>: <span class="ident">AsDiagnostic</span><span class="op">&gt;</span> <span class="ident">Diagnostic</span> <span class="kw">for</span> <span class="ident">ContextDiagnostic</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">E</span><span class="op">&gt;</span> {
-        <span class="kw">fn</span> <span class="ident">category</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">Category</span><span class="op">&gt;</span> {
+        <span class="kw">fn</span> <span class="ident">category</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">Category</span><span class="op">&gt;</span> {
             <span class="self">self</span>.<span class="ident">source</span>.<span class="ident">as_diagnostic</span>().<span class="ident">category</span>()
         }
 
@@ -797,7 +797,7 @@
     }
 
     <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">E</span>: <span class="ident">AsDiagnostic</span><span class="op">&gt;</span> <span class="ident">Diagnostic</span> <span class="kw">for</span> <span class="ident">CategoryDiagnostic</span><span class="op">&lt;</span><span class="ident">E</span><span class="op">&gt;</span> {
-        <span class="kw">fn</span> <span class="ident">category</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">Category</span><span class="op">&gt;</span> {
+        <span class="kw">fn</span> <span class="ident">category</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">Category</span><span class="op">&gt;</span> {
             <span class="prelude-val">Some</span>(
                 <span class="self">self</span>.<span class="ident">source</span>
                     .<span class="ident">as_diagnostic</span>()
@@ -852,7 +852,7 @@
     }
 
     <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">E</span>: <span class="ident">AsDiagnostic</span><span class="op">&gt;</span> <span class="ident">Diagnostic</span> <span class="kw">for</span> <span class="ident">FilePathDiagnostic</span><span class="op">&lt;</span><span class="ident">E</span><span class="op">&gt;</span> {
-        <span class="kw">fn</span> <span class="ident">category</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">Category</span><span class="op">&gt;</span> {
+        <span class="kw">fn</span> <span class="ident">category</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">Category</span><span class="op">&gt;</span> {
             <span class="self">self</span>.<span class="ident">source</span>.<span class="ident">as_diagnostic</span>().<span class="ident">category</span>()
         }
 
@@ -927,7 +927,7 @@
     }
 
     <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">E</span>: <span class="ident">AsDiagnostic</span><span class="op">&gt;</span> <span class="ident">Diagnostic</span> <span class="kw">for</span> <span class="ident">FileSourceCodeDiagnostic</span><span class="op">&lt;</span><span class="ident">E</span><span class="op">&gt;</span> {
-        <span class="kw">fn</span> <span class="ident">category</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">Category</span><span class="op">&gt;</span> {
+        <span class="kw">fn</span> <span class="ident">category</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">Category</span><span class="op">&gt;</span> {
             <span class="self">self</span>.<span class="ident">source</span>.<span class="ident">as_diagnostic</span>().<span class="ident">category</span>()
         }
 

@@ -421,6 +421,7 @@
 <span id="421">421</span>
 <span id="422">422</span>
 <span id="423">423</span>
+<span id="424">424</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Implements the OS dependent transport layer for the server protocol. This</span>
 <span class="doccomment">//! uses a domain socket created in the global temporary directory on Unix</span>
 <span class="doccomment">//! systems, and a named pipe on Windows. The protocol used for message frames</span>
@@ -508,12 +509,13 @@
 <span class="doccomment">/// used concurrently</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// This concurrent handling of I/O is implemented useing two &quot;background tasks&quot;:</span>
-<span class="doccomment">/// - the [write_task] pulls outgoing messages from the &quot;write channel&quot; and</span>
+<span class="doccomment">/// - the `write_task` pulls outgoing messages from the &quot;write channel&quot; and</span>
 <span class="doccomment">/// writes them to the &quot;write half&quot; of the socket</span>
-<span class="doccomment">/// - the [read_task] reads incoming messages from the &quot;read half&quot; of the</span>
+<span class="doccomment">/// - the `read_task` reads incoming messages from the &quot;read half&quot; of the</span>
+<span class="doccomment">/// - the `read_task` reads incoming messages from the &quot;read half&quot; of the</span>
 <span class="doccomment">/// socket, then looks up a request with an ID corresponding to the received</span>
 <span class="doccomment">/// message in the &quot;pending requests&quot; map. If a pending request is found, it&#39;s</span>
-<span class="doccomment">/// fullfilled with the content of the message that was just received</span>
+<span class="doccomment">/// fulfilled with the content of the message that was just received</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// In addition to these, a new &quot;foreground task&quot; is created for each request.</span>
 <span class="doccomment">/// Each foreground task creates a oneshot channel and stores it in the pending</span>

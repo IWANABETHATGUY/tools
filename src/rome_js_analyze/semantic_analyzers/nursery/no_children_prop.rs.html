@@ -102,11 +102,10 @@
 <span id="102">102</span>
 <span id="103">103</span>
 <span id="104">104</span>
-<span id="105">105</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::react</span>::{<span class="ident">ReactApiCall</span>, <span class="ident">ReactCreateElementCall</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::semantic_services::Semantic</span>;
 <span class="kw">use</span> <span class="ident">rome_analyze::context::RuleContext</span>;
-<span class="kw">use</span> <span class="ident">rome_analyze</span>::{<span class="ident">declare_rule</span>, <span class="ident">Rule</span>, <span class="ident">RuleCategory</span>, <span class="ident">RuleDiagnostic</span>};
+<span class="kw">use</span> <span class="ident">rome_analyze</span>::{<span class="ident">declare_rule</span>, <span class="ident">Rule</span>, <span class="ident">RuleDiagnostic</span>};
 <span class="kw">use</span> <span class="ident">rome_console::markup</span>;
 <span class="kw">use</span> <span class="ident">rome_js_syntax</span>::{<span class="ident">JsCallExpression</span>, <span class="ident">JsPropertyObjectMember</span>, <span class="ident">JsxAttribute</span>, <span class="ident">JsxName</span>};
 <span class="kw">use</span> <span class="ident">rome_rowan</span>::{<span class="ident">declare_node_union</span>, <span class="ident">AstNode</span>};
@@ -144,7 +143,6 @@
 }
 
 <span class="kw">impl</span> <span class="ident">Rule</span> <span class="kw">for</span> <span class="ident">NoChildrenProp</span> {
-    <span class="kw">const</span> <span class="ident">CATEGORY</span>: <span class="ident">RuleCategory</span> <span class="op">=</span> <span class="ident">RuleCategory::Syntax</span>;
     <span class="kw">type</span> <span class="ident">Query</span> <span class="op">=</span> <span class="ident">Semantic</span><span class="op">&lt;</span><span class="ident">NoChildrenPropQuery</span><span class="op">&gt;</span>;
     <span class="kw">type</span> <span class="ident">State</span> <span class="op">=</span> <span class="ident">NoChildrenPropState</span>;
     <span class="kw">type</span> <span class="ident">Signals</span> <span class="op">=</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::State</span><span class="op">&gt;</span>;

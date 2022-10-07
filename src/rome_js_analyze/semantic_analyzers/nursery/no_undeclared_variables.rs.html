@@ -79,20 +79,17 @@
 <span id="79">79</span>
 <span id="80">80</span>
 <span id="81">81</span>
-<span id="82">82</span>
-<span id="83">83</span>
-<span id="84">84</span>
-<span id="85">85</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::globals::browser::BROWSER</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::globals::node::NODE</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::globals::runtime::ES_2021</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::globals::typescript::TYPESCRIPT_BUILTIN</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::semantic_services::Semantic</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::semantic_services::SemanticServices</span>;
 <span class="kw">use</span> <span class="ident">rome_analyze::context::RuleContext</span>;
-<span class="kw">use</span> <span class="ident">rome_analyze</span>::{<span class="ident">declare_rule</span>, <span class="ident">Rule</span>, <span class="ident">RuleCategory</span>, <span class="ident">RuleDiagnostic</span>};
+<span class="kw">use</span> <span class="ident">rome_analyze</span>::{<span class="ident">declare_rule</span>, <span class="ident">Rule</span>, <span class="ident">RuleDiagnostic</span>};
 <span class="kw">use</span> <span class="ident">rome_console::markup</span>;
-<span class="kw">use</span> <span class="ident">rome_js_semantic::Scope</span>;
-<span class="kw">use</span> <span class="ident">rome_js_syntax</span>::{<span class="ident">JsReferenceIdentifier</span>, <span class="ident">JsxReferenceIdentifier</span>};
+<span class="kw">use</span> <span class="ident">rome_js_syntax</span>::{
+    <span class="ident">JsIdentifierAssignment</span>, <span class="ident">JsReferenceIdentifier</span>, <span class="ident">JsxReferenceIdentifier</span>, <span class="ident">TextRange</span>,
+};
 <span class="kw">use</span> <span class="ident">rome_rowan</span>::{<span class="ident">declare_node_union</span>, <span class="ident">AstNode</span>};
 
 <span class="macro">declare_rule!</span> {
@@ -113,57 +110,52 @@
 }
 
 <span class="macro">declare_node_union!</span> {
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">NoUndeclaredVariablesQuery</span> <span class="op">=</span> <span class="ident">JsReferenceIdentifier</span><span class="op">|</span> <span class="ident">JsxReferenceIdentifier</span>
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">AnyIdentifier</span> <span class="op">=</span> <span class="ident">JsReferenceIdentifier</span> <span class="op">|</span> <span class="ident">JsIdentifierAssignment</span> <span class="op">|</span> <span class="ident">JsxReferenceIdentifier</span>
 }
 
 <span class="kw">impl</span> <span class="ident">Rule</span> <span class="kw">for</span> <span class="ident">NoUndeclaredVariables</span> {
-    <span class="kw">const</span> <span class="ident">CATEGORY</span>: <span class="ident">RuleCategory</span> <span class="op">=</span> <span class="ident">RuleCategory::Lint</span>;
-    <span class="kw">type</span> <span class="ident">Query</span> <span class="op">=</span> <span class="ident">Semantic</span><span class="op">&lt;</span><span class="ident">NoUndeclaredVariablesQuery</span><span class="op">&gt;</span>;
-    <span class="kw">type</span> <span class="ident">State</span> <span class="op">=</span> <span class="ident">String</span>;
-    <span class="kw">type</span> <span class="ident">Signals</span> <span class="op">=</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::State</span><span class="op">&gt;</span>;
+    <span class="kw">type</span> <span class="ident">Query</span> <span class="op">=</span> <span class="ident">SemanticServices</span>;
+    <span class="kw">type</span> <span class="ident">State</span> <span class="op">=</span> (<span class="ident">TextRange</span>, <span class="ident">String</span>);
+    <span class="kw">type</span> <span class="ident">Signals</span> <span class="op">=</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::State</span><span class="op">&gt;</span>;
 
     <span class="kw">fn</span> <span class="ident">run</span>(<span class="ident">ctx</span>: <span class="kw-2">&amp;</span><span class="ident">RuleContext</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>) -&gt; <span class="ident"><span class="self">Self</span>::Signals</span> {
-        <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">query</span>();
-        <span class="kw">let</span> <span class="ident">model</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">model</span>();
-        <span class="kw">match</span> <span class="ident">node</span> {
-            <span class="ident">NoUndeclaredVariablesQuery::JsxReferenceIdentifier</span>(<span class="ident">reference</span>) =&gt; {
-                <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">reference</span>.<span class="ident">value_token</span>().<span class="ident">ok</span>()<span class="question-mark">?</span>;
-                <span class="kw">let</span> <span class="ident">reference_name</span> <span class="op">=</span> <span class="ident">value</span>.<span class="ident">text_trimmed</span>();
-                <span class="kw">let</span> <span class="ident">scope</span> <span class="op">=</span> <span class="ident">model</span>.<span class="ident">scope</span>(<span class="ident">reference</span>.<span class="ident">syntax</span>());
-                <span class="kw">if</span> <span class="op">!</span><span class="ident">is_declared</span>(<span class="ident">reference_name</span>, <span class="ident">scope</span>) {
-                    <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="ident">reference_name</span>.<span class="ident">to_string</span>());
+        <span class="ident">ctx</span>.<span class="ident">query</span>()
+            .<span class="ident">all_unresolved_references</span>()
+            .<span class="ident">filter_map</span>(<span class="op">|</span><span class="ident">reference</span><span class="op">|</span> {
+                <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">reference</span>.<span class="ident">node</span>().<span class="ident">clone</span>();
+                <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">AnyIdentifier::unwrap_cast</span>(<span class="ident">node</span>);
+                <span class="kw">let</span> <span class="ident">token</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">node</span> {
+                    <span class="ident">AnyIdentifier::JsReferenceIdentifier</span>(<span class="ident">node</span>) =&gt; <span class="ident">node</span>.<span class="ident">value_token</span>(),
+                    <span class="ident">AnyIdentifier::JsIdentifierAssignment</span>(<span class="ident">node</span>) =&gt; <span class="ident">node</span>.<span class="ident">name_token</span>(),
+                    <span class="ident">AnyIdentifier::JsxReferenceIdentifier</span>(<span class="ident">node</span>) =&gt; <span class="ident">node</span>.<span class="ident">value_token</span>(),
+                };
+
+                <span class="kw">let</span> <span class="ident">token</span> <span class="op">=</span> <span class="ident">token</span>.<span class="ident">ok</span>()<span class="question-mark">?</span>;
+                <span class="kw">let</span> <span class="ident">text</span> <span class="op">=</span> <span class="ident">token</span>.<span class="ident">text_trimmed</span>();
+                <span class="kw">if</span> <span class="ident">is_global</span>(<span class="ident">text</span>) {
+                    <span class="kw">return</span> <span class="prelude-val">None</span>;
                 }
-            }
-            <span class="ident">NoUndeclaredVariablesQuery::JsReferenceIdentifier</span>(<span class="ident">reference</span>) =&gt; {
-                <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">reference</span>.<span class="ident">value_token</span>().<span class="ident">ok</span>()<span class="question-mark">?</span>;
-                <span class="kw">let</span> <span class="ident">reference_name</span> <span class="op">=</span> <span class="ident">value</span>.<span class="ident">text_trimmed</span>();
-                <span class="kw">let</span> <span class="ident">scope</span> <span class="op">=</span> <span class="ident">model</span>.<span class="ident">scope</span>(<span class="ident">reference</span>.<span class="ident">syntax</span>());
-                <span class="kw">if</span> <span class="op">!</span><span class="ident">is_declared</span>(<span class="ident">reference_name</span>, <span class="ident">scope</span>) {
-                    <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="ident">reference_name</span>.<span class="ident">to_string</span>());
-                }
-            }
-        }
-        <span class="prelude-val">None</span>
+
+                <span class="kw">let</span> <span class="ident">span</span> <span class="op">=</span> <span class="ident">token</span>.<span class="ident">text_trimmed_range</span>();
+                <span class="kw">let</span> <span class="ident">text</span> <span class="op">=</span> <span class="ident">text</span>.<span class="ident">to_string</span>();
+                <span class="prelude-val">Some</span>((<span class="ident">span</span>, <span class="ident">text</span>))
+            })
+            .<span class="ident">collect</span>()
     }
 
-    <span class="kw">fn</span> <span class="ident">diagnostic</span>(<span class="ident">ctx</span>: <span class="kw-2">&amp;</span><span class="ident">RuleContext</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>, <span class="ident">state</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::State</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">RuleDiagnostic</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">query</span>();
+    <span class="kw">fn</span> <span class="ident">diagnostic</span>(<span class="ident">_ctx</span>: <span class="kw-2">&amp;</span><span class="ident">RuleContext</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>, (<span class="ident">span</span>, <span class="ident">name</span>): <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::State</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">RuleDiagnostic</span><span class="op">&gt;</span> {
         <span class="prelude-val">Some</span>(<span class="ident">RuleDiagnostic::new</span>(
             <span class="macro">rule_category!</span>(),
-            <span class="ident">node</span>.<span class="ident">syntax</span>().<span class="ident">text_trimmed_range</span>(),
+            <span class="kw-2">*</span><span class="ident">span</span>,
             <span class="macro">markup!</span> {
-                <span class="string">&quot;The &quot;</span><span class="op">&lt;</span><span class="ident">Emphasis</span><span class="op">&gt;</span>{<span class="ident">state</span>}<span class="op">&lt;</span><span class="op">/</span><span class="ident">Emphasis</span><span class="op">&gt;</span><span class="string">&quot; variable is undeclared&quot;</span>
+                <span class="string">&quot;The &quot;</span><span class="op">&lt;</span><span class="ident">Emphasis</span><span class="op">&gt;</span>{<span class="ident">name</span>}<span class="op">&lt;</span><span class="op">/</span><span class="ident">Emphasis</span><span class="op">&gt;</span><span class="string">&quot; variable is undeclared&quot;</span>
             },
         ))
     }
 }
 
-<span class="kw">fn</span> <span class="ident">is_declared</span>(<span class="ident">reference_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">scope</span>: <span class="ident">Scope</span>) -&gt; <span class="ident">bool</span> {
-    <span class="kw">let</span> <span class="ident">binding</span> <span class="op">=</span> <span class="ident">scope</span>.<span class="ident">get_binding</span>(<span class="ident">reference_name</span>);
-
-    <span class="comment">// TODO: add here the check for global variables defined in the configuration, currently not supported</span>
-    <span class="ident">binding</span>.<span class="ident">is_some</span>()
-        <span class="op">|</span><span class="op">|</span> <span class="ident">ES_2021</span>.<span class="ident">binary_search</span>(<span class="kw-2">&amp;</span><span class="ident">reference_name</span>).<span class="ident">is_ok</span>()
+<span class="kw">fn</span> <span class="ident">is_global</span>(<span class="ident">reference_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="ident">bool</span> {
+    <span class="ident">ES_2021</span>.<span class="ident">binary_search</span>(<span class="kw-2">&amp;</span><span class="ident">reference_name</span>).<span class="ident">is_ok</span>()
         <span class="op">|</span><span class="op">|</span> <span class="ident">BROWSER</span>.<span class="ident">binary_search</span>(<span class="kw-2">&amp;</span><span class="ident">reference_name</span>).<span class="ident">is_ok</span>()
         <span class="op">|</span><span class="op">|</span> <span class="ident">NODE</span>.<span class="ident">binary_search</span>(<span class="kw-2">&amp;</span><span class="ident">reference_name</span>).<span class="ident">is_ok</span>()
         <span class="op">|</span><span class="op">|</span> <span class="ident">TYPESCRIPT_BUILTIN</span>.<span class="ident">binary_search</span>(<span class="kw-2">&amp;</span><span class="ident">reference_name</span>).<span class="ident">is_ok</span>()

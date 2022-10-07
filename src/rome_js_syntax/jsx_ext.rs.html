@@ -153,6 +153,7 @@
 <span id="153">153</span>
 <span id="154">154</span>
 <span id="155">155</span>
+<span id="156">156</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">crate</span>::{
     <span class="ident">JsxAttribute</span>, <span class="ident">JsxAttributeList</span>, <span class="ident">JsxName</span>, <span class="ident">JsxOpeningElement</span>, <span class="ident">JsxSelfClosingElement</span>, <span class="ident">JsxString</span>,
     <span class="ident">TextSize</span>,
@@ -166,13 +167,14 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// ```</span>
     <span class="doccomment">/// use rome_js_factory::make::{jsx_ident, jsx_string};</span>
+    <span class="doccomment">/// use rome_rowan::TriviaPieceKind;</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">///let string = jsx_string(jsx_ident(&quot;button&quot;));</span>
+    <span class="doccomment">///let string = jsx_string(jsx_ident(&quot;button&quot;).with_leading_trivia(vec![(TriviaPieceKind::Whitespace, &quot; &quot;)]));</span>
     <span class="doccomment">/// assert_eq!(string.inner_string_text().unwrap().text(), &quot;button&quot;);</span>
     <span class="doccomment">/// ```</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">inner_string_text</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">SyntaxResult</span><span class="op">&lt;</span><span class="ident">SyntaxTokenText</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">value_token</span>()<span class="question-mark">?</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">text</span> <span class="op">=</span> <span class="ident">value</span>.<span class="ident">token_text</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">text</span> <span class="op">=</span> <span class="ident">value</span>.<span class="ident">token_text_trimmed</span>();
 
         <span class="kw">static</span> <span class="ident">QUOTES</span>: [<span class="ident">char</span>; <span class="number">2</span>] <span class="op">=</span> [<span class="string">&#39;&quot;&#39;</span>, <span class="string">&#39;\&#39;&#39;</span>];
 

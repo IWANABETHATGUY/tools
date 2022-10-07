@@ -349,16 +349,10 @@
 <span id="349">349</span>
 <span id="350">350</span>
 <span id="351">351</span>
-<span id="352">352</span>
-<span id="353">353</span>
-<span id="354">354</span>
-<span id="355">355</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::iter</span>;
 
 <span class="kw">use</span> <span class="ident">rome_analyze::context::RuleContext</span>;
-<span class="kw">use</span> <span class="ident">rome_analyze</span>::{
-    <span class="ident">declare_rule</span>, <span class="ident">ActionCategory</span>, <span class="ident">Ast</span>, <span class="ident">Rule</span>, <span class="ident">RuleAction</span>, <span class="ident">RuleCategory</span>, <span class="ident">RuleDiagnostic</span>,
-};
+<span class="kw">use</span> <span class="ident">rome_analyze</span>::{<span class="ident">declare_rule</span>, <span class="ident">ActionCategory</span>, <span class="ident">Ast</span>, <span class="ident">Rule</span>, <span class="ident">RuleAction</span>, <span class="ident">RuleDiagnostic</span>};
 <span class="kw">use</span> <span class="ident">rome_console::markup</span>;
 <span class="kw">use</span> <span class="ident">rome_diagnostics::Applicability</span>;
 <span class="kw">use</span> <span class="ident">rome_js_factory::make</span>;
@@ -433,8 +427,6 @@
 }
 
 <span class="kw">impl</span> <span class="ident">Rule</span> <span class="kw">for</span> <span class="ident">UseBlockStatements</span> {
-    <span class="kw">const</span> <span class="ident">CATEGORY</span>: <span class="ident">RuleCategory</span> <span class="op">=</span> <span class="ident">RuleCategory::Lint</span>;
-
     <span class="kw">type</span> <span class="ident">Query</span> <span class="op">=</span> <span class="ident">Ast</span><span class="op">&lt;</span><span class="ident">JsAnyBlockStatement</span><span class="op">&gt;</span>;
     <span class="kw">type</span> <span class="ident">State</span> <span class="op">=</span> <span class="ident">UseBlockStatementsOperationType</span>;
     <span class="kw">type</span> <span class="ident">Signals</span> <span class="op">=</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::State</span><span class="op">&gt;</span>;

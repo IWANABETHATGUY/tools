@@ -505,7 +505,7 @@
 <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">Configuration</span>, <span class="ident">RomeError</span>};
 <span class="kw">use</span> <span class="ident">rome_analyze::ActionCategory</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">rome_analyze::RuleCategories</span>;
-<span class="kw">use</span> <span class="ident">rome_diagnostics</span>::{<span class="ident">CodeSuggestion</span>, <span class="ident">Diagnostic</span>};
+<span class="kw">use</span> <span class="ident">rome_diagnostics</span>::{<span class="ident">v2</span>, <span class="ident">CodeSuggestion</span>};
 <span class="kw">use</span> <span class="ident">rome_formatter::Printed</span>;
 <span class="kw">use</span> <span class="ident">rome_fs::RomePath</span>;
 <span class="kw">use</span> <span class="ident">rome_js_syntax</span>::{<span class="ident">TextRange</span>, <span class="ident">TextSize</span>};
@@ -632,7 +632,7 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">serde::Serialize</span>, <span class="ident">serde::Deserialize</span>)]</span>
 <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;schemars&quot;</span>, <span class="ident">derive</span>(<span class="ident">schemars::JsonSchema</span>))]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">PullDiagnosticsResult</span> {
-    <span class="kw">pub</span> <span class="ident">diagnostics</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Diagnostic</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">diagnostics</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">v2::serde::Diagnostic</span><span class="op">&gt;</span>,
 }
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">serde::Serialize</span>, <span class="ident">serde::Deserialize</span>)]</span>

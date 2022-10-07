@@ -59,6 +59,7 @@
 <span id="59">59</span>
 <span id="60">60</span>
 <span id="61">61</span>
+<span id="62">62</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">JsAnyImportClause</span>, <span class="ident">JsImport</span>, <span class="ident">JsModuleSource</span>, <span class="ident">TextSize</span>};
 <span class="kw">use</span> <span class="ident">rome_rowan</span>::{<span class="ident">SyntaxResult</span>, <span class="ident">SyntaxTokenText</span>};
 
@@ -97,13 +98,14 @@
     <span class="doccomment">/// ```</span>
     <span class="doccomment">/// use rome_js_factory::make::{ident, js_module_source};</span>
     <span class="doccomment">/// use rome_js_syntax::{JsAnyBinding, JsAnyImportClause, T};</span>
-    <span class="doccomment">/// let source = js_module_source(ident(&quot;react&quot;));</span>
+    <span class="doccomment">/// use rome_rowan::TriviaPieceKind;</span>
+    <span class="doccomment">/// let source = js_module_source(ident(&quot;react&quot;).with_leading_trivia(vec![(TriviaPieceKind::Whitespace, &quot; &quot;)]));</span>
     <span class="doccomment">/// let text = source.inner_string_text().unwrap();</span>
     <span class="doccomment">/// assert_eq!(text.text(), &quot;react&quot;);</span>
     <span class="doccomment">/// ```</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">inner_string_text</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">SyntaxResult</span><span class="op">&lt;</span><span class="ident">SyntaxTokenText</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">value_token</span>()<span class="question-mark">?</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">text</span> <span class="op">=</span> <span class="ident">value</span>.<span class="ident">token_text</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">text</span> <span class="op">=</span> <span class="ident">value</span>.<span class="ident">token_text_trimmed</span>();
 
         <span class="kw">static</span> <span class="ident">QUOTES</span>: [<span class="ident">char</span>; <span class="number">2</span>] <span class="op">=</span> [<span class="string">&#39;&quot;&#39;</span>, <span class="string">&#39;\&#39;&#39;</span>];
 

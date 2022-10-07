@@ -865,6 +865,18 @@
 <span id="865">865</span>
 <span id="866">866</span>
 <span id="867">867</span>
+<span id="868">868</span>
+<span id="869">869</span>
+<span id="870">870</span>
+<span id="871">871</span>
+<span id="872">872</span>
+<span id="873">873</span>
+<span id="874">874</span>
+<span id="875">875</span>
+<span id="876">876</span>
+<span id="877">877</span>
+<span id="878">878</span>
+<span id="879">879</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">crate</span>::{
     <span class="ident">CliSession</span>, <span class="ident">Execution</span>, <span class="ident">FormatterReportFileDetail</span>, <span class="ident">FormatterReportSummary</span>, <span class="ident">Report</span>,
     <span class="ident">ReportDiagnostic</span>, <span class="ident">ReportDiff</span>, <span class="ident">ReportErrorKind</span>, <span class="ident">ReportKind</span>, <span class="ident">Termination</span>, <span class="ident">TraversalMode</span>,
@@ -872,9 +884,14 @@
 <span class="kw">use</span> <span class="ident">crossbeam::channel</span>::{<span class="ident">unbounded</span>, <span class="ident">Receiver</span>, <span class="ident">Sender</span>};
 <span class="kw">use</span> <span class="ident">rome_console</span>::{<span class="ident">markup</span>, <span class="ident">Console</span>, <span class="ident">ConsoleExt</span>};
 <span class="kw">use</span> <span class="ident">rome_diagnostics</span>::{
-    <span class="ident">file</span>::{<span class="ident">FileId</span>, <span class="ident">SimpleFile</span>},
-    <span class="ident">v2</span>::{<span class="self">self</span>, <span class="ident">category</span>, <span class="ident">Advices</span>, <span class="ident">Category</span>, <span class="ident">LogCategory</span>, <span class="ident">PrintDiagnostic</span>, <span class="ident">Visit</span>},
-    <span class="ident">Diagnostic</span>, <span class="ident">Severity</span>, <span class="ident">MAXIMUM_DISPLAYABLE_DIAGNOSTICS</span>,
+    <span class="ident">file::FileId</span>,
+    <span class="ident">v2</span>::{
+        <span class="self">self</span>,
+        <span class="ident">adapters</span>::{<span class="ident">IoError</span>, <span class="ident">StdError</span>},
+        <span class="ident">category</span>, <span class="ident">Advices</span>, <span class="ident">Category</span>, <span class="ident">Diagnostic</span>, <span class="ident">DiagnosticExt</span>, <span class="ident">Error</span>, <span class="ident">FilePath</span>, <span class="ident">PrintDescription</span>,
+        <span class="ident">PrintDiagnostic</span>, <span class="ident">Severity</span>, <span class="ident">Visit</span>,
+    },
+    <span class="ident">MAXIMUM_DISPLAYABLE_DIAGNOSTICS</span>,
 };
 <span class="kw">use</span> <span class="ident">rome_fs</span>::{<span class="ident">AtomicInterner</span>, <span class="ident">FileSystem</span>, <span class="ident">OpenOptions</span>, <span class="ident">PathInterner</span>, <span class="ident">RomePath</span>};
 <span class="kw">use</span> <span class="ident">rome_fs</span>::{<span class="ident">TraversalContext</span>, <span class="ident">TraversalScope</span>};
@@ -889,9 +906,7 @@
 <span class="kw">use</span> <span class="ident">std</span>::{
     <span class="ident">collections::HashMap</span>,
     <span class="ident">ffi::OsString</span>,
-    <span class="ident">fmt::Display</span>,
     <span class="ident">io</span>,
-    <span class="ident">ops::Deref</span>,
     <span class="ident">panic::catch_unwind</span>,
     <span class="ident">path</span>::{<span class="ident">Path</span>, <span class="ident">PathBuf</span>},
     <span class="ident">sync::atomic</span>::{<span class="ident">AtomicUsize</span>, <span class="ident">Ordering</span>},
@@ -1102,14 +1117,8 @@
 
 <span class="kw">impl</span> <span class="ident">Advices</span> <span class="kw">for</span> <span class="ident">FormatDiffAdvice</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span> {
     <span class="kw">fn</span> <span class="ident">record</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">visitor</span>: <span class="kw-2">&amp;mut</span> <span class="kw">dyn</span> <span class="ident">Visit</span>) -&gt; <span class="ident">io::Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="comment">// Skip printing the diff for files over 1Mb (probably a minified file)</span>
-        <span class="kw">let</span> <span class="ident">max_len</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">old</span>.<span class="ident">len</span>().<span class="ident">max</span>(<span class="self">self</span>.<span class="ident">new</span>.<span class="ident">len</span>());
-        <span class="kw">if</span> <span class="ident">max_len</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">1_000_000</span> {
-            <span class="ident">visitor</span>.<span class="ident">record_log</span>(<span class="ident">LogCategory::Info</span>, <span class="kw-2">&amp;</span><span class="string">&quot;[Diff not printed for file over 1Mb]&quot;</span>)
-        } <span class="kw">else</span> {
-            <span class="kw">let</span> <span class="ident">diff</span> <span class="op">=</span> <span class="ident">TextEdit::from_unicode_words</span>(<span class="self">self</span>.<span class="ident">old</span>, <span class="self">self</span>.<span class="ident">new</span>);
-            <span class="ident">visitor</span>.<span class="ident">record_diff</span>(<span class="kw-2">&amp;</span><span class="ident">diff</span>)
-        }
+        <span class="kw">let</span> <span class="ident">diff</span> <span class="op">=</span> <span class="ident">TextEdit::from_unicode_words</span>(<span class="self">self</span>.<span class="ident">old</span>, <span class="self">self</span>.<span class="ident">new</span>);
+        <span class="ident">visitor</span>.<span class="ident">record_diff</span>(<span class="kw-2">&amp;</span><span class="ident">diff</span>)
     }
 }
 
@@ -1151,51 +1160,65 @@
                 <span class="ident">total_skipped_suggested_fixes</span> <span class="op">+</span><span class="op">=</span> <span class="ident">skipped_suggested_fixes</span>;
             }
 
-            <span class="ident">Message::Error</span>(<span class="ident">err</span>) =&gt; {
-                <span class="comment">// Retrieves the file name from the file ID cache, if it&#39;s a miss</span>
-                <span class="comment">// flush entries from the interner channel until it&#39;s found</span>
-                <span class="kw">let</span> <span class="ident">file_name</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">paths</span>.<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="ident">err</span>.<span class="ident">file_id</span>) {
-                    <span class="prelude-val">Some</span>(<span class="ident">path</span>) =&gt; <span class="prelude-val">Some</span>(<span class="ident">path</span>),
-                    <span class="prelude-val">None</span> =&gt; <span class="kw">loop</span> {
-                        <span class="kw">match</span> <span class="ident">recv_files</span>.<span class="ident">recv</span>() {
-                            <span class="prelude-val">Ok</span>((<span class="ident">file_id</span>, <span class="ident">path</span>)) =&gt; {
-                                <span class="ident">paths</span>.<span class="ident">insert</span>(<span class="ident">file_id</span>, <span class="ident">path</span>.<span class="ident">display</span>().<span class="ident">to_string</span>());
-                                <span class="kw">if</span> <span class="ident">file_id</span> <span class="op">==</span> <span class="ident">err</span>.<span class="ident">file_id</span> {
-                                    <span class="kw">break</span> <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">paths</span>[<span class="kw-2">&amp;</span><span class="ident">file_id</span>]);
+            <span class="ident">Message::Error</span>(<span class="kw-2">mut</span> <span class="ident">err</span>) =&gt; {
+                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">location</span>) <span class="op">=</span> <span class="ident">err</span>.<span class="ident">location</span>() {
+                    <span class="kw">if</span> <span class="kw">let</span> <span class="ident">v2::Resource::File</span>(<span class="ident">FilePath::FileId</span>(<span class="ident">file_id</span>)) <span class="op">=</span> <span class="ident">location</span>.<span class="ident">resource</span> {
+                        <span class="comment">// Retrieves the file name from the file ID cache, if it&#39;s a miss</span>
+                        <span class="comment">// flush entries from the interner channel until it&#39;s found</span>
+                        <span class="kw">let</span> <span class="ident">file_name</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">paths</span>.<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="ident">file_id</span>) {
+                            <span class="prelude-val">Some</span>(<span class="ident">path</span>) =&gt; <span class="prelude-val">Some</span>(<span class="ident">path</span>),
+                            <span class="prelude-val">None</span> =&gt; <span class="kw">loop</span> {
+                                <span class="kw">match</span> <span class="ident">recv_files</span>.<span class="ident">recv</span>() {
+                                    <span class="prelude-val">Ok</span>((<span class="ident">id</span>, <span class="ident">path</span>)) =&gt; {
+                                        <span class="ident">paths</span>.<span class="ident">insert</span>(<span class="ident">id</span>, <span class="ident">path</span>.<span class="ident">display</span>().<span class="ident">to_string</span>());
+                                        <span class="kw">if</span> <span class="ident">id</span> <span class="op">==</span> <span class="ident">file_id</span> {
+                                            <span class="kw">break</span> <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">paths</span>[<span class="kw-2">&amp;</span><span class="ident">file_id</span>]);
+                                        }
+                                    }
+                                    <span class="comment">// In case the channel disconnected without sending</span>
+                                    <span class="comment">// the path we need, print the error without a file</span>
+                                    <span class="comment">// name (normally this should never happen)</span>
+                                    <span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; <span class="kw">break</span> <span class="prelude-val">None</span>,
                                 }
-                            }
-                            <span class="comment">// In case the channel disconnected without sending</span>
-                            <span class="comment">// the path we need, print the error without a file</span>
-                            <span class="comment">// name (normally this should never happen)</span>
-                            <span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; <span class="kw">break</span> <span class="prelude-val">None</span>,
+                            },
+                        };
+
+                        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">path</span>) <span class="op">=</span> <span class="ident">file_name</span> {
+                            <span class="ident">err</span> <span class="op">=</span> <span class="ident">err</span>.<span class="ident">with_file_path</span>(<span class="ident">FilePath::PathAndId</span> {
+                                <span class="ident">path</span>: <span class="ident">path</span>.<span class="ident">as_str</span>(),
+                                <span class="ident">file_id</span>,
+                            });
                         }
-                    },
-                };
+                    }
+                }
 
                 <span class="kw">if</span> <span class="ident">mode</span>.<span class="ident">should_report_to_terminal</span>() {
-                    <span class="kw">let</span> <span class="ident">diag</span> <span class="op">=</span> <span class="ident">TraversalDiagnostic</span> {
-                        <span class="ident">file_name</span>: <span class="ident">file_name</span>.<span class="ident">map</span>(<span class="ident">Deref::deref</span>),
-                        <span class="ident">severity</span>: <span class="kw">match</span> <span class="ident">err</span>.<span class="ident">severity</span> {
-                            <span class="ident">Severity::Help</span> =&gt; <span class="ident">v2::Severity::Hint</span>,
-                            <span class="ident">Severity::Note</span> =&gt; <span class="ident">v2::Severity::Information</span>,
-                            <span class="ident">Severity::Warning</span> =&gt; <span class="ident">v2::Severity::Warning</span>,
-                            <span class="ident">Severity::Error</span> =&gt; <span class="ident">v2::Severity::Error</span>,
-                            <span class="ident">Severity::Bug</span> =&gt; <span class="ident">v2::Severity::Fatal</span>,
-                        },
-                        <span class="ident">category</span>: <span class="ident">err</span>.<span class="ident">code</span>,
-                        <span class="ident">message</span>: <span class="kw-2">&amp;</span><span class="ident">err</span>.<span class="ident">message</span>,
-                    };
                     <span class="ident">console</span>.<span class="ident">error</span>(<span class="macro">markup!</span> {
-                        {<span class="ident">PrintDiagnostic</span>(<span class="kw-2">&amp;</span><span class="ident">diag</span>)}
+                        {<span class="ident">PrintDiagnostic</span>(<span class="kw-2">&amp;</span><span class="ident">err</span>)}
                     });
                 } <span class="kw">else</span> {
+                    <span class="kw">let</span> <span class="ident">file_name</span> <span class="op">=</span> <span class="ident">err</span>
+                        .<span class="ident">location</span>()
+                        .<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">location</span><span class="op">|</span> {
+                            <span class="kw">let</span> <span class="ident">path</span> <span class="op">=</span> <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="ident">location</span>.<span class="ident">resource</span> {
+                                <span class="ident">v2::Resource::File</span>(<span class="ident">file</span>) =&gt; <span class="ident">file</span>,
+                                <span class="kw">_</span> =&gt; <span class="kw">return</span> <span class="prelude-val">None</span>,
+                            };
+
+                            <span class="ident">path</span>.<span class="ident">path</span>()
+                        })
+                        .<span class="ident">unwrap_or</span>(<span class="string">&quot;&lt;unknown&gt;&quot;</span>);
+
+                    <span class="kw">let</span> <span class="ident">title</span> <span class="op">=</span> <span class="ident">PrintDescription</span>(<span class="kw-2">&amp;</span><span class="ident">err</span>).<span class="ident">to_string</span>();
+                    <span class="kw">let</span> <span class="ident">code</span> <span class="op">=</span> <span class="ident">err</span>.<span class="ident">category</span>().<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">code</span><span class="op">|</span> <span class="ident">code</span>.<span class="ident">name</span>().<span class="ident">parse</span>().<span class="ident">ok</span>());
+
                     <span class="ident">sender_reports</span>
                         .<span class="ident">send</span>(<span class="ident">ReportKind::Error</span>(
-                            <span class="ident">file_name</span>.<span class="ident">unwrap</span>().<span class="ident">to_string</span>(),
+                            <span class="ident">file_name</span>.<span class="ident">to_string</span>(),
                             <span class="ident">ReportErrorKind::Diagnostic</span>(<span class="ident">ReportDiagnostic</span> {
-                                <span class="ident">code</span>: <span class="prelude-val">Some</span>(<span class="ident">err</span>.<span class="ident">code</span>),
-                                <span class="ident">title</span>: <span class="ident">err</span>.<span class="ident">message</span>,
-                                <span class="ident">severity</span>: <span class="ident">err</span>.<span class="ident">severity</span>,
+                                <span class="ident">code</span>,
+                                <span class="ident">title</span>,
+                                <span class="ident">severity</span>: <span class="ident">err</span>.<span class="ident">severity</span>(),
                             }),
                         ))
                         .<span class="ident">ok</span>();
@@ -1207,7 +1230,6 @@
                 <span class="ident">content</span>,
                 <span class="ident">diagnostics</span>,
             } =&gt; {
-                <span class="kw">let</span> <span class="ident">file</span> <span class="op">=</span> <span class="ident">SimpleFile::new</span>(<span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">content</span>);
                 <span class="comment">// The command `rome check` gives a default value of 20.</span>
                 <span class="comment">// In case of other commands that pass here, we limit to 50 to avoid to delay the terminal.</span>
                 <span class="comment">// Once `--max-diagnostics` will be a global argument, `unwrap_of_default` should be enough.</span>
@@ -1217,33 +1239,42 @@
                 <span class="comment">// is CI mode we want to print all the diagnostics</span>
                 <span class="kw">if</span> <span class="ident">mode</span>.<span class="ident">is_ci</span>() {
                     <span class="kw">for</span> <span class="ident">diag</span> <span class="kw">in</span> <span class="ident">diagnostics</span> {
-                        <span class="ident">has_errors</span> <span class="op">|</span><span class="op">=</span> <span class="ident">diag</span>.<span class="ident">is_error</span>();
+                        <span class="ident">has_errors</span> <span class="op">|</span><span class="op">=</span> <span class="ident">diag</span>.<span class="ident">severity</span>() <span class="op">==</span> <span class="ident">Severity::Error</span>;
+                        <span class="kw">let</span> <span class="ident">diag</span> <span class="op">=</span> <span class="ident">diag</span>.<span class="ident">with_file_path</span>(<span class="kw-2">&amp;</span><span class="ident">name</span>).<span class="ident">with_file_source_code</span>(<span class="kw-2">&amp;</span><span class="ident">content</span>);
                         <span class="ident">console</span>.<span class="ident">error</span>(<span class="macro">markup!</span> {
-                            {<span class="ident">diag</span>.<span class="ident">display</span>(<span class="kw-2">&amp;</span><span class="ident">file</span>)}
+                            {<span class="ident">PrintDiagnostic</span>(<span class="kw-2">&amp;</span><span class="ident">diag</span>)}
                         });
                     }
                 } <span class="kw">else</span> {
                     <span class="kw">for</span> <span class="ident">diag</span> <span class="kw">in</span> <span class="ident">diagnostics</span> {
-                        <span class="ident">has_errors</span> <span class="op">|</span><span class="op">=</span> <span class="ident">diag</span>.<span class="ident">is_error</span>();
-                        <span class="kw">if</span> <span class="ident">printed_diagnostics</span> <span class="op">&lt;</span> <span class="ident">max_diagnostics</span> {
-                            <span class="kw">if</span> <span class="ident">mode</span>.<span class="ident">should_report_to_terminal</span>() {
-                                <span class="ident">console</span>.<span class="ident">error</span>(<span class="macro">markup!</span> {
-                                    {<span class="ident">diag</span>.<span class="ident">display</span>(<span class="kw-2">&amp;</span><span class="ident">file</span>)}
-                                });
-                            }
+                        <span class="kw">let</span> <span class="ident">severity</span> <span class="op">=</span> <span class="ident">diag</span>.<span class="ident">severity</span>();
+                        <span class="ident">has_errors</span> <span class="op">|</span><span class="op">=</span> <span class="ident">severity</span> <span class="op">==</span> <span class="ident">Severity::Error</span>;
+
+                        <span class="kw">let</span> <span class="ident">should_print</span> <span class="op">=</span> <span class="ident">printed_diagnostics</span> <span class="op">&lt;</span> <span class="ident">max_diagnostics</span>;
+                        <span class="kw">if</span> <span class="ident">should_print</span> {
                             <span class="ident">printed_diagnostics</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
                         } <span class="kw">else</span> {
                             <span class="ident">not_printed_diagnostics</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
                         }
 
-                        <span class="kw">if</span> <span class="op">!</span><span class="ident">mode</span>.<span class="ident">should_report_to_terminal</span>() {
+                        <span class="kw">if</span> <span class="ident">mode</span>.<span class="ident">should_report_to_terminal</span>() {
+                            <span class="kw">if</span> <span class="ident">should_print</span> {
+                                <span class="kw">let</span> <span class="ident">diag</span> <span class="op">=</span>
+                                    <span class="ident">diag</span>.<span class="ident">with_file_path</span>(<span class="kw-2">&amp;</span><span class="ident">name</span>).<span class="ident">with_file_source_code</span>(<span class="kw-2">&amp;</span><span class="ident">content</span>);
+                                <span class="ident">console</span>.<span class="ident">error</span>(<span class="macro">markup!</span> {
+                                    {<span class="ident">PrintDiagnostic</span>(<span class="kw-2">&amp;</span><span class="ident">diag</span>)}
+                                });
+                            }
+                        } <span class="kw">else</span> {
                             <span class="ident">sender_reports</span>
                                 .<span class="ident">send</span>(<span class="ident">ReportKind::Error</span>(
                                     <span class="ident">name</span>.<span class="ident">to_string</span>(),
                                     <span class="ident">ReportErrorKind::Diagnostic</span>(<span class="ident">ReportDiagnostic</span> {
-                                        <span class="ident">code</span>: <span class="ident">diag</span>.<span class="ident">code</span>,
+                                        <span class="ident">code</span>: <span class="ident">diag</span>
+                                            .<span class="ident">category</span>()
+                                            .<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">code</span><span class="op">|</span> <span class="ident">code</span>.<span class="ident">name</span>().<span class="ident">parse</span>().<span class="ident">ok</span>()),
                                         <span class="ident">title</span>: <span class="ident">String::from</span>(<span class="string">&quot;test here&quot;</span>),
-                                        <span class="ident">severity</span>: <span class="ident">diag</span>.<span class="ident">severity</span>,
+                                        <span class="ident">severity</span>,
                                     }),
                                 ))
                                 .<span class="ident">ok</span>();
@@ -1291,10 +1322,10 @@
                 } <span class="kw">else</span> {
                     <span class="ident">sender_reports</span>
                         .<span class="ident">send</span>(<span class="ident">ReportKind::Error</span>(
-                            <span class="ident">file_name</span>.<span class="ident">to_string</span>(),
+                            <span class="ident">file_name</span>,
                             <span class="ident">ReportErrorKind::Diff</span>(<span class="ident">ReportDiff</span> {
-                                <span class="ident">before</span>: <span class="ident">old</span>.<span class="ident">to_string</span>(),
-                                <span class="ident">after</span>: <span class="ident">new</span>.<span class="ident">to_string</span>(),
+                                <span class="ident">before</span>: <span class="ident">old</span>,
+                                <span class="ident">after</span>: <span class="ident">new</span>,
                                 <span class="ident">severity</span>: <span class="ident">Severity::Error</span>,
                             }),
                         ))
@@ -1382,13 +1413,8 @@
         <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">interner</span>
     }
 
-    <span class="kw">fn</span> <span class="ident">push_diagnostic</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">file_id</span>: <span class="ident">FileId</span>, <span class="ident">code</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">Category</span>, <span class="ident">message</span>: <span class="ident">String</span>) {
-        <span class="self">self</span>.<span class="ident">push_message</span>(<span class="ident">TraversalError</span> {
-            <span class="ident">severity</span>: <span class="ident">Severity::Error</span>,
-            <span class="ident">file_id</span>,
-            <span class="ident">code</span>,
-            <span class="ident">message</span>,
-        });
+    <span class="kw">fn</span> <span class="ident">push_diagnostic</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">error</span>: <span class="ident">Error</span>) {
+        <span class="self">self</span>.<span class="ident">push_message</span>(<span class="ident">error</span>);
     }
 
     <span class="kw">fn</span> <span class="ident">can_handle</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">rome_path</span>: <span class="kw-2">&amp;</span><span class="ident">RomePath</span>) -&gt; <span class="ident">bool</span> {
@@ -1404,9 +1430,9 @@
             <span class="prelude-val">Ok</span>(<span class="ident">result</span>) =&gt; <span class="ident">result</span>.<span class="ident">reason</span>.<span class="ident">is_none</span>(),
             <span class="prelude-val">Err</span>(<span class="ident">err</span>) =&gt; {
                 <span class="self">self</span>.<span class="ident">push_diagnostic</span>(
-                    <span class="ident">rome_path</span>.<span class="ident">file_id</span>(),
-                    <span class="macro">category!</span>(<span class="string">&quot;files/missingHandler&quot;</span>),
-                    <span class="ident">err</span>.<span class="ident">to_string</span>(),
+                    <span class="ident">StdError::from</span>(<span class="ident">err</span>)
+                        .<span class="ident">with_category</span>(<span class="macro">category!</span>(<span class="string">&quot;files/missingHandler&quot;</span>))
+                        .<span class="ident">with_file_path</span>(<span class="ident">rome_path</span>.<span class="ident">file_id</span>()),
                 );
                 <span class="bool-val">false</span>
             }
@@ -1444,12 +1470,7 @@
                 },
             };
 
-            <span class="ident">ctx</span>.<span class="ident">push_message</span>(<span class="ident">TraversalError</span> {
-                <span class="ident">severity</span>: <span class="ident">Severity::Bug</span>,
-                <span class="ident">file_id</span>,
-                <span class="ident">code</span>: <span class="macro">category!</span>(<span class="string">&quot;internalError/panic&quot;</span>),
-                <span class="ident">message</span>,
-            });
+            <span class="ident">ctx</span>.<span class="ident">push_message</span>(<span class="ident">PanicDiagnostic</span> { <span class="ident">message</span> }.<span class="ident">with_file_path</span>(<span class="ident">file_id</span>));
         }
     }
 }
@@ -1496,17 +1517,15 @@
 
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">reason</span>) <span class="op">=</span> <span class="ident">supported_file</span> {
             <span class="kw">return</span> <span class="kw">match</span> <span class="ident">reason</span> {
-                <span class="ident">UnsupportedReason::FileNotSupported</span> =&gt; <span class="prelude-val">Err</span>(<span class="ident">Message::from</span>(<span class="ident">TraversalError</span> {
-                    <span class="ident">severity</span>: <span class="ident">Severity::Error</span>,
-                    <span class="ident">file_id</span>,
-                    <span class="ident">code</span>: <span class="macro">category!</span>(<span class="string">&quot;files/missingHandler&quot;</span>),
-                    <span class="ident">message</span>: <span class="ident">String::from</span>(<span class="string">&quot;unhandled file type&quot;</span>),
-                })),
+                <span class="ident">UnsupportedReason::FileNotSupported</span> =&gt; {
+                    <span class="prelude-val">Err</span>(<span class="ident">Message::from</span>(<span class="ident">UnhandledDiagnostic</span>.<span class="ident">with_file_path</span>(<span class="ident">file_id</span>)))
+                }
                 <span class="ident">UnsupportedReason::FeatureNotEnabled</span> <span class="op">|</span> <span class="ident">UnsupportedReason::Ignored</span> =&gt; {
                     <span class="prelude-val">Ok</span>(<span class="ident">FileStatus::Ignored</span>)
                 }
             };
         }
+
         <span class="kw">let</span> <span class="ident">open_options</span> <span class="op">=</span> <span class="ident">OpenOptions::default</span>().<span class="ident">read</span>(<span class="bool-val">true</span>).<span class="ident">write</span>(<span class="bool-val">true</span>);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">file</span> <span class="op">=</span> <span class="ident">ctx</span>
             .<span class="ident">fs</span>
@@ -1560,23 +1579,18 @@
         <span class="kw">let</span> <span class="ident">has_errors</span> <span class="op">=</span> <span class="ident">result</span>
             .<span class="ident">diagnostics</span>
             .<span class="ident">iter</span>()
-            .<span class="ident">any</span>(<span class="op">|</span><span class="ident">diag</span><span class="op">|</span> <span class="ident">diag</span>.<span class="ident">severity</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">Severity::Error</span>);
+            .<span class="ident">any</span>(<span class="op">|</span><span class="ident">diag</span><span class="op">|</span> <span class="ident">diag</span>.<span class="ident">severity</span>() <span class="op">&gt;</span><span class="op">=</span> <span class="ident">Severity::Error</span>);
 
         <span class="comment">// In formatting mode, abort immediately if the file has errors</span>
         <span class="kw">match</span> <span class="ident">ctx</span>.<span class="ident">execution</span>.<span class="ident">traversal_mode</span>() {
             <span class="ident">TraversalMode::Format</span> { <span class="ident">ignore_errors</span>, .. } <span class="kw">if</span> <span class="ident">has_errors</span> =&gt; {
                 <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="kw">if</span> <span class="kw-2">*</span><span class="ident">ignore_errors</span> {
-                    <span class="ident">Message::from</span>(<span class="ident">TraversalError</span> {
-                        <span class="ident">severity</span>: <span class="ident">Severity::Warning</span>,
-                        <span class="ident">file_id</span>,
-                        <span class="ident">code</span>: <span class="macro">category!</span>(<span class="string">&quot;parse&quot;</span>),
-                        <span class="ident">message</span>: <span class="ident">String::from</span>(<span class="string">&quot;Skipped file with syntax errors&quot;</span>),
-                    })
+                    <span class="ident">Message::from</span>(<span class="ident">SkippedDiagnostic</span>.<span class="ident">with_file_path</span>(<span class="ident">file_id</span>))
                 } <span class="kw">else</span> {
                     <span class="ident">Message::Diagnostics</span> {
                         <span class="ident">name</span>: <span class="ident">path</span>.<span class="ident">display</span>().<span class="ident">to_string</span>(),
                         <span class="ident">content</span>: <span class="ident">input</span>,
-                        <span class="ident">diagnostics</span>: <span class="ident">result</span>.<span class="ident">diagnostics</span>,
+                        <span class="ident">diagnostics</span>: <span class="ident">result</span>.<span class="ident">diagnostics</span>.<span class="ident">into_iter</span>().<span class="ident">map</span>(<span class="ident">Error::from</span>).<span class="ident">collect</span>(),
                     }
                 });
             }
@@ -1593,7 +1607,7 @@
             <span class="ident">FileStatus::Message</span>(<span class="ident">Message::Diagnostics</span> {
                 <span class="ident">name</span>: <span class="ident">path</span>.<span class="ident">display</span>().<span class="ident">to_string</span>(),
                 <span class="ident">content</span>: <span class="ident">input</span>.<span class="ident">clone</span>(),
-                <span class="ident">diagnostics</span>: <span class="ident">result</span>.<span class="ident">diagnostics</span>,
+                <span class="ident">diagnostics</span>: <span class="ident">result</span>.<span class="ident">diagnostics</span>.<span class="ident">into_iter</span>().<span class="ident">map</span>(<span class="ident">Error::from</span>).<span class="ident">collect</span>(),
             })
         };
 
@@ -1665,11 +1679,11 @@
         <span class="doccomment">/// Suggested fixes skipped during the lint traversal</span>
         <span class="ident">skipped_suggested_fixes</span>: <span class="ident">u32</span>,
     },
-    <span class="ident">Error</span>(<span class="ident">TraversalError</span>),
+    <span class="ident">Error</span>(<span class="ident">Error</span>),
     <span class="ident">Diagnostics</span> {
         <span class="ident">name</span>: <span class="ident">String</span>,
         <span class="ident">content</span>: <span class="ident">String</span>,
-        <span class="ident">diagnostics</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Diagnostic</span><span class="op">&gt;</span>,
+        <span class="ident">diagnostics</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Error</span><span class="op">&gt;</span>,
     },
     <span class="ident">Diff</span> {
         <span class="ident">file_name</span>: <span class="ident">String</span>,
@@ -1678,19 +1692,30 @@
     },
 }
 
-<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">TraversalError</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Message</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">err</span>: <span class="ident">TraversalError</span>) -&gt; <span class="self">Self</span> {
-        <span class="ident"><span class="self">Self</span>::Error</span>(<span class="ident">err</span>)
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Message</span>
+<span class="kw">where</span>
+    <span class="ident">Error</span>: <span class="ident">From</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span>,
+{
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">err</span>: <span class="ident">D</span>) -&gt; <span class="self">Self</span> {
+        <span class="ident"><span class="self">Self</span>::Error</span>(<span class="ident">Error::from</span>(<span class="ident">err</span>))
     }
 }
 
-<span class="doccomment">/// Generic error type returned by the traversal process</span>
-<span class="kw">struct</span> <span class="ident">TraversalError</span> {
-    <span class="ident">severity</span>: <span class="ident">Severity</span>,
-    <span class="ident">file_id</span>: <span class="ident">FileId</span>,
-    <span class="ident">code</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">Category</span>,
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">v2::Diagnostic</span>)]</span>
+<span class="attribute">#[<span class="ident">diagnostic</span>(<span class="ident">category</span> <span class="op">=</span> <span class="string">&quot;internalError/panic&quot;</span>, <span class="ident">tags</span>(<span class="ident">INTERNAL</span>))]</span>
+<span class="kw">struct</span> <span class="ident">PanicDiagnostic</span> {
+    <span class="attribute">#[<span class="ident">description</span>]</span>
+    <span class="attribute">#[<span class="ident">message</span>]</span>
     <span class="ident">message</span>: <span class="ident">String</span>,
 }
+
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">v2::Diagnostic</span>)]</span>
+<span class="attribute">#[<span class="ident">diagnostic</span>(<span class="ident">category</span> <span class="op">=</span> <span class="string">&quot;files/missingHandler&quot;</span>, <span class="ident">message</span> <span class="op">=</span> <span class="string">&quot;unhandled file type&quot;</span>)]</span>
+<span class="kw">struct</span> <span class="ident">UnhandledDiagnostic</span>;
+
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">v2::Diagnostic</span>)]</span>
+<span class="attribute">#[<span class="ident">diagnostic</span>(<span class="ident">category</span> <span class="op">=</span> <span class="string">&quot;parse&quot;</span>, <span class="ident">message</span> <span class="op">=</span> <span class="string">&quot;Skipped file with syntax errors&quot;</span>)]</span>
+<span class="kw">struct</span> <span class="ident">SkippedDiagnostic</span>;
 
 <span class="doccomment">/// Extension trait for turning [Display]-able error types into [TraversalError]</span>
 <span class="kw">trait</span> <span class="ident">ResultExt</span> {
@@ -1699,12 +1724,12 @@
         <span class="self">self</span>,
         <span class="ident">file_id</span>: <span class="ident">FileId</span>,
         <span class="ident">code</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">Category</span>,
-    ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Result</span>, <span class="ident">TraversalError</span><span class="op">&gt;</span>;
+    ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Result</span>, <span class="ident">Error</span><span class="op">&gt;</span>;
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">E</span><span class="op">&gt;</span> <span class="ident">ResultExt</span> <span class="kw">for</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">E</span><span class="op">&gt;</span>
 <span class="kw">where</span>
-    <span class="ident">E</span>: <span class="ident">Display</span>,
+    <span class="ident">E</span>: <span class="ident">std::error::Error</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 {
     <span class="kw">type</span> <span class="prelude-ty">Result</span> <span class="op">=</span> <span class="ident">T</span>;
 
@@ -1712,24 +1737,23 @@
         <span class="self">self</span>,
         <span class="ident">file_id</span>: <span class="ident">FileId</span>,
         <span class="ident">code</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">Category</span>,
-    ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Result</span>, <span class="ident">TraversalError</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">map_err</span>(<span class="kw">move</span> <span class="op">|</span><span class="ident">err</span><span class="op">|</span> <span class="ident">TraversalError</span> {
-            <span class="ident">severity</span>: <span class="ident">Severity::Error</span>,
-            <span class="ident">file_id</span>,
-            <span class="ident">code</span>,
-            <span class="ident">message</span>: <span class="ident">err</span>.<span class="ident">to_string</span>(),
+    ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Result</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
+        <span class="self">self</span>.<span class="ident">map_err</span>(<span class="kw">move</span> <span class="op">|</span><span class="ident">err</span><span class="op">|</span> {
+            <span class="ident">StdError::from</span>(<span class="ident">err</span>)
+                .<span class="ident">with_category</span>(<span class="ident">code</span>)
+                .<span class="ident">with_file_path</span>(<span class="ident">file_id</span>)
         })
     }
 }
 
-<span class="doccomment">/// Extension trait for turning [io::Error] into [TraversalError]</span>
+<span class="doccomment">/// Extension trait for turning [io::Error] into [Error]</span>
 <span class="kw">trait</span> <span class="ident">ResultIoExt</span>: <span class="ident">ResultExt</span> {
-    <span class="kw">fn</span> <span class="ident">with_file_id</span>(<span class="self">self</span>, <span class="ident">file_id</span>: <span class="ident">FileId</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Result</span>, <span class="ident">TraversalError</span><span class="op">&gt;</span>;
+    <span class="kw">fn</span> <span class="ident">with_file_id</span>(<span class="self">self</span>, <span class="ident">file_id</span>: <span class="ident">FileId</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Result</span>, <span class="ident">Error</span><span class="op">&gt;</span>;
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">ResultIoExt</span> <span class="kw">for</span> <span class="ident">io::Result</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">with_file_id</span>(<span class="self">self</span>, <span class="ident">file_id</span>: <span class="ident">FileId</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Result</span>, <span class="ident">TraversalError</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">with_file_id_and_code</span>(<span class="ident">file_id</span>, <span class="macro">category!</span>(<span class="string">&quot;internalError/fs&quot;</span>))
+    <span class="kw">fn</span> <span class="ident">with_file_id</span>(<span class="self">self</span>, <span class="ident">file_id</span>: <span class="ident">FileId</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Result</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
+        <span class="self">self</span>.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">error</span><span class="op">|</span> <span class="ident">IoError::from</span>(<span class="ident">error</span>).<span class="ident">with_file_path</span>(<span class="ident">file_id</span>))
     }
 }
 </code></pre></div>

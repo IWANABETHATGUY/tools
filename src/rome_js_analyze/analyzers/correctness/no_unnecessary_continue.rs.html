@@ -185,13 +185,7 @@
 <span id="185">185</span>
 <span id="186">186</span>
 <span id="187">187</span>
-<span id="188">188</span>
-<span id="189">189</span>
-<span id="190">190</span>
-<span id="191">191</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">rome_analyze</span>::{
-    <span class="ident">context::RuleContext</span>, <span class="ident">declare_rule</span>, <span class="ident">ActionCategory</span>, <span class="ident">Ast</span>, <span class="ident">Rule</span>, <span class="ident">RuleCategory</span>, <span class="ident">RuleDiagnostic</span>,
-};
+</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">rome_analyze</span>::{<span class="ident">context::RuleContext</span>, <span class="ident">declare_rule</span>, <span class="ident">ActionCategory</span>, <span class="ident">Ast</span>, <span class="ident">Rule</span>, <span class="ident">RuleDiagnostic</span>};
 <span class="kw">use</span> <span class="ident">rome_console::markup</span>;
 <span class="kw">use</span> <span class="ident">rome_diagnostics::Applicability</span>;
 <span class="kw">use</span> <span class="ident">rome_js_syntax</span>::{<span class="ident">JsContinueStatement</span>, <span class="ident">JsLabeledStatement</span>, <span class="ident">JsSyntaxKind</span>, <span class="ident">JsSyntaxNode</span>};
@@ -271,8 +265,6 @@
 }
 
 <span class="kw">impl</span> <span class="ident">Rule</span> <span class="kw">for</span> <span class="ident">NoUnnecessaryContinue</span> {
-    <span class="kw">const</span> <span class="ident">CATEGORY</span>: <span class="ident">RuleCategory</span> <span class="op">=</span> <span class="ident">RuleCategory::Lint</span>;
-
     <span class="kw">type</span> <span class="ident">Query</span> <span class="op">=</span> <span class="ident">Ast</span><span class="op">&lt;</span><span class="ident">JsContinueStatement</span><span class="op">&gt;</span>;
     <span class="kw">type</span> <span class="ident">State</span> <span class="op">=</span> ();
     <span class="kw">type</span> <span class="ident">Signals</span> <span class="op">=</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::State</span><span class="op">&gt;</span>;

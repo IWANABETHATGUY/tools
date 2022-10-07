@@ -450,57 +450,6 @@
 <span id="450">450</span>
 <span id="451">451</span>
 <span id="452">452</span>
-<span id="453">453</span>
-<span id="454">454</span>
-<span id="455">455</span>
-<span id="456">456</span>
-<span id="457">457</span>
-<span id="458">458</span>
-<span id="459">459</span>
-<span id="460">460</span>
-<span id="461">461</span>
-<span id="462">462</span>
-<span id="463">463</span>
-<span id="464">464</span>
-<span id="465">465</span>
-<span id="466">466</span>
-<span id="467">467</span>
-<span id="468">468</span>
-<span id="469">469</span>
-<span id="470">470</span>
-<span id="471">471</span>
-<span id="472">472</span>
-<span id="473">473</span>
-<span id="474">474</span>
-<span id="475">475</span>
-<span id="476">476</span>
-<span id="477">477</span>
-<span id="478">478</span>
-<span id="479">479</span>
-<span id="480">480</span>
-<span id="481">481</span>
-<span id="482">482</span>
-<span id="483">483</span>
-<span id="484">484</span>
-<span id="485">485</span>
-<span id="486">486</span>
-<span id="487">487</span>
-<span id="488">488</span>
-<span id="489">489</span>
-<span id="490">490</span>
-<span id="491">491</span>
-<span id="492">492</span>
-<span id="493">493</span>
-<span id="494">494</span>
-<span id="495">495</span>
-<span id="496">496</span>
-<span id="497">497</span>
-<span id="498">498</span>
-<span id="499">499</span>
-<span id="500">500</span>
-<span id="501">501</span>
-<span id="502">502</span>
-<span id="503">503</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::categories</span>::{<span class="ident">ActionCategory</span>, <span class="ident">RuleCategory</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::context::RuleContext</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::registry</span>::{<span class="ident">RuleLanguage</span>, <span class="ident">RuleSuppressions</span>};
@@ -549,130 +498,31 @@
 }
 
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">RuleMeta</span> {
+    <span class="kw">type</span> <span class="ident">Group</span>: <span class="ident">RuleGroup</span>;
     <span class="kw">const</span> <span class="ident">METADATA</span>: <span class="ident">RuleMetadata</span>;
 }
 
 <span class="doccomment">/// This macro is used to declare an analyzer rule type, and implement the</span>
-<span class="doccomment">/// [RuleMeta] trait for it</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// # Example</span>
+<span class="comment">//  [RuleMeta] trait for it</span>
+<span class="doccomment">///  # Example</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// The macro itself expect the following syntax:</span>
-<span class="doccomment">/// ```ignore</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// ```rust,ignore</span>
+<span class="doccomment">///use rome_analyze::declare_rule;</span>
+<span class="doccomment">///</span>
 <span class="doccomment">/// declare_rule! {</span>
 <span class="doccomment">///     /// Documentation</span>
 <span class="doccomment">///     pub(crate) ExampleRule {</span>
 <span class="doccomment">///         version: &quot;0.7.0&quot;,</span>
-<span class="doccomment">///         name: &quot;ruleName&quot;</span>
+<span class="doccomment">///         name: &quot;ruleName&quot;,</span>
+<span class="doccomment">///         recommended: false,</span>
 <span class="doccomment">///     }</span>
 <span class="doccomment">/// }</span>
 <span class="doccomment">/// ```</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// # Documentation</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// The doc-comment for the rule is mandatory and is used to generate the</span>
-<span class="doccomment">/// documentation page for the rule on the website.</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// Importantly, the tool used to generate those pages also runs tests on the</span>
-<span class="doccomment">/// code blocks included in the documentation written in languages supported by</span>
-<span class="doccomment">/// the Rome toolchain (JavaScript, JSX, TypeScript, ...) similar to how</span>
-<span class="doccomment">/// `rustdoc` generates tests from code blocks written in Rust. Because code</span>
-<span class="doccomment">/// blocks in Rust doc-comments are assumed to be written in Rust by default</span>
-<span class="doccomment">/// the language of the test must be explicitly specified, for instance:</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// ```ignore</span>
-<span class="doccomment">/// declare_rule! {</span>
-<span class="doccomment">///     /// Disallow the use of `var`</span>
-<span class="doccomment">///     ///</span>
-<span class="doccomment">///     /// ### Valid</span>
-<span class="doccomment">///     ///</span>
-<span class="doccomment">///     /// ```js</span>
-<span class="doccomment">///     /// let a, b;</span>
-<span class="doccomment">///     /// ```</span>
-<span class="doccomment">///     pub(crate) NoVar {</span>
-<span class="doccomment">///         version: &quot;0.7.0&quot;,</span>
-<span class="doccomment">///         name: &quot;noVar&quot;</span>
-<span class="doccomment">///     }</span>
-<span class="doccomment">/// }</span>
-<span class="doccomment">/// ```</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// Additionally, it&#39;s possible to declare that a test should emit a diagnostic</span>
-<span class="doccomment">/// by adding `expect_diagnostic` to the language metadata:</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// ```ignore</span>
-<span class="doccomment">/// declare_rule! {</span>
-<span class="doccomment">///     /// Disallow the use of `var`</span>
-<span class="doccomment">///     ///</span>
-<span class="doccomment">///     /// ### Invalid</span>
-<span class="doccomment">///     ///</span>
-<span class="doccomment">///     /// ```js,expect_diagnostic</span>
-<span class="doccomment">///     /// var a, b;</span>
-<span class="doccomment">///     /// ```</span>
-<span class="doccomment">///     pub(crate) NoVar {</span>
-<span class="doccomment">///         version: &quot;0.7.0&quot;,</span>
-<span class="doccomment">///         name: &quot;noVar&quot;</span>
-<span class="doccomment">///     }</span>
-<span class="doccomment">/// }</span>
-<span class="doccomment">/// ```</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// This will cause the documentation generator to ensure the rule does emit</span>
-<span class="doccomment">/// exactly one diagnostic for this code, and to include a snapshot for the</span>
-<span class="doccomment">/// diagnostic in the resulting documentation page</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// ## Deprecation</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// There are occasions when a rule must be deprecated, to avoid breaking changes. The reason</span>
-<span class="doccomment">/// of deprecations can be multiples.</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// In order to to do, the macro allows to add additional field to add the reason for deprecation</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// ```ignore</span>
-<span class="doccomment">/// declare_rule! {</span>
-<span class="doccomment">///     /// Disallow the use of `var`</span>
-<span class="doccomment">///     ///</span>
-<span class="doccomment">///     /// ### Invalid</span>
-<span class="doccomment">///     ///</span>
-<span class="doccomment">///     /// ```js,expect_diagnostic</span>
-<span class="doccomment">///     /// var a, b;</span>
-<span class="doccomment">///     /// ```</span>
-<span class="doccomment">///     pub(crate) NoVar {</span>
-<span class="doccomment">///         version: &quot;0.7.0&quot;,</span>
-<span class="doccomment">///         name: &quot;noVar&quot;,</span>
-<span class="doccomment">///         deprecated: &quot;Use the rule `noAnotherVar`&quot;</span>
-<span class="doccomment">///     }</span>
-<span class="doccomment">/// }</span>
-<span class="doccomment">/// ```</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// ## Category Macro</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// Declaring a rule using `declare_rule!` will cause a new `rule_category!`</span>
-<span class="doccomment">/// macro to be declared in the surrounding module. This macro can be used to</span>
-<span class="doccomment">/// refer to the corresponding diagnostic category for this lint rule, if it</span>
-<span class="doccomment">/// has one. Using this macro instead of getting the category for a diagnostic</span>
-<span class="doccomment">/// by dynamically parsing its string name has the advantage of statically</span>
-<span class="doccomment">/// injecting the category at compile time and checking that it is correctly</span>
-<span class="doccomment">/// registered to the `rome_diagnostics` library</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// ```ignore</span>
-<span class="doccomment">/// declare_rule! {</span>
-<span class="doccomment">///     /// Documentation</span>
-<span class="doccomment">///     pub(crate) ExampleRule {</span>
-<span class="doccomment">///         version: &quot;0.7.0&quot;,</span>
-<span class="doccomment">///         name: &quot;ruleName&quot;</span>
-<span class="doccomment">///     }</span>
-<span class="doccomment">/// }</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// impl Rule for ExampleRule {</span>
-<span class="doccomment">///     fn diagnostic(ctx: &amp;RuleContext&lt;Self&gt;, _state: &amp;Self::State) -&gt; Option&lt;RuleDiagnostic&gt; {</span>
-<span class="doccomment">///         Some(RuleDiagnostic::new(</span>
-<span class="doccomment">///             rule_category!(),</span>
-<span class="doccomment">///             ctx.query().text_trimmed_range(),</span>
-<span class="doccomment">///             &quot;message&quot;,</span>
-<span class="doccomment">///         ))</span>
-<span class="doccomment">///     }</span>
-<span class="doccomment">/// }</span>
-<span class="doccomment">/// ```</span>
-<span class="doccomment">///</span>
+<span class="doccomment">/// Check [crate](module documentation) for a better</span>
+<span class="doccomment">/// understanding of how the macro works</span>
 <span class="attribute">#[<span class="ident">macro_export</span>]</span>
 <span class="macro">macro_rules!</span> <span class="ident">declare_rule</span> {
     ( $( <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>:<span class="ident">literal</span>]</span> )<span class="op">+</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">vis</span>:<span class="ident">vis</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">id</span>:<span class="ident">ident</span> {
@@ -684,6 +534,7 @@
         <span class="macro-nonterminal">$</span><span class="macro-nonterminal">vis</span> <span class="kw">enum</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">id</span> {}
 
         <span class="kw">impl</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::RuleMeta</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">id</span> {
+            <span class="kw">type</span> <span class="ident">Group</span> <span class="op">=</span> <span class="ident"><span class="kw">super</span>::Group</span>;
             <span class="kw">const</span> <span class="ident">METADATA</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::RuleMetadata</span> <span class="op">=</span>
                 <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::RuleMetadata::new</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">version</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>, <span class="macro">concat!</span>( $( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>, <span class="string">&quot;\n&quot;</span>, )<span class="op">*</span> )) $( .<span class="macro-nonterminal">$</span><span class="macro-nonterminal">key</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">value</span>) )<span class="kw-2">*</span>;
         }
@@ -705,9 +556,10 @@
 <span class="doccomment">/// disabled at once</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">RuleGroup</span> {
     <span class="kw">type</span> <span class="ident">Language</span>: <span class="ident">Language</span>;
+    <span class="kw">type</span> <span class="ident">Category</span>: <span class="ident">GroupCategory</span>;
     <span class="doccomment">/// The name of this group, displayed in the diagnostics emitted by its rules</span>
     <span class="kw">const</span> <span class="ident">NAME</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>;
-    <span class="doccomment">/// Register all the rules belonging to this group into `registry` if they match `filter`</span>
+    <span class="doccomment">/// Register all the rules belonging to this group into `registry`</span>
     <span class="kw">fn</span> <span class="ident">push_rules</span>(<span class="ident">registry</span>: <span class="kw-2">&amp;mut</span> <span class="ident">RuleRegistry</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Language</span><span class="op">&gt;</span>, <span class="ident">filter</span>: <span class="kw-2">&amp;</span><span class="ident">AnalysisFilter</span>);
 }
 
@@ -720,13 +572,16 @@
 
         <span class="kw">impl</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::RuleGroup</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">id</span> {
             <span class="kw">type</span> <span class="ident">Language</span> <span class="op">=</span> <span class="op">&lt;</span>( $( $( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">rule</span> )::<span class="op">*</span> , )<span class="op">*</span> ) <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::GroupLanguage</span><span class="op">&gt;</span><span class="ident">::Language</span>;
+            <span class="kw">type</span> <span class="ident">Category</span> <span class="op">=</span> <span class="ident"><span class="kw">super</span>::Category</span>;
 
             <span class="kw">const</span> <span class="ident">NAME</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>;
 
             <span class="kw">fn</span> <span class="ident">push_rules</span>(<span class="ident">registry</span>: <span class="kw-2">&amp;mut</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::RuleRegistry</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Language</span><span class="op">&gt;</span>, <span class="ident">filter</span>: <span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::AnalysisFilter</span>) {
-                $( <span class="kw">if</span> <span class="ident">filter</span>.<span class="ident">match_rule</span>::<span class="op">&lt;</span><span class="self">Self</span>, $( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">rule</span> )::<span class="kw-2">*</span><span class="op">&gt;</span>() { <span class="ident">registry</span>.<span class="ident">push</span>::<span class="op">&lt;</span><span class="self">Self</span>, $( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">rule</span> )::<span class="kw-2">*</span><span class="op">&gt;</span>(); } )<span class="op">*</span>
+                $( <span class="ident">registry</span>.<span class="ident">push_rule</span>::<span class="op">&lt;</span>$( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">rule</span> )::<span class="kw-2">*</span><span class="op">&gt;</span>(<span class="ident">filter</span>); )<span class="op">*</span>
             }
         }
+
+        <span class="kw">pub</span>(<span class="self">self</span>) <span class="kw">use</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">id</span> <span class="kw">as</span> <span class="ident">Group</span>;
 
         <span class="comment">// Declare a `group_category!` macro in the context of this module (and</span>
         <span class="comment">// all its children). This macro takes the name of a rule as a string</span>
@@ -745,12 +600,52 @@
     };
 }
 
-<span class="doccomment">/// This trait is implemented for tuples of [Rule] types of size 1 to 20 if the</span>
+<span class="doccomment">/// A group category is a collection of rule groups under a given category ID,</span>
+<span class="doccomment">/// serving as a broad classification on the kind of diagnostic or code action</span>
+<span class="doccomment">/// these rule emit, and allowing whole categories of rules to be disabled at</span>
+<span class="doccomment">/// once depending on the kind of analysis being performed</span>
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">GroupCategory</span> {
+    <span class="kw">type</span> <span class="ident">Language</span>: <span class="ident">Language</span>;
+    <span class="doccomment">/// The category ID used for all groups and rule belonging to this category</span>
+    <span class="kw">const</span> <span class="ident">CATEGORY</span>: <span class="ident">RuleCategory</span>;
+    <span class="doccomment">/// Register all the groups belonging to this category into `registry`</span>
+    <span class="kw">fn</span> <span class="ident">push_groups</span>(<span class="ident">registry</span>: <span class="kw-2">&amp;mut</span> <span class="ident">RuleRegistry</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Language</span><span class="op">&gt;</span>, <span class="ident">filter</span>: <span class="kw-2">&amp;</span><span class="ident">AnalysisFilter</span>);
+}
+
+<span class="attribute">#[<span class="ident">macro_export</span>]</span>
+<span class="macro">macro_rules!</span> <span class="ident">declare_category</span> {
+    ( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">vis</span>:<span class="ident">vis</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">id</span>:<span class="ident">ident</span> { <span class="ident">kind</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">kind</span>:<span class="ident">ident</span>, <span class="ident">groups</span>: [ $( $( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">group</span>:<span class="ident">ident</span> )::<span class="op">*</span> , )<span class="op">*</span> ] } ) =&gt; {
+        <span class="macro-nonterminal">$</span><span class="macro-nonterminal">vis</span> <span class="kw">enum</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">id</span> {}
+
+        <span class="kw">impl</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::GroupCategory</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">id</span> {
+            <span class="kw">type</span> <span class="ident">Language</span> <span class="op">=</span> <span class="op">&lt;</span>( $( $( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">group</span> )::<span class="op">*</span> , )<span class="op">*</span> ) <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::CategoryLanguage</span><span class="op">&gt;</span><span class="ident">::Language</span>;
+
+            <span class="kw">const</span> <span class="ident">CATEGORY</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::RuleCategory</span> <span class="op">=</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::RuleCategory</span>::<span class="macro-nonterminal">$</span><span class="macro-nonterminal">kind</span>;
+
+            <span class="kw">fn</span> <span class="ident">push_groups</span>(<span class="ident">registry</span>: <span class="kw-2">&amp;mut</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::RuleRegistry</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Language</span><span class="op">&gt;</span>, <span class="ident">filter</span>: <span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::AnalysisFilter</span>) {
+                $( <span class="ident">registry</span>.<span class="ident">push_group</span>::<span class="op">&lt;</span>$( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">group</span> )::<span class="kw-2">*</span><span class="op">&gt;</span>(<span class="ident">filter</span>); )<span class="op">*</span>
+            }
+        }
+
+        <span class="kw">pub</span>(<span class="self">self</span>) <span class="kw">use</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">id</span> <span class="kw">as</span> <span class="ident">Category</span>;
+    };
+}
+
+<span class="doccomment">/// This trait is implemented for tuples of [Rule] types of size 1 to 29 if the</span>
 <span class="doccomment">/// query type of all the rules in the tuple share the same associated</span>
 <span class="doccomment">/// [Language] (which is then aliased as the `Language` associated type on</span>
 <span class="doccomment">/// [GroupLanguage] itself). It is used to ensure all the rules in a given</span>
 <span class="doccomment">/// group are all querying the same underlying language</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">GroupLanguage</span> {
+    <span class="kw">type</span> <span class="ident">Language</span>: <span class="ident">Language</span>;
+}
+
+<span class="doccomment">/// This trait is implemented for tuples of [Rule] types of size 1 to 29 if the</span>
+<span class="doccomment">/// language of all the groups in the tuple share the same associated</span>
+<span class="doccomment">/// [Language] (which is then aliased as the `Language` associated type on</span>
+<span class="doccomment">/// [CategoryLanguage] itself). It is used to ensure all the groups in a given</span>
+<span class="doccomment">/// category are all querying the same underlying language</span>
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">CategoryLanguage</span> {
     <span class="kw">type</span> <span class="ident">Language</span>: <span class="ident">Language</span>;
 }
 
@@ -762,6 +657,13 @@
             <span class="macro-nonterminal">$</span><span class="macro-nonterminal">head</span>: <span class="ident">Rule</span> $( , <span class="macro-nonterminal">$</span><span class="macro-nonterminal">rest</span>: <span class="ident">Rule</span>, <span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">rest</span> <span class="kw">as</span> <span class="ident">Rule</span><span class="op">&gt;</span><span class="ident">::Query</span>: <span class="ident">Queryable</span><span class="op">&lt;</span><span class="ident">Language</span> <span class="op">=</span> <span class="ident">RuleLanguage</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">head</span><span class="op">&gt;</span><span class="op">&gt;</span> )<span class="op">*</span>
         {
             <span class="kw">type</span> <span class="ident">Language</span> <span class="op">=</span> <span class="ident">RuleLanguage</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">head</span><span class="op">&gt;</span>;
+        }
+
+        <span class="kw">impl</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">head</span> $( , <span class="macro-nonterminal">$</span><span class="macro-nonterminal">rest</span> )<span class="kw-2">*</span><span class="op">&gt;</span> <span class="ident">CategoryLanguage</span> <span class="kw">for</span> (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">head</span>, $( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">rest</span> ),<span class="kw-2">*</span>)
+        <span class="kw">where</span>
+            <span class="macro-nonterminal">$</span><span class="macro-nonterminal">head</span>: <span class="ident">RuleGroup</span> $( , <span class="macro-nonterminal">$</span><span class="macro-nonterminal">rest</span>: <span class="ident">RuleGroup</span><span class="op">&lt;</span><span class="ident">Language</span> <span class="op">=</span> <span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">head</span> <span class="kw">as</span> <span class="ident">RuleGroup</span><span class="op">&gt;</span><span class="ident">::Language</span><span class="op">&gt;</span> )<span class="op">*</span>
+        {
+            <span class="kw">type</span> <span class="ident">Language</span> <span class="op">=</span> <span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">head</span> <span class="kw">as</span> <span class="ident">RuleGroup</span><span class="op">&gt;</span><span class="ident">::Language</span>;
         }
 
         <span class="macro">impl_group_language!</span>( $( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">rest</span> ),<span class="op">*</span> );
@@ -779,10 +681,6 @@
 <span class="doccomment">/// and a callback function to be executed on all nodes matching the query to possibly</span>
 <span class="doccomment">/// raise an analysis event</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Rule</span>: <span class="ident">RuleMeta</span> {
-    <span class="doccomment">/// The category this rule belong to, this is used for broadly filtering</span>
-    <span class="doccomment">/// rules when running the analyzer</span>
-    <span class="kw">const</span> <span class="ident">CATEGORY</span>: <span class="ident">RuleCategory</span>;
-
     <span class="doccomment">/// The type of AstNode this rule is interested in</span>
     <span class="kw">type</span> <span class="ident">Query</span>: <span class="ident">Queryable</span>;
     <span class="doccomment">/// A generic type that will be kept in memory between a call to `run` and</span>

@@ -215,7 +215,7 @@
     <span class="doccomment">/// The category of a diagnostic uniquely identifying this</span>
     <span class="doccomment">/// diagnostic type, such as `lint/correctness/noArguments`, `args/invalid`</span>
     <span class="doccomment">/// or `format/disabled`.</span>
-    <span class="kw">fn</span> <span class="ident">category</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">Category</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">category</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">Category</span><span class="op">&gt;</span> {
         <span class="prelude-val">None</span>
     }
 

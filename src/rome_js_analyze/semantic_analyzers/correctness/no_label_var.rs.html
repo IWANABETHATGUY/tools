@@ -71,10 +71,8 @@
 <span id="71">71</span>
 <span id="72">72</span>
 <span id="73">73</span>
-<span id="74">74</span>
-<span id="75">75</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">semantic_services::Semantic</span>, <span class="ident">JsRuleAction</span>};
-<span class="kw">use</span> <span class="ident">rome_analyze</span>::{<span class="ident">context::RuleContext</span>, <span class="ident">declare_rule</span>, <span class="ident">Rule</span>, <span class="ident">RuleCategory</span>, <span class="ident">RuleDiagnostic</span>};
+<span class="kw">use</span> <span class="ident">rome_analyze</span>::{<span class="ident">context::RuleContext</span>, <span class="ident">declare_rule</span>, <span class="ident">Rule</span>, <span class="ident">RuleDiagnostic</span>};
 <span class="kw">use</span> <span class="ident">rome_console::markup</span>;
 <span class="kw">use</span> <span class="ident">rome_js_syntax</span>::{<span class="ident">JsLabeledStatement</span>, <span class="ident">JsSyntaxNode</span>, <span class="ident">JsSyntaxToken</span>};
 <span class="kw">use</span> <span class="ident">rome_rowan::AstNode</span>;
@@ -105,8 +103,6 @@
 }
 
 <span class="kw">impl</span> <span class="ident">Rule</span> <span class="kw">for</span> <span class="ident">NoLabelVar</span> {
-    <span class="kw">const</span> <span class="ident">CATEGORY</span>: <span class="ident">RuleCategory</span> <span class="op">=</span> <span class="ident">RuleCategory::Lint</span>;
-
     <span class="kw">type</span> <span class="ident">Query</span> <span class="op">=</span> <span class="ident">Semantic</span><span class="op">&lt;</span><span class="ident">JsLabeledStatement</span><span class="op">&gt;</span>;
     <span class="doccomment">/// The first element of the tuple is the name of the binding, the second element of the tuple is the label name</span>
     <span class="kw">type</span> <span class="ident">State</span> <span class="op">=</span> (<span class="ident">JsSyntaxNode</span>, <span class="ident">JsSyntaxToken</span>);

@@ -5,12 +5,14 @@
 <span id="5">5</span>
 <span id="6">6</span>
 <span id="7">7</span>
+<span id="8">8</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Generated file, do not edit by hand, see `xtask/codegen`</span>
 
 <span class="kw">use</span> <span class="ident">rome_analyze::declare_group</span>;
+<span class="kw">mod</span> <span class="ident">no_auto_focus</span>;
 <span class="kw">mod</span> <span class="ident">no_new_symbol</span>;
 <span class="kw">mod</span> <span class="ident">no_unreachable</span>;
 <span class="kw">mod</span> <span class="ident">use_optional_chain</span>;
-<span class="macro">declare_group!</span> { <span class="kw">pub</span> (<span class="kw">crate</span>) <span class="ident">Nursery</span> { <span class="ident">name</span> : <span class="string">&quot;nursery&quot;</span> , <span class="ident">rules</span> : [<span class="self">self</span> :: <span class="ident">no_new_symbol</span> :: <span class="ident">NoNewSymbol</span> , <span class="self">self</span> :: <span class="ident">no_unreachable</span> :: <span class="ident">NoUnreachable</span> , <span class="self">self</span> :: <span class="ident">use_optional_chain</span> :: <span class="ident">UseOptionalChain</span> ,] } }
+<span class="macro">declare_group!</span> { <span class="kw">pub</span> (<span class="kw">crate</span>) <span class="ident">Nursery</span> { <span class="ident">name</span> : <span class="string">&quot;nursery&quot;</span> , <span class="ident">rules</span> : [<span class="self">self</span> :: <span class="ident">no_auto_focus</span> :: <span class="ident">NoAutoFocus</span> , <span class="self">self</span> :: <span class="ident">no_new_symbol</span> :: <span class="ident">NoNewSymbol</span> , <span class="self">self</span> :: <span class="ident">no_unreachable</span> :: <span class="ident">NoUnreachable</span> , <span class="self">self</span> :: <span class="ident">use_optional_chain</span> :: <span class="ident">UseOptionalChain</span> ,] } }
 </code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="rome_js_analyze" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0 (a55dd71d5 2022-09-19)" ></div></body></html>

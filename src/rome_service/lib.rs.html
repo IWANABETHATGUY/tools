@@ -286,7 +286,18 @@
 <span id="286">286</span>
 <span id="287">287</span>
 <span id="288">288</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">rome_console</span>::{<span class="ident">Console</span>, <span class="ident">EnvConsole</span>};
+<span id="289">289</span>
+<span id="290">290</span>
+<span id="291">291</span>
+<span id="292">292</span>
+<span id="293">293</span>
+<span id="294">294</span>
+<span id="295">295</span>
+<span id="296">296</span>
+<span id="297">297</span>
+<span id="298">298</span>
+</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">rome_console::fmt::Bytes</span>;
+<span class="kw">use</span> <span class="ident">rome_console</span>::{<span class="ident">Console</span>, <span class="ident">EnvConsole</span>};
 <span class="kw">use</span> <span class="ident">rome_formatter::FormatError</span>;
 <span class="kw">use</span> <span class="ident">rome_fs</span>::{<span class="ident">FileSystem</span>, <span class="ident">OsFileSystem</span>, <span class="ident">RomePath</span>};
 <span class="kw">use</span> <span class="ident">rome_js_analyze::utils::rename::RenameError</span>;
@@ -359,6 +370,12 @@
     <span class="ident">TransportError</span>(<span class="ident">TransportError</span>),
     <span class="doccomment">/// Emitted when the file is ignored and should not be processed</span>
     <span class="ident">FileIgnored</span>(<span class="ident">PathBuf</span>),
+    <span class="doccomment">/// Emitted when a file could not be parsed because it&#39;s larger than the size limite</span>
+    <span class="ident">FileTooLarge</span> {
+        <span class="ident">path</span>: <span class="ident">PathBuf</span>,
+        <span class="ident">size</span>: <span class="ident">usize</span>,
+        <span class="ident">limit</span>: <span class="ident">usize</span>,
+    },
 }
 
 <span class="kw">impl</span> <span class="ident">Debug</span> <span class="kw">for</span> <span class="ident">RomeError</span> {
@@ -450,6 +467,9 @@
             }
             <span class="ident">RomeError::FileIgnored</span>(<span class="ident">path</span>) =&gt; {
                 <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;The file {} was ignored&quot;</span>, <span class="ident">path</span>.<span class="ident">display</span>())
+            }
+            <span class="ident">RomeError::FileTooLarge</span> { <span class="ident">path</span>, <span class="ident">size</span>, <span class="ident">limit</span> } =&gt; {
+                <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;The file {} could not be parsed because it&#39;s too large (the file is {} long, but the size limit is {})&quot;</span>, <span class="ident">path</span>.<span class="ident">display</span>(), <span class="ident">Bytes</span>(<span class="kw-2">*</span><span class="ident">size</span>), <span class="ident">Bytes</span>(<span class="kw-2">*</span><span class="ident">limit</span>))
             }
         }
     }
